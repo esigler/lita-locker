@@ -39,6 +39,16 @@ module Lita
       )
 
       route(
+        /^locker\sresource\slist$/,
+        :resource_list,
+        command: true,
+        help: {
+          t('help.resource_list_key') =>
+          t('help.resource_list_value')
+        }
+      )
+
+      route(
         /^locker\sresource\screate\s([a-zA-Z0-9]+)$/,
         :resource_create,
         command: true,
@@ -101,6 +111,12 @@ module Lita
           # FIXME: Handle the case where things can't be unlocked?
         else
           response.reply(t('subject.does_not_exist', name: name))
+        end
+      end
+
+      def resource_list(response)
+        resources.each do |r|
+          response.reply(t('resource.desc', name: r.sub('resource_', '')))
         end
       end
 
@@ -168,7 +184,11 @@ module Lita
       end
 
       def resource(name)
-        return redis.hgetall("resource_#{name}") if resource_exists?(name)
+        redis.hgetall("resource_#{name}")
+      end
+
+      def resources
+        redis.keys('resource_*')
       end
     end
 

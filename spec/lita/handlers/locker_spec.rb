@@ -7,6 +7,7 @@ describe Lita::Handlers::Locker, lita_handler: true do
   it { routes_command('lock foobar').to(:lock) }
   it { routes_command('unlock foobar').to(:unlock) }
   it { routes_command('unlock foobar force').to(:unlock_force) }
+  it { routes_command('locker resource list').to(:resource_list) }
   it { routes_command('locker resource create foobar').to(:resource_create) }
   it { routes_command('locker resource delete foobar').to(:resource_delete) }
 
@@ -83,6 +84,15 @@ describe Lita::Handlers::Locker, lita_handler: true do
     it 'unlocks a label from someone else when it is available'
 
     it 'shows an error when a <subject> does not exist'
+  end
+
+  describe '#resource_list' do
+    it 'shows a list of resources if there are any' do
+      send_command('locker resource create foobar')
+      send_command('locker resource create bazbat')
+      send_command('locker resource list')
+      expect(replies.last).to eq('Resource: foobar')
+    end
   end
 
   describe '#resource_create' do

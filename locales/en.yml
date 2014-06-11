@@ -9,12 +9,15 @@ en:
           unlock_value: Make something available to others
           unlock_force_key: unlock <subject> force
           unlock_force_value: Force removal of a reservation.
+          resource_list_key: locker resource list
+          resource_list_value: List all resources
           resource_create_key: locker resource create <name>
           resource_create_value: Create a resource with <name>
           resource_delete_key: locker resource delete <name>
           resource_delete_value: Delete the resource with <name>
         resource:
           created: "resource %{name} created"
+          desc: "Resource: %{name}"
           exists: "resource %{name} already exists"
           deleted: "resource %{name} deleted"
           does_not_exist: "resource %{name} does not exist"
