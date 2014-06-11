@@ -53,7 +53,7 @@ locker unreserve <subject> - Remove yourself from the queue for <subject>
 
 ### Labels
 ```
-locker lable list                          - List all labels
+locker label list                          - List all labels
 locker label create <name>                 - Create a label with <name>.  <name> must be A-Z, a-z, 0-9, no spaces or punctuation.
 locker label delete <name>                 - Delete the label with <name>.  Clears all locks associated.
 locker label add <resource> to <name>      - Adds <resource> to the list of things to lock/unlock for <name>
