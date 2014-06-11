@@ -74,17 +74,18 @@ module Lita
       def unlock(response)
         name = response.matches[0][0]
         if resource_exists?(name)
-          state = show_resource(name)
-          if state == 'unlocked'
+          res = resource(name)
+          if res['state'] == 'unlocked'
             response.reply(t('resource.is_unlocked', name: name))
           else
-            if response.user.name == state
-              if unlock_resource!(name)
-                response.reply(t('resource.unlock', name: name))
-              end
+            # FIXME: NOT SECURE
+            if response.user.name == res['owner']
+              unlock_resource!(name)
+              response.reply(t('resource.unlock', name: name))
               # FIXME: Handle the case where things can't be unlocked?
             else
-              response.reply(t('resource.owned', name: name, owner: state))
+              response.reply(t('resource.owned', name: name,
+                                                 owner: res['owner']))
             end
           end
         else
@@ -95,9 +96,9 @@ module Lita
       def unlock_force(response)
         name = response.matches[0][0]
         if resource_exists?(name)
-          if unlock_resource!(name)
-            response.reply(t('resource.unlock', name: name))
-          end
+          unlock_resource!(name)
+          response.reply(t('resource.unlock', name: name))
+          # FIXME: Handle the case where things can't be unlocked?
         else
           response.reply(t('subject.does_not_exist', name: name))
         end
@@ -125,7 +126,8 @@ module Lita
 
       def create_resource(name)
         resource_key = "resource_#{name}"
-        redis.set(resource_key, 'unlocked') unless resource_exists?(name)
+        redis.hset(resource_key, 'state', 'unlocked') unless
+          resource_exists?(name)
       end
 
       def delete_resource(name)
@@ -140,12 +142,14 @@ module Lita
       def lock_resource!(name, owner)
         if resource_exists?(name)
           resource_key = "resource_#{name}"
-          value = redis.get(resource_key)
+          value = redis.hget(resource_key, 'state')
           if value == 'unlocked'
             # FIXME: Race condition!
             # FIXME: Need to track who did what
             # FIXME: Security!
-            redis.set(resource_key, owner.name)
+            redis.hset(resource_key, 'state', 'locked')
+            redis.hset(resource_key, 'owner', owner.name)
+            true
           else
             false
           end
@@ -157,14 +161,14 @@ module Lita
       def unlock_resource!(name)
         if resource_exists?(name)
           # FIXME: Tracking here?
-          redis.set("resource_#{name}", 'unlocked')
+          redis.hset("resource_#{name}", 'state', 'unlocked')
         else
           false
         end
       end
 
-      def show_resource(name)
-        return redis.get("resource_#{name}") if resource_exists?(name)
+      def resource(name)
+        return redis.hgetall("resource_#{name}") if resource_exists?(name)
       end
     end
 
