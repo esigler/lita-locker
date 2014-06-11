@@ -2,3 +2,26 @@ en:
   lita:
     handlers:
       locker:
+        help:
+          lock_key: lock <subject>
+          lock_value: Make something unavailable to others
+          unlock_key: unlock <subject>
+          unlock_value: Make something available to others
+          unlock_force_key: unlock <subject> force
+          unlock_force_value: Force removal of a reservation.
+          resource_create_key: locker resource create <name>
+          resource_create_value: Create a resource with <name>
+          resource_delete_key: locker resource delete <name>
+          resource_delete_value: Delete the resource with <name>
+        resource:
+          created: "resource %{name} created"
+          exists: "resource %{name} already exists"
+          deleted: "resource %{name} deleted"
+          does_not_exist: "resource %{name} does not exist"
+          lock: "%{name} locked"
+          is_locked: "%{name} is locked"
+          unlock: "%{name} unlocked"
+          is_unlocked: "%{name} is unlocked"
+          owned: "%{name} is locked by %{owner}"
+        subject:
+          does_not_exist: "subject %{name} does not exist"
