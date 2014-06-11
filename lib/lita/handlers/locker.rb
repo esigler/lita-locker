@@ -2,6 +2,16 @@ module Lita
   module Handlers
     class Locker < Handler
       route(
+        /^\(lock\)\s([a-zA-Z0-9]+)$/,
+        :lock
+      )
+
+      route(
+        /^\(unlock\)\s([a-zA-Z0-9]+)$/,
+        :unlock
+      )
+
+      route(
         /^lock\s([a-zA-Z0-9]+)$/,
         :lock,
         command: true,

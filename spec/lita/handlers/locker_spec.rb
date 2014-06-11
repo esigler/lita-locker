@@ -1,6 +1,9 @@
 require 'spec_helper'
 
 describe Lita::Handlers::Locker, lita_handler: true do
+  it { routes('(lock) foobar').to(:lock) }
+  it { routes('(unlock) foobar').to(:unlock) }
+
   it { routes_command('lock foobar').to(:lock) }
   it { routes_command('unlock foobar').to(:unlock) }
   it { routes_command('unlock foobar force').to(:unlock_force) }
