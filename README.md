@@ -7,7 +7,7 @@
 [![Code Climate](https://img.shields.io/codeclimate/github/esigler/lita-locker.svg)](https://codeclimate.com/github/esigler/lita-locker)
 [![Gemnasium](https://img.shields.io/gemnasium/esigler/lita-locker.svg)](https://gemnasium.com/esigler/lita-locker)
 
-A [lita.io](https://github.com/jimmycuadra/lita) handler for locking, unlocking shared resources.
+Locking, unlocking shared resource handler for [lita.io](https://github.com/jimmycuadra/lita).
 
 ## Installation
 
