@@ -5,11 +5,20 @@ describe Lita::Handlers::Locker, lita_handler: true do
   it { routes('(unlock) foobar').to(:unlock) }
 
   it { routes_command('lock foobar').to(:lock) }
+
   it { routes_command('unlock foobar').to(:unlock) }
   it { routes_command('unlock foobar force').to(:unlock_force) }
+
   it { routes_command('locker resource list').to(:resource_list) }
   it { routes_command('locker resource create foobar').to(:resource_create) }
   it { routes_command('locker resource delete foobar').to(:resource_delete) }
+
+  it { routes_command('locker label list').to(:label_list) }
+  it { routes_command('locker label create foobar').to(:label_create) }
+  it { routes_command('locker label delete foobar').to(:label_delete) }
+
+  it { routes_http(:get, '/locker/label/foobar').to(:http_label_show) }
+  it { routes_http(:get, '/locker/resource/foobar').to(:http_resource_show) }
 
   describe '#lock' do
     it 'locks a resource when it is available' do
@@ -84,6 +93,41 @@ describe Lita::Handlers::Locker, lita_handler: true do
     it 'unlocks a label from someone else when it is available'
 
     it 'shows an error when a <subject> does not exist'
+  end
+
+  describe '#label_list' do
+    it 'shows a list of labels if there are any' do
+      send_command('locker label create foobar')
+      send_command('locker label create bazbat')
+      send_command('locker label list')
+      expect(replies.last).to eq('Label: bazbat')
+    end
+  end
+
+  describe '#label_create' do
+    it 'creates a label with <name>' do
+      send_command('locker label create foobar')
+      expect(replies.last).to eq('Label foobar created')
+    end
+
+    it 'shows a warning when the <name> already exists' do
+      send_command('locker label create foobar')
+      send_command('locker label create foobar')
+      expect(replies.last).to eq('Label foobar already exists')
+    end
+  end
+
+  describe '#label_delete' do
+    it 'deletes a label with <name>' do
+      send_command('locker label create foobar')
+      send_command('locker label delete foobar')
+      expect(replies.last).to eq('Label foobar deleted')
+    end
+
+    it 'shows a warning when <name> does not exist' do
+      send_command('locker label delete foobar')
+      expect(replies.last).to eq('Label foobar does not exist')
+    end
   end
 
   describe '#resource_list' do

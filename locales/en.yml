@@ -15,6 +15,12 @@ en:
           resource_create_value: Create a resource with <name>
           resource_delete_key: locker resource delete <name>
           resource_delete_value: Delete the resource with <name>
+          label_list_key: locker label list
+          label_list_value: List all labels
+          label_create_key: locker label create <name>
+          label_create_value: Create a label with <name>
+          label_delete_key: locker label delete <name>
+          label_delete_value: Delete the label with <name>
         resource:
           created: "resource %{name} created"
           desc: "Resource: %{name}"
@@ -28,3 +34,9 @@ en:
           owned: "%{name} is locked by %{owner}"
         subject:
           does_not_exist: "subject %{name} does not exist"
+        label:
+          desc: "Label: %{name}"
+          created: "Label %{name} created"
+          exists: "Label %{name} already exists"
+          deleted: "Label %{name} deleted"
+          does_not_exist: "Label %{name} does not exist"

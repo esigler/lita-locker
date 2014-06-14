@@ -1,6 +1,9 @@
 module Lita
   module Handlers
     class Locker < Handler
+      http.get '/locker/label/:name', :http_label_show
+      http.get '/locker/resource/:name', :http_resource_show
+
       route(
         /^\(lock\)\s([a-zA-Z0-9]+)$/,
         :lock
@@ -68,6 +71,50 @@ module Lita
         }
       )
 
+      route(
+        /^locker\slabel\slist$/,
+        :label_list,
+        command: true,
+        help: {
+          t('help.label_list_key') =>
+          t('help.label_list_value')
+        }
+      )
+
+      route(
+        /^locker\slabel\screate\s([a-zA-Z0-9]+)$/,
+        :label_create,
+        command: true,
+        help: {
+          t('help.label_create_key') =>
+          t('help.label_create_value')
+        }
+      )
+
+      route(
+        /^locker\slabel\sdelete\s([a-zA-Z0-9]+)$/,
+        :label_delete,
+        command: true,
+        help: {
+          t('help.label_delete_key') =>
+          t('help.label_delete_value')
+        }
+      )
+
+      def http_label_show(request, response)
+        name = request.env['router.params'][:name]
+        response.headers['Content-Type'] = 'application/json'
+        result = label(name)
+        response.write(result.to_json)
+      end
+
+      def http_resource_show(request, response)
+        name = request.env['router.params'][:name]
+        response.headers['Content-Type'] = 'application/json'
+        result = resource(name)
+        response.write(result.to_json)
+      end
+
       def lock(response)
         name = response.matches[0][0]
         if resource_exists?(name)
@@ -114,6 +161,30 @@ module Lita
         end
       end
 
+      def label_list(response)
+        labels.each do |l|
+          response.reply(t('label.desc', name: l.sub('label_', '')))
+        end
+      end
+
+      def label_create(response)
+        name = response.matches[0][0]
+        if create_label(name)
+          response.reply(t('label.created', name: name))
+        else
+          response.reply(t('label.exists', name: name))
+        end
+      end
+
+      def label_delete(response)
+        name = response.matches[0][0]
+        if delete_label(name)
+          response.reply(t('label.deleted', name: name))
+        else
+          response.reply(t('label.does_not_exist', name: name))
+        end
+      end
+
       def resource_list(response)
         resources.each do |r|
           response.reply(t('resource.desc', name: r.sub('resource_', '')))
@@ -139,6 +210,21 @@ module Lita
       end
 
       private
+
+      def create_label(name)
+        label_key = "label_#{name}"
+        redis.hset(label_key, 'state', 'unlocked') unless
+          label_exists?(name)
+      end
+
+      def delete_label(name)
+        label_key = "label_#{name}"
+        redis.del(label_key) if label_exists?(name)
+      end
+
+      def label_exists?(name)
+        redis.exists("label_#{name}")
+      end
 
       def create_resource(name)
         resource_key = "resource_#{name}"
@@ -189,6 +275,14 @@ module Lita
 
       def resources
         redis.keys('resource_*')
+      end
+
+      def label(name)
+        redis.hgetall("label_#{name}")
+      end
+
+      def labels
+        redis.keys('label_*')
       end
     end
 
