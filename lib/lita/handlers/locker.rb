@@ -72,6 +72,16 @@ module Lita
       )
 
       route(
+        /^locker\sresource\sshow\s([a-zA-Z0-9]+)$/,
+        :resource_show,
+        command: true,
+        help: {
+          t('help.resource_show_key') =>
+          t('help.resource_show_value')
+        }
+      )
+
+      route(
         /^locker\slabel\slist$/,
         :label_list,
         command: true,
@@ -270,7 +280,9 @@ module Lita
 
       def resource_list(response)
         resources.each do |r|
-          response.reply(t('resource.desc', name: r.sub('resource_', '')))
+          r_name = r.sub('resource_', '')
+          res = resource(r_name)
+          response.reply(t('resource.desc', name: r_name, state: res['state']))
         end
       end
 
@@ -287,6 +299,16 @@ module Lita
         name = response.matches[0][0]
         if delete_resource(name)
           response.reply(t('resource.deleted', name: name))
+        else
+          response.reply(t('resource.does_not_exist', name: name))
+        end
+      end
+
+      def resource_show(response)
+        name = response.matches[0][0]
+        if resource_exists?(name)
+          r = resource(name)
+          response.reply(t('resource.desc', name: name, state: r['state']))
         else
           response.reply(t('resource.does_not_exist', name: name))
         end

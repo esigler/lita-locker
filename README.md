@@ -67,6 +67,7 @@ locker unreserve <subject> - Remove yourself from the queue for <subject>
 * locker resource list          - List all resources
 * locker resource create <name> - Create a resource with <name>.  <name> must be A-Z, a-z, 0-9, no spaces or punctuation.
 * locker resource delete <name> - Delete the resource with <name>.  Clears all locks associated.
+* locker resource show <name>   - Show the state of <name>
 ```
 
 ### HTTP access

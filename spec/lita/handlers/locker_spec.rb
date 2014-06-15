@@ -12,6 +12,7 @@ describe Lita::Handlers::Locker, lita_handler: true do
   it { routes_command('locker resource list').to(:resource_list) }
   it { routes_command('locker resource create foobar').to(:resource_create) }
   it { routes_command('locker resource delete foobar').to(:resource_delete) }
+  it { routes_command('locker resource show foobar').to(:resource_show) }
 
   it { routes_command('locker label list').to(:label_list) }
   it { routes_command('locker label create foobar').to(:label_create) }
@@ -220,7 +221,7 @@ describe Lita::Handlers::Locker, lita_handler: true do
       send_command('locker resource create foobar')
       send_command('locker resource create bazbat')
       send_command('locker resource list')
-      expect(replies.last).to eq('Resource: foobar')
+      expect(replies.last).to eq('Resource: foobar, state: unlocked')
     end
   end
 
@@ -246,6 +247,22 @@ describe Lita::Handlers::Locker, lita_handler: true do
 
     it 'shows a warning when <name> does not exist' do
       send_command('locker resource delete foobar')
+      expect(replies.last).to eq('Resource foobar does not exist')
+    end
+  end
+
+  describe '#resource_show' do
+    it 'shows the state of a <name> if it exists' do
+      send_command('locker resource create foobar')
+      send_command('locker resource show foobar')
+      expect(replies.last).to eq('Resource: foobar, state: unlocked')
+      send_command('lock foobar')
+      send_command('locker resource show foobar')
+      expect(replies.last).to eq('Resource: foobar, state: locked')
+    end
+
+    it 'shows a warning when <name> does not exist' do
+      send_command('locker resource show foobar')
       expect(replies.last).to eq('Resource foobar does not exist')
     end
   end

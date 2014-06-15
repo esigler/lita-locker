@@ -15,6 +15,8 @@ en:
           resource_create_value: Create a resource with <name>
           resource_delete_key: locker resource delete <name>
           resource_delete_value: Delete the resource with <name>
+          resource_show_key: locker resource show <name>
+          resource_show_value: Show the state of <name>
           label_list_key: locker label list
           label_list_value: List all labels
           label_create_key: locker label create <name>
@@ -29,7 +31,7 @@ en:
           label_remove_value: Removes <resource> from <name>
         resource:
           created: "Resource %{name} created"
-          desc: "Resource: %{name}"
+          desc: "Resource: %{name}, state: %{state}"
           exists: "Resource %{name} already exists"
           deleted: "Resource %{name} deleted"
           does_not_exist: "Resource %{name} does not exist"
