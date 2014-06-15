@@ -32,7 +32,7 @@ en:
         resource:
           created: "Resource %{name} created"
           desc: "Resource: %{name}, state: %{state}"
-          exists: "Resource %{name} already exists"
+          exists: "%{name} already exists"
           deleted: "Resource %{name} deleted"
           does_not_exist: "Resource %{name} does not exist"
           lock: "%{name} locked"
@@ -43,9 +43,14 @@ en:
         subject:
           does_not_exist: "%{name} does not exist"
         label:
+          unlock: "%{name} unlocked"
+          owned: "%{name} is locked by %{owner}"
+          is_unlocked: "%{name} is unlocked"
+          unable_to_lock: "%{name} unable to be locked"
+          lock: "%{name} locked"
           desc: "Label: %{name}"
           created: "Label %{name} created"
-          exists: "Label %{name} already exists"
+          exists: "%{name} already exists"
           deleted: "Label %{name} deleted"
           does_not_exist: "Label %{name} does not exist"
           has_no_resources: "Label %{name} has no resources"
@@ -53,3 +58,4 @@ en:
           resource_removed: "Resource %{resource} has been removed from %{label}"
           resources: "Label %{name} has: %{resources}"
           does_not_have_resource: "Label %{label} does not have Resource %{resource}"
+          no_resources: "%{name} has no resources, so it cannot be locked"

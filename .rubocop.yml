@@ -2,7 +2,7 @@ BlockNesting:
   Max: 5
 
 ClassLength:
-  Max: 400
+  Max: 500
 
 CyclomaticComplexity:
   Max: 10

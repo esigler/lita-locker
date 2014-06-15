@@ -43,7 +43,6 @@ locker status      - Show what is and isn't available
 lock <subject> <time>  - A time-limited reservation.  <time> must be a number with a "s", "m", or "h" postfix.
 * unlock <subject>       - Remove a reservation.  This can only be done by whomever made the request.
 * unlock <subject> force - Force removal of a reservation.  This can be done by anyone.
-state <subject>        - Show the state of <subject>, including if it is locked, unlocked, and pending reservations.
 ```
 
 ### Reservations

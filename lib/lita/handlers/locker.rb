@@ -163,6 +163,17 @@ module Lita
           else
             response.reply(t('resource.is_locked', name: name))
           end
+        elsif label_exists?(name)
+          m = label_membership(name)
+          if m.count > 0
+            if lock_label!(name, response.user)
+              response.reply(t('label.lock', name: name))
+            else
+              response.reply(t('label.unable_to_lock', name: name))
+            end
+          else
+            response.reply(t('label.no_resources', name: name))
+          end
         else
           response.reply(t('subject.does_not_exist', name: name))
         end
@@ -185,6 +196,21 @@ module Lita
                                                  owner: res['owner']))
             end
           end
+        elsif label_exists?(name)
+          l = label(name)
+          if l['state'] == 'unlocked'
+            response.reply(t('label.is_unlocked', name: name))
+          else
+            # FIXME: NOT SECURE
+            if response.user.name == l['owner']
+              unlock_label!(name)
+              response.reply(t('label.unlock', name: name))
+              # FIXME: Handle the case where things can't be unlocked?
+            else
+              response.reply(t('label.owned', name: name,
+                                              owner: l['owner']))
+            end
+          end
         else
           response.reply(t('subject.does_not_exist', name: name))
         end
@@ -195,6 +221,10 @@ module Lita
         if resource_exists?(name)
           unlock_resource!(name)
           response.reply(t('resource.unlock', name: name))
+          # FIXME: Handle the case where things can't be unlocked?
+        elsif label_exists?(name)
+          unlock_label!(name)
+          response.reply(t('label.unlock', name: name))
           # FIXME: Handle the case where things can't be unlocked?
         else
           response.reply(t('subject.does_not_exist', name: name))
@@ -319,7 +349,7 @@ module Lita
       def create_label(name)
         label_key = "label_#{name}"
         redis.hset(label_key, 'state', 'unlocked') unless
-          label_exists?(name)
+          resource_exists?(name) || label_exists?(name)
       end
 
       def delete_label(name)
@@ -350,7 +380,7 @@ module Lita
       def create_resource(name)
         resource_key = "resource_#{name}"
         redis.hset(resource_key, 'state', 'unlocked') unless
-          resource_exists?(name)
+          resource_exists?(name) || label_exists?(name)
       end
 
       def delete_resource(name)
@@ -368,8 +398,7 @@ module Lita
           value = redis.hget(resource_key, 'state')
           if value == 'unlocked'
             # FIXME: Race condition!
-            # FIXME: Need to track who did what
-            # FIXME: Security!
+            # FIXME: Store something better than name
             redis.hset(resource_key, 'state', 'locked')
             redis.hset(resource_key, 'owner', owner.name)
             true
@@ -381,10 +410,47 @@ module Lita
         end
       end
 
+      def lock_label!(name, owner)
+        if label_exists?(name)
+          key = "label_#{name}"
+          members = label_membership(name)
+          members.each do |m|
+            r = resource(m)
+            return false if r['state'] == 'locked'
+          end
+          # FIXME: No, really, race condition.
+          members.each do |m|
+            lock_resource!(m, owner)
+          end
+          redis.hset(key, 'state', 'locked')
+          redis.hset(key, 'owner', owner.name)
+          true
+        else
+          false
+        end
+      end
+
       def unlock_resource!(name)
         if resource_exists?(name)
           # FIXME: Tracking here?
-          redis.hset("resource_#{name}", 'state', 'unlocked')
+          key = "resource_#{name}"
+          redis.hset(key, 'state', 'unlocked')
+          redis.hset(key, 'owner', '')
+        else
+          false
+        end
+      end
+
+      def unlock_label!(name)
+        if label_exists?(name)
+          key = "label_#{name}"
+          members = label_membership(name)
+          members.each do |m|
+            unlock_resource!(m)
+          end
+          redis.hset(key, 'state', 'unlocked')
+          redis.hset(key, 'owner', '')
+          true
         else
           false
         end
