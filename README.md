@@ -37,12 +37,13 @@ locker reserve web - Make yourself the next owner of something after it is unloc
 locker status      - Show what is and isn't available
 ```
 
-### Locking, Unlocking
+### Locking, Unlocking, State
 ```
 * lock <subject>         - A basic reservation, with no time limit.  <subject> can be a resource or a label.
 lock <subject> <time>  - A time-limited reservation.  <time> must be a number with a "s", "m", or "h" postfix.
 * unlock <subject>       - Remove a reservation.  This can only be done by whomever made the request.
 * unlock <subject> force - Force removal of a reservation.  This can be done by anyone.
+state <subject>        - Show the state of <subject>, including if it is locked, unlocked, and pending reservations.
 ```
 
 ### Reservations
@@ -56,9 +57,9 @@ locker unreserve <subject> - Remove yourself from the queue for <subject>
 * locker label list                          - List all labels
 * locker label create <name>                 - Create a label with <name>.  <name> must be A-Z, a-z, 0-9, no spaces or punctuation.
 * locker label delete <name>                 - Delete the label with <name>.  Clears all locks associated.
-locker label add <resource> to <name>      - Adds <resource> to the list of things to lock/unlock for <name>
-locker label remove <resource> from <name> - Removes <resource> from <name>
-locker label show <name>                   - Show all resources for <name>
+* locker label add <resource> to <name>      - Adds <resource> to the list of things to lock/unlock for <name>
+* locker label remove <resource> from <name> - Removes <resource> from <name>
+* locker label show <name>                   - Show all resources for <name>
 ```
 
 ### Resources

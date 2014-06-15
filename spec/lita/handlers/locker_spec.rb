@@ -16,6 +16,9 @@ describe Lita::Handlers::Locker, lita_handler: true do
   it { routes_command('locker label list').to(:label_list) }
   it { routes_command('locker label create foobar').to(:label_create) }
   it { routes_command('locker label delete foobar').to(:label_delete) }
+  it { routes_command('locker label show foobar').to(:label_show) }
+  it { routes_command('locker label add foo to bar').to(:label_add) }
+  it { routes_command('locker label remove foo from bar').to(:label_remove) }
 
   it { routes_http(:get, '/locker/label/foobar').to(:http_label_show) }
   it { routes_http(:get, '/locker/resource/foobar').to(:http_resource_show) }
@@ -40,7 +43,7 @@ describe Lita::Handlers::Locker, lita_handler: true do
 
     it 'shows an error when a <subject> does not exist' do
       send_command('lock foobar')
-      expect(replies.last).to eq('subject foobar does not exist')
+      expect(replies.last).to eq('foobar does not exist')
     end
   end
 
@@ -76,7 +79,7 @@ describe Lita::Handlers::Locker, lita_handler: true do
 
     it 'shows an error when a <subject> does not exist' do
       send_command('unlock foobar')
-      expect(replies.last).to eq('subject foobar does not exist')
+      expect(replies.last).to eq('foobar does not exist')
     end
   end
 
@@ -130,6 +133,88 @@ describe Lita::Handlers::Locker, lita_handler: true do
     end
   end
 
+  describe '#label_show' do
+    it 'shows a list of resources for a label if there are any' do
+      send_command('locker resource create whatever')
+      send_command('locker label create foobar')
+      send_command('locker label add whatever to foobar')
+      send_command('locker label show foobar')
+      expect(replies.last).to eq('Label foobar has: whatever')
+    end
+
+    it 'shows a warning if there are no resources for the label' do
+      send_command('locker label create foobar')
+      send_command('locker label show foobar')
+      expect(replies.last).to eq('Label foobar has no resources')
+    end
+
+    it 'shows an error if the label does not exist' do
+      send_command('locker label show foobar')
+      expect(replies.last).to eq('Label foobar does not exist')
+    end
+  end
+
+  describe '#label_add' do
+    it 'adds a resource to a label if both exist' do
+      send_command('locker resource create foo')
+      send_command('locker label create bar')
+      send_command('locker label add foo to bar')
+      expect(replies.last).to eq('Resource foo has been added to bar')
+      send_command('locker label show bar')
+      expect(replies.last).to eq('Label bar has: foo')
+    end
+
+    it 'adds multiple resources to a label if all exist' do
+      send_command('locker resource create foo')
+      send_command('locker resource create baz')
+      send_command('locker label create bar')
+      send_command('locker label add foo to bar')
+      send_command('locker label add baz to bar')
+      send_command('locker label show bar')
+      expect(replies.last).to eq('Label bar has: baz, foo')
+    end
+
+    it 'shows an error if the label does not exist' do
+      send_command('locker label add foo to bar')
+      expect(replies.last).to eq('Label bar does not exist')
+    end
+
+    it 'shows an error if the resource does not exist' do
+      send_command('locker label create bar')
+      send_command('locker label add foo to bar')
+      expect(replies.last).to eq('Resource foo does not exist')
+    end
+  end
+
+  describe '#label_remove' do
+    it 'removes a resource from a label if both exist and are related' do
+      send_command('locker resource create foo')
+      send_command('locker label create bar')
+      send_command('locker label add foo to bar')
+      send_command('locker label remove foo from bar')
+      send_command('locker label show bar')
+      expect(replies.last).to eq('Label bar has no resources')
+    end
+
+    it 'shows an error if they both exist but are not related' do
+      send_command('locker resource create foo')
+      send_command('locker label create bar')
+      send_command('locker label remove foo from bar')
+      expect(replies.last).to eq('Label bar does not have Resource foo')
+    end
+
+    it 'shows an error if the label does not exist' do
+      send_command('locker label add foo to bar')
+      expect(replies.last).to eq('Label bar does not exist')
+    end
+
+    it 'shows an error if the resource does not exist' do
+      send_command('locker label create bar')
+      send_command('locker label add foo to bar')
+      expect(replies.last).to eq('Resource foo does not exist')
+    end
+  end
+
   describe '#resource_list' do
     it 'shows a list of resources if there are any' do
       send_command('locker resource create foobar')
@@ -142,13 +227,13 @@ describe Lita::Handlers::Locker, lita_handler: true do
   describe '#resource_create' do
     it 'creates a resource with <name>' do
       send_command('locker resource create foobar')
-      expect(replies.last).to eq('resource foobar created')
+      expect(replies.last).to eq('Resource foobar created')
     end
 
     it 'shows a warning when the <name> already exists' do
       send_command('locker resource create foobar')
       send_command('locker resource create foobar')
-      expect(replies.last).to eq('resource foobar already exists')
+      expect(replies.last).to eq('Resource foobar already exists')
     end
   end
 
@@ -156,12 +241,12 @@ describe Lita::Handlers::Locker, lita_handler: true do
     it 'deletes a resource with <name>' do
       send_command('locker resource create foobar')
       send_command('locker resource delete foobar')
-      expect(replies.last).to eq('resource foobar deleted')
+      expect(replies.last).to eq('Resource foobar deleted')
     end
 
     it 'shows a warning when <name> does not exist' do
       send_command('locker resource delete foobar')
-      expect(replies.last).to eq('resource foobar does not exist')
+      expect(replies.last).to eq('Resource foobar does not exist')
     end
   end
 end

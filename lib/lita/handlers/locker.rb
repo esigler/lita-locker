@@ -101,6 +101,36 @@ module Lita
         }
       )
 
+      route(
+        /^locker\slabel\sshow\s([a-zA-Z0-9]+)$/,
+        :label_show,
+        command: true,
+        help: {
+          t('help.label_show_key') =>
+          t('help.label_show_value')
+        }
+      )
+
+      route(
+        /^locker\slabel\sadd\s([a-zA-Z0-9]+)\sto\s([a-zA-Z0-9]+)$/,
+        :label_add,
+        command: true,
+        help: {
+          t('help.label_add_key') =>
+          t('help.label_add_value')
+        }
+      )
+
+      route(
+        /^locker\slabel\sremove\s([a-zA-Z0-9]+)\sfrom\s([a-zA-Z0-9]+)$/,
+        :label_remove,
+        command: true,
+        help: {
+          t('help.label_remove_key') =>
+          t('help.label_remove_value')
+        }
+      )
+
       def http_label_show(request, response)
         name = request.env['router.params'][:name]
         response.headers['Content-Type'] = 'application/json'
@@ -185,6 +215,59 @@ module Lita
         end
       end
 
+      def label_show(response)
+        name = response.matches[0][0]
+        if label_exists?(name)
+          members = label_membership(name)
+          if members.count > 0
+            response.reply(t('label.resources', name: name,
+                                                resources: members.join(', ')))
+          else
+            response.reply(t('label.has_no_resources', name: name))
+          end
+        else
+          response.reply(t('label.does_not_exist', name: name))
+        end
+      end
+
+      def label_add(response)
+        resource_name = response.matches[0][0]
+        label_name = response.matches[0][1]
+        if label_exists?(label_name)
+          if resource_exists?(resource_name)
+            add_resource_to_label(label_name, resource_name)
+            response.reply(t('label.resource_added', label: label_name,
+                                                     resource: resource_name))
+          else
+            response.reply(t('resource.does_not_exist', name: resource_name))
+          end
+        else
+          response.reply(t('label.does_not_exist', name: label_name))
+        end
+      end
+
+      def label_remove(response)
+        resource_name = response.matches[0][0]
+        label_name = response.matches[0][1]
+        if label_exists?(label_name)
+          if resource_exists?(resource_name)
+            members = label_membership(label_name)
+            if members.include?(resource_name)
+              remove_resource_from_label(label_name, resource_name)
+              response.reply(t('label.resource_removed',
+                               label: label_name, resource: resource_name))
+            else
+              response.reply(t('label.does_not_have_resource',
+                               label: label_name, resource: resource_name))
+            end
+          else
+            response.reply(t('resource.does_not_exist', name: resource_name))
+          end
+        else
+          response.reply(t('label.does_not_exist', name: label_name))
+        end
+      end
+
       def resource_list(response)
         resources.each do |r|
           response.reply(t('resource.desc', name: r.sub('resource_', '')))
@@ -224,6 +307,22 @@ module Lita
 
       def label_exists?(name)
         redis.exists("label_#{name}")
+      end
+
+      def label_membership(name)
+        redis.smembers("membership_#{name}")
+      end
+
+      def add_resource_to_label(label, resource)
+        if label_exists?(label) && resource_exists?(resource)
+          redis.sadd("membership_#{label}", resource)
+        end
+      end
+
+      def remove_resource_from_label(label, resource)
+        if label_exists?(label) && resource_exists?(resource)
+          redis.srem("membership_#{label}", resource)
+        end
       end
 
       def create_resource(name)
