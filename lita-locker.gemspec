@@ -1,6 +1,6 @@
 Gem::Specification.new do |spec|
   spec.name          = 'lita-locker'
-  spec.version       = '0.0.1'
+  spec.version       = '0.3.0'
   spec.authors       = ['Eric Sigler']
   spec.email         = ['me@esigler.com']
   spec.description   = %q("lock" and "unlock" arbitrary subjects)
