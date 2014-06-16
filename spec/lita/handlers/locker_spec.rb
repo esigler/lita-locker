@@ -1,10 +1,11 @@
 require 'spec_helper'
 
 describe Lita::Handlers::Locker, lita_handler: true do
-  it { routes('(lock) foobar').to(:lock) }
-  it { routes('(unlock) foobar').to(:unlock) }
+#  it { routes('(lock) foobar').to(:lock) }
+#  it { routes('(unlock) foobar').to(:unlock) }
 
   it { routes_command('lock foobar').to(:lock) }
+#  it { routes_command('lock foobar 30m').to(:lock) }
 
   it { routes_command('unlock foobar').to(:unlock) }
   it { routes_command('unlock foobar force').to(:unlock_force) }
@@ -68,6 +69,20 @@ describe Lita::Handlers::Locker, lita_handler: true do
       send_command('lock foobar')
       expect(replies.last).to eq('foobar does not exist')
     end
+
+#    it 'locks a resource when it is available for a period of time' do
+#      send_command('locker resource create foobar')
+#      send_command('lock foobar 17m')
+#      expect(replies.last).to eq('foobar locked for 17 minutes')
+#      send_command('locker resource show foobar')
+#      expect(replies.last).to eq('Resource: foobar, state: locked')
+#      send_command('unlock foobar')
+#      send_command('lock foobar 12s')
+#      expect(replies.last).to eq('foobar locked for 17 seconds')
+#      send_command('unlock foobar')
+#      send_command('lock foobar 14h')
+#      expect(replies.last).to eq('foobar locked for 14 hours')
+#    end
   end
 
   describe '#unlock' do

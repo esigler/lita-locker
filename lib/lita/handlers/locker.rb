@@ -4,15 +4,15 @@ module Lita
       http.get '/locker/label/:name', :http_label_show
       http.get '/locker/resource/:name', :http_resource_show
 
-      route(
-        /^\(lock\)\s([a-zA-Z0-9_-]+)$/,
-        :lock
-      )
+#      route(
+#        /^\(lock\)\s([a-zA-Z0-9_-]+)$/,
+#        :lock
+#      )
 
-      route(
-        /^\(unlock\)\s([a-zA-Z0-9_-]+)$/,
-        :unlock
-      )
+#      route(
+#        /^\(unlock\)\s([a-zA-Z0-9_-]+)$/,
+#        :unlock
+#      )
 
       route(
         /^lock\s([a-zA-Z0-9_-]+)$/,
@@ -22,6 +22,15 @@ module Lita
           t('help.lock_key') => t('help.lock_value')
         }
       )
+
+#      route(
+#        /^lock\s([a-zA-Z0-9_-]+)\s(\d+)(s|m|h)$/,
+#        :lock,
+#        command: true,
+#        help: {
+#          t('help.lock_time_key') => t('help.lock_time_value')
+#        }
+#      )
 
       route(
         /^unlock\s([a-zA-Z0-9_-]+)$/,
@@ -157,8 +166,21 @@ module Lita
 
       def lock(response)
         name = response.matches[0][0]
+        timeamt = response.matches[0][1]
+        timeunit = response.matches[0][2]
+        case timeunit
+        when 's'
+          time_until = Time.now.utc + timeamt.to_i
+        when 'm'
+          time_until = Time.now.utc + (timeamt.to_i * 60)
+        when 'h'
+          time_until = Time.now.utc + (timeamt.to_i * 3600)
+        else
+          time_until = nil
+        end
+
         if resource_exists?(name)
-          if lock_resource!(name, response.user)
+          if lock_resource!(name, response.user, time_until)
             response.reply(t('resource.lock', name: name))
           else
             response.reply(t('resource.is_locked', name: name))
@@ -166,7 +188,7 @@ module Lita
         elsif label_exists?(name)
           m = label_membership(name)
           if m.count > 0
-            if lock_label!(name, response.user)
+            if lock_label!(name, response.user, time_until)
               response.reply(t('label.lock', name: name))
             else
               response.reply(t('label.unable_to_lock', name: name))
@@ -392,7 +414,7 @@ module Lita
         redis.exists("resource_#{name}")
       end
 
-      def lock_resource!(name, owner)
+      def lock_resource!(name, owner, time_until)
         if resource_exists?(name)
           resource_key = "resource_#{name}"
           value = redis.hget(resource_key, 'state')
@@ -401,6 +423,7 @@ module Lita
             # FIXME: Store something better than name
             redis.hset(resource_key, 'state', 'locked')
             redis.hset(resource_key, 'owner', owner.name)
+            redis.hset(resource_key, 'until', time_until)
             true
           else
             false
@@ -410,7 +433,7 @@ module Lita
         end
       end
 
-      def lock_label!(name, owner)
+      def lock_label!(name, owner, time_until)
         if label_exists?(name)
           key = "label_#{name}"
           members = label_membership(name)
@@ -420,10 +443,11 @@ module Lita
           end
           # FIXME: No, really, race condition.
           members.each do |m|
-            lock_resource!(m, owner)
+            lock_resource!(m, owner, time_until)
           end
           redis.hset(key, 'state', 'locked')
           redis.hset(key, 'owner', owner.name)
+          redis.hset(key, 'until', time_until)
           true
         else
           false
