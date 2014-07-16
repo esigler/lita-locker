@@ -67,6 +67,7 @@ module Lita
         /^locker\sresource\screate\s#{RESOURCE_REGEX}$/,
         :resource_create,
         command: true,
+        restrict_to: [:locker_admins],
         help: {
           t('help.resource_create_key') =>
           t('help.resource_create_value')
@@ -77,6 +78,7 @@ module Lita
         /^locker\sresource\sdelete\s#{RESOURCE_REGEX}$/,
         :resource_delete,
         command: true,
+        restrict_to: [:locker_admins],
         help: {
           t('help.resource_delete_key') =>
           t('help.resource_delete_value')

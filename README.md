@@ -58,7 +58,7 @@ unreserve <subject> - Remove yourself from the queue for <subject>
 ### Labels
 ```
 locker label list                          - List all labels
-locker label create <name>                 - Create a label with <name>.  <name> must be A-Z, a-z, 0-9, no spaces or punctuation.
+locker label create <name>                 - Create a label with <name>.
 locker label delete <name>                 - Delete the label with <name>.  Clears all locks associated.
 locker label add <resource> to <name>      - Adds <resource> to the list of things to lock/unlock for <name>
 locker label remove <resource> from <name> - Removes <resource> from <name>
@@ -68,8 +68,8 @@ locker label show <name>                   - Show all resources for <name>
 ### Resources
 ```
 locker resource list          - List all resources
-locker resource create <name> - Create a resource with <name>.  <name> must be A-Z, a-z, 0-9, no spaces or punctuation.
-locker resource delete <name> - Delete the resource with <name>.  Clears all locks associated.
+locker resource create <name> - Create a resource with <name>.  (Restricted to locker_admins group)
+locker resource delete <name> - Delete the resource with <name>.  Clears all locks associated.  (Restricted to locker_admins group)
 locker resource show <name>   - Show the state of <name>
 ```
 

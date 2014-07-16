@@ -34,6 +34,13 @@ describe Lita::Handlers::Locker, lita_handler: true do
   it { routes_http(:get, '/locker/label/foobar').to(:http_label_show) }
   it { routes_http(:get, '/locker/resource/foobar').to(:http_resource_show) }
 
+  before do
+    allow(Lita::Authorization).to receive(:user_in_group?).with(
+      user,
+      :locker_admins
+    ).and_return(true)
+  end
+
   describe '#lock' do
     it 'locks a resource when it is available' do
       send_command('locker resource create foobar')
