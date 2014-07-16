@@ -4,18 +4,21 @@ module Lita
       http.get '/locker/label/:name', :http_label_show
       http.get '/locker/resource/:name', :http_resource_show
 
-#      route(
-#        /^\(lock\)\s([a-zA-Z0-9_-]+)$/,
-#        :lock
-#      )
-
-#      route(
-#        /^\(unlock\)\s([a-zA-Z0-9_-]+)$/,
-#        :unlock
-#      )
+      LABEL_REGEX    = /([\W\S_-]+)/
+      RESOURCE_REGEX = /([\.a-zA-Z0-9_-]+)/
 
       route(
-        /^lock\s([a-zA-Z0-9_-]+)$/,
+        /^\(lock\)\s#{LABEL_REGEX}$/,
+        :lock
+      )
+
+      route(
+        /^\(unlock\)\s#{LABEL_REGEX}$/,
+        :unlock
+      )
+
+      route(
+        /^lock\s#{LABEL_REGEX}$/,
         :lock,
         command: true,
         help: {
@@ -33,7 +36,7 @@ module Lita
 #      )
 
       route(
-        /^unlock\s([a-zA-Z0-9_-]+)$/,
+        /^unlock\s#{LABEL_REGEX}$/,
         :unlock,
         command: true,
         help: {
@@ -42,7 +45,7 @@ module Lita
       )
 
       route(
-        /^unlock\s([a-zA-Z0-9_-]+)\sforce$/,
+        /^unlock\s#{LABEL_REGEX}\sforce$/,
         :unlock_force,
         command: true,
         help: {
@@ -61,7 +64,7 @@ module Lita
       )
 
       route(
-        /^locker\sresource\screate\s([a-zA-Z0-9_-]+)$/,
+        /^locker\sresource\screate\s#{RESOURCE_REGEX}$/,
         :resource_create,
         command: true,
         help: {
@@ -71,7 +74,7 @@ module Lita
       )
 
       route(
-        /^locker\sresource\sdelete\s([a-zA-Z0-9_-]+)$/,
+        /^locker\sresource\sdelete\s#{RESOURCE_REGEX}$/,
         :resource_delete,
         command: true,
         help: {
@@ -81,7 +84,7 @@ module Lita
       )
 
       route(
-        /^locker\sresource\sshow\s([a-zA-Z0-9_-]+)$/,
+        /^locker\sresource\sshow\s#{RESOURCE_REGEX}$/,
         :resource_show,
         command: true,
         help: {
@@ -101,7 +104,7 @@ module Lita
       )
 
       route(
-        /^locker\slabel\screate\s([a-zA-Z0-9_-]+)$/,
+        /^locker\slabel\screate\s#{LABEL_REGEX}$/,
         :label_create,
         command: true,
         help: {
@@ -111,7 +114,7 @@ module Lita
       )
 
       route(
-        /^locker\slabel\sdelete\s([a-zA-Z0-9_-]+)$/,
+        /^locker\slabel\sdelete\s#{LABEL_REGEX}$/,
         :label_delete,
         command: true,
         help: {
@@ -121,7 +124,7 @@ module Lita
       )
 
       route(
-        /^locker\slabel\sshow\s([a-zA-Z0-9_-]+)$/,
+        /^locker\slabel\sshow\s#{LABEL_REGEX}$/,
         :label_show,
         command: true,
         help: {
@@ -131,7 +134,7 @@ module Lita
       )
 
       route(
-        /^locker\slabel\sadd\s([a-zA-Z0-9_-]+)\sto\s([a-zA-Z0-9_-]+)$/,
+        /^locker\slabel\sadd\s#{RESOURCE_REGEX}\sto\s#{LABEL_REGEX}$/,
         :label_add,
         command: true,
         help: {
@@ -141,7 +144,7 @@ module Lita
       )
 
       route(
-        /^locker\slabel\sremove\s([a-zA-Z0-9_-]+)\sfrom\s([a-zA-Z0-9_-]+)$/,
+        /^locker\slabel\sremove\s#{RESOURCE_REGEX}\sfrom\s#{LABEL_REGEX}$/,
         :label_remove,
         command: true,
         help: {

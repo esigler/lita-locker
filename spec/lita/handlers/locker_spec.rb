@@ -1,17 +1,26 @@
 require 'spec_helper'
 
 describe Lita::Handlers::Locker, lita_handler: true do
-#  it { routes('(lock) foobar').to(:lock) }
-#  it { routes('(unlock) foobar').to(:unlock) }
+  it { routes('(lock) foobar').to(:lock) }
+  it { routes('(unlock) foobar').to(:unlock) }
 
   it { routes_command('lock foobar').to(:lock) }
+  it { routes_command('lock foo bar').to(:lock) }
+  it { routes_command('lock foo-bar').to(:lock) }
+  it { routes_command('lock foo_bar').to(:lock) }
 #  it { routes_command('lock foobar 30m').to(:lock) }
 
   it { routes_command('unlock foobar').to(:unlock) }
+  it { routes_command('unlock foo bar').to(:unlock) }
+  it { routes_command('unlock foo-bar').to(:unlock) }
+  it { routes_command('unlock foo_bar').to(:unlock) }
   it { routes_command('unlock foobar force').to(:unlock_force) }
 
   it { routes_command('locker resource list').to(:resource_list) }
   it { routes_command('locker resource create foobar').to(:resource_create) }
+  it { routes_command('locker resource create foo.bar').to(:resource_create) }
+  it { routes_command('locker resource create foo-bar').to(:resource_create) }
+  it { routes_command('locker resource create foo_bar').to(:resource_create) }
   it { routes_command('locker resource delete foobar').to(:resource_delete) }
   it { routes_command('locker resource show foobar').to(:resource_show) }
 
@@ -175,7 +184,8 @@ describe Lita::Handlers::Locker, lita_handler: true do
       send_command('locker label create foobar')
       send_command('locker label create bazbat')
       send_command('locker label list')
-      expect(replies.last).to eq('Label: bazbat')
+      expect(replies.include?('Label: foobar')).to eq(true)
+      expect(replies.include?('Label: bazbat')).to eq(true)
     end
   end
 
@@ -298,7 +308,8 @@ describe Lita::Handlers::Locker, lita_handler: true do
       send_command('locker resource create foobar')
       send_command('locker resource create bazbat')
       send_command('locker resource list')
-      expect(replies.last).to eq('Resource: foobar, state: unlocked')
+      expect(replies.include?('Resource: foobar, state: unlocked')).to eq(true)
+      expect(replies.include?('Resource: bazbat, state: unlocked')).to eq(true)
     end
   end
 
