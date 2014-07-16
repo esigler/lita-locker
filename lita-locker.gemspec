@@ -1,6 +1,6 @@
 Gem::Specification.new do |spec|
   spec.name          = 'lita-locker'
-  spec.version       = '0.3.1'
+  spec.version       = '0.4.0'
   spec.authors       = ['Eric Sigler']
   spec.email         = ['me@esigler.com']
   spec.description   = %q("lock" and "unlock" arbitrary subjects)
@@ -18,7 +18,7 @@ Gem::Specification.new do |spec|
 
   spec.add_development_dependency 'bundler', '~> 1.3'
   spec.add_development_dependency 'rake'
-  spec.add_development_dependency 'rspec', '>= 3.0.0.beta2'
+  spec.add_development_dependency 'rspec', '>= 3.0.0'
   spec.add_development_dependency 'simplecov'
   spec.add_development_dependency 'coveralls'
   spec.add_development_dependency 'rubocop'
