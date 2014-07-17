@@ -139,7 +139,7 @@ describe Lita::Handlers::Locker, lita_handler: true do
       send_command('locker label add foobar to bazbat')
       send_command('lock bazbat')
       send_command('unlock bazbat')
-      expect(replies.last).to eq('bazbat unlocked')
+      expect(replies.last).to eq('(successful) bazbat unlocked')
     end
 
     it 'does not unlock a label when someone else locked it' do
@@ -150,7 +150,7 @@ describe Lita::Handlers::Locker, lita_handler: true do
       send_command('locker label add foobar to bazbat')
       send_command('lock bazbat', as: alice)
       send_command('unlock bazbat', as: bob)
-      expect(replies.last).to eq('bazbat is locked by Alice')
+      expect(replies.last).to eq('(failed) bazbat is locked by Alice')
     end
 
     it 'shows a warning when a resource is already unlocked' do
@@ -165,12 +165,12 @@ describe Lita::Handlers::Locker, lita_handler: true do
       send_command('locker label add foobar to bazbat')
       send_command('unlock bazbat')
       send_command('unlock bazbat')
-      expect(replies.last).to eq('bazbat is unlocked')
+      expect(replies.last).to eq('(successful) bazbat is unlocked')
     end
 
     it 'shows an error when a <subject> does not exist' do
       send_command('unlock foobar')
-      expect(replies.last).to eq('foobar does not exist')
+      expect(replies.last).to eq('(failed) foobar does not exist')
     end
   end
 

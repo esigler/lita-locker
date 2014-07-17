@@ -233,20 +233,21 @@ module Lita
         elsif label_exists?(name)
           l = label(name)
           if l['state'] == 'unlocked'
-            response.reply(t('label.is_unlocked', name: name))
+            response.reply('(successful) ' + t('label.is_unlocked',
+                                               name: name))
           else
             # FIXME: NOT SECURE
             if response.user.name == l['owner']
               unlock_label!(name)
-              response.reply(t('label.unlock', name: name))
+              response.reply('(successful) ' + t('label.unlock', name: name))
               # FIXME: Handle the case where things can't be unlocked?
             else
-              response.reply(t('label.owned', name: name,
-                                              owner: l['owner']))
+              response.reply('(failed) ' + t('label.owned', name: name,
+                                                            owner: l['owner']))
             end
           end
         else
-          response.reply(t('subject.does_not_exist', name: name))
+          response.reply('(failed) ' + t('subject.does_not_exist', name: name))
         end
       end
 
