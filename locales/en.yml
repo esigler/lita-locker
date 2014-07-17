@@ -35,11 +35,11 @@ en:
           exists: "%{name} already exists"
           deleted: "Resource %{name} deleted"
           does_not_exist: "Resource %{name} does not exist"
-          lock: "%{name} locked"
+          lock: "(successful) %{name} locked"
           is_locked: "%{name} is locked"
           unlock: "%{name} unlocked"
           is_unlocked: "%{name} is unlocked"
-          owned: "%{name} is locked by %{owner}"
+          owned: "(failed) %{name} is locked by %{owner}"
         subject:
           does_not_exist: "%{name} does not exist"
         label:
