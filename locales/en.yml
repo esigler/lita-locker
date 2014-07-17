@@ -41,7 +41,7 @@ en:
           is_unlocked: "%{name} is unlocked"
           owned: "%{name} is locked by %{owner}"
         subject:
-          does_not_exist: "%{name} does not exist"
+          does_not_exist: "Sorry, that does not exist"
         label:
           unlock: "%{name} unlocked"
           owned: "%{name} is locked by %{owner}"
