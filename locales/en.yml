@@ -59,3 +59,4 @@ en:
           resources: "Label %{name} has: %{resources}"
           does_not_have_resource: "Label %{label} does not have Resource %{resource}"
           no_resources: "%{name} has no resources, so it cannot be locked"
+          dependency: 'Label unable to be locked, blocked on a dependency'

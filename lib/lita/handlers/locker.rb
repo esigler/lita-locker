@@ -26,14 +26,14 @@ module Lita
         }
       )
 
-#      route(
-#        /^lock\s([a-zA-Z0-9_-]+)\s(\d+)(s|m|h)$/,
-#        :lock,
-#        command: true,
-#        help: {
-#          t('help.lock_time_key') => t('help.lock_time_value')
-#        }
-#      )
+      # route(
+      #   /^lock\s([a-zA-Z0-9_-]+)\s(\d+)(s|m|h)$/,
+      #   :lock,
+      #   command: true,
+      #   help: {
+      #     t('help.lock_time_key') => t('help.lock_time_value')
+      #   }
+      # )
 
       route(
         /^unlock\s#{LABEL_REGEX}$/,
@@ -196,7 +196,13 @@ module Lita
             if lock_label!(name, response.user, time_until)
               response.reply(t('label.lock', name: name))
             else
-              response.reply(t('label.unable_to_lock', name: name))
+              l = label(name)
+              if l['state'] == 'locked'
+                response.reply(t('label.owned', name: name,
+                                                owner: l['owner']))
+              else
+                response.reply(t('label.dependency'))
+              end
             end
           else
             response.reply(t('label.no_resources', name: name))

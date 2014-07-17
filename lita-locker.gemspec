@@ -3,8 +3,8 @@ Gem::Specification.new do |spec|
   spec.version       = '0.4.0'
   spec.authors       = ['Eric Sigler']
   spec.email         = ['me@esigler.com']
-  spec.description   = %q("lock" and "unlock" arbitrary subjects)
-  spec.summary       = %q("lock" and "unlock" arbitrary subjects)
+  spec.description   = '"lock" and "unlock" arbitrary subjects'
+  spec.summary       = '"lock" and "unlock" arbitrary subjects'
   spec.homepage      = 'https://github.com/esigler/lita-locker'
   spec.license       = 'MIT'
   spec.metadata      = { 'lita_plugin_type' => 'handler' }

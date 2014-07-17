@@ -8,7 +8,7 @@ describe Lita::Handlers::Locker, lita_handler: true do
   it { routes_command('lock foo bar').to(:lock) }
   it { routes_command('lock foo-bar').to(:lock) }
   it { routes_command('lock foo_bar').to(:lock) }
-#  it { routes_command('lock foobar 30m').to(:lock) }
+  # it { routes_command('lock foobar 30m').to(:lock) }
 
   it { routes_command('unlock foobar').to(:unlock) }
   it { routes_command('unlock foo bar').to(:unlock) }
@@ -39,6 +39,10 @@ describe Lita::Handlers::Locker, lita_handler: true do
       user,
       :locker_admins
     ).and_return(true)
+  end
+
+  let(:alice) do
+    Lita::User.create('9001@hipchat', name: 'Alice')
   end
 
   describe '#lock' do
@@ -76,9 +80,20 @@ describe Lita::Handlers::Locker, lita_handler: true do
       send_command('locker resource create foobar')
       send_command('locker label create bazbat')
       send_command('locker label add foobar to bazbat')
-      send_command('lock foobar')
-      send_command('lock bazbat')
-      expect(replies.last).to eq('bazbat unable to be locked')
+      send_command('lock foobar', as: alice)
+      send_command('lock bazbat', as: alice)
+      expect(replies.last).to eq('Label unable to be locked, blocked on a ' \
+                                 'dependency')
+    end
+
+    it 'shows a warning when a label is taken by someone else' do
+      send_command('locker resource create foobar')
+      send_command('locker label create bazbat')
+      send_command('locker label add foobar to bazbat')
+      send_command('lock bazbat', as: alice)
+      bob = Lita::User.create(2, name: 'Bob')
+      send_command('lock bazbat', as: bob)
+      expect(replies.last).to eq('bazbat is locked by Alice')
     end
 
     it 'shows an error when a <subject> does not exist' do
@@ -86,19 +101,19 @@ describe Lita::Handlers::Locker, lita_handler: true do
       expect(replies.last).to eq('foobar does not exist')
     end
 
-#    it 'locks a resource when it is available for a period of time' do
-#      send_command('locker resource create foobar')
-#      send_command('lock foobar 17m')
-#      expect(replies.last).to eq('foobar locked for 17 minutes')
-#      send_command('locker resource show foobar')
-#      expect(replies.last).to eq('Resource: foobar, state: locked')
-#      send_command('unlock foobar')
-#      send_command('lock foobar 12s')
-#      expect(replies.last).to eq('foobar locked for 17 seconds')
-#      send_command('unlock foobar')
-#      send_command('lock foobar 14h')
-#      expect(replies.last).to eq('foobar locked for 14 hours')
-#    end
+    # it 'locks a resource when it is available for a period of time' do
+    #   send_command('locker resource create foobar')
+    #   send_command('lock foobar 17m')
+    #   expect(replies.last).to eq('foobar locked for 17 minutes')
+    #   send_command('locker resource show foobar')
+    #   expect(replies.last).to eq('Resource: foobar, state: locked')
+    #   send_command('unlock foobar')
+    #   send_command('lock foobar 12s')
+    #   expect(replies.last).to eq('foobar locked for 17 seconds')
+    #   send_command('unlock foobar')
+    #   send_command('lock foobar 14h')
+    #   expect(replies.last).to eq('foobar locked for 14 hours')
+    # end
   end
 
   describe '#unlock' do
