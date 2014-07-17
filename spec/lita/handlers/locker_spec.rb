@@ -98,7 +98,7 @@ describe Lita::Handlers::Locker, lita_handler: true do
 
     it 'shows an error when a <subject> does not exist' do
       send_command('lock foobar')
-      expect(replies.last).to eq('foobar does not exist')
+      expect(replies.last).to eq('Sorry, that does not exist')
     end
 
     # it 'locks a resource when it is available for a period of time' do
@@ -170,7 +170,7 @@ describe Lita::Handlers::Locker, lita_handler: true do
 
     it 'shows an error when a <subject> does not exist' do
       send_command('unlock foobar')
-      expect(replies.last).to eq('(failed) foobar does not exist')
+      expect(replies.last).to eq('(failed) Sorry, that does not exist')
     end
   end
 
@@ -197,7 +197,7 @@ describe Lita::Handlers::Locker, lita_handler: true do
 
     it 'shows an error when a <subject> does not exist' do
       send_command('unlock foobar force')
-      expect(replies.last).to eq('foobar does not exist')
+      expect(replies.last).to eq('Sorry, that does not exist')
     end
   end
 
