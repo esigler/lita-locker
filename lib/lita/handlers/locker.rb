@@ -194,18 +194,19 @@ module Lita
           m = label_membership(name)
           if m.count > 0
             if lock_label!(name, response.user, time_until)
-              response.reply(t('label.lock', name: name))
+              response.reply('(successful) ' + t('label.lock', name: name))
             else
               l = label(name)
               if l['state'] == 'locked'
-                response.reply(t('label.owned', name: name,
-                                                owner: l['owner']))
+                response.reply('(failed) ' + t('label.owned',
+                                               name: name,
+                                               owner: l['owner']))
               else
-                response.reply(t('label.dependency'))
+                response.reply('(failed) ' + t('label.dependency'))
               end
             end
           else
-            response.reply(t('label.no_resources', name: name))
+            response.reply('(failed) ' + t('label.no_resources', name: name))
           end
         else
           response.reply(t('subject.does_not_exist', name: name))

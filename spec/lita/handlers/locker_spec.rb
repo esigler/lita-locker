@@ -57,7 +57,7 @@ describe Lita::Handlers::Locker, lita_handler: true do
       send_command('locker label create bazbat')
       send_command('locker label add foobar to bazbat')
       send_command('lock bazbat')
-      expect(replies.last).to eq('bazbat locked')
+      expect(replies.last).to eq('(successful) bazbat locked')
       send_command('locker resource show foobar')
       expect(replies.last).to eq('Resource: foobar, state: locked')
     end
@@ -65,7 +65,7 @@ describe Lita::Handlers::Locker, lita_handler: true do
     it 'shows a warning when a label has no resources' do
       send_command('locker label create foobar')
       send_command('lock foobar')
-      expect(replies.last).to eq('foobar has no resources, ' \
+      expect(replies.last).to eq('(failed) foobar has no resources, ' \
                                  'so it cannot be locked')
     end
 
@@ -82,8 +82,8 @@ describe Lita::Handlers::Locker, lita_handler: true do
       send_command('locker label add foobar to bazbat')
       send_command('lock foobar', as: alice)
       send_command('lock bazbat', as: alice)
-      expect(replies.last).to eq('Label unable to be locked, blocked on a ' \
-                                 'dependency')
+      expect(replies.last).to eq('(failed) Label unable to be locked, ' \
+                                 'blocked on a dependency')
     end
 
     it 'shows a warning when a label is taken by someone else' do
@@ -93,7 +93,7 @@ describe Lita::Handlers::Locker, lita_handler: true do
       send_command('lock bazbat', as: alice)
       bob = Lita::User.create(2, name: 'Bob')
       send_command('lock bazbat', as: bob)
-      expect(replies.last).to eq('bazbat is locked by Alice')
+      expect(replies.last).to eq('(failed) bazbat is locked by Alice')
     end
 
     it 'shows an error when a <subject> does not exist' do
