@@ -13,7 +13,7 @@ module Lita
       )
 
       route(
-        /^\(unlock\)\s#{LABEL_REGEX}$/,
+        /^(?:\(unlock\)|\(release\))\s#{LABEL_REGEX}$/,
         :unlock
       )
 
