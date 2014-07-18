@@ -14,7 +14,8 @@ describe Lita::Handlers::Locker, lita_handler: true do
   it { routes_command('unlock foo bar').to(:unlock) }
   it { routes_command('unlock foo-bar').to(:unlock) }
   it { routes_command('unlock foo_bar').to(:unlock) }
-  it { routes_command('unlock foobar force').to(:unlock_force) }
+
+  it { routes_command('steal foobar').to(:steal) }
 
   it { routes_command('locker resource list').to(:resource_list) }
   it { routes_command('locker resource create foobar').to(:resource_create) }
@@ -174,13 +175,13 @@ describe Lita::Handlers::Locker, lita_handler: true do
     end
   end
 
-  describe '#unlock_force' do
-    it 'unlocks a resource from someone else when it is available' do
+  describe '#steal' do
+    it 'steals a resource from someone else when it is available' do
       alice = Lita::User.create(1, name: 'Alice')
       bob = Lita::User.create(2, name: 'Bob')
       send_command('locker resource create foobar')
       send_command('lock foobar', as: alice)
-      send_command('unlock foobar force', as: bob)
+      send_command('steal foobar', as: bob)
       expect(replies.last).to eq('foobar unlocked')
     end
 
@@ -191,12 +192,12 @@ describe Lita::Handlers::Locker, lita_handler: true do
       send_command('locker label create bazbat')
       send_command('locker label add foobar to bazbat')
       send_command('lock bazbat', as: alice)
-      send_command('unlock bazbat force', as: bob)
+      send_command('steal bazbat', as: bob)
       expect(replies.last).to eq('bazbat unlocked')
     end
 
     it 'shows an error when a <subject> does not exist' do
-      send_command('unlock foobar force')
+      send_command('steal foobar')
       expect(replies.last).to eq('Sorry, that does not exist')
     end
   end

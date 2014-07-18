@@ -45,8 +45,8 @@ module Lita
       )
 
       route(
-        /^unlock\s#{LABEL_REGEX}\sforce$/,
-        :unlock_force,
+        /^steal\s#{LABEL_REGEX}$/,
+        :steal,
         command: true,
         help: {
           t('help.unlock_force_key') => t('help.unlock_force_value')
@@ -251,7 +251,7 @@ module Lita
         end
       end
 
-      def unlock_force(response)
+      def steal(response)
         name = response.matches[0][0]
         if resource_exists?(name)
           unlock_resource!(name)
