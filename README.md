@@ -39,9 +39,9 @@ locker status           - Show what is and isn't available
 
 ### Locking, Unlocking, State
 ```
-lock <subject>         - A basic reservation, with no time limit.  <subject> can be a resource or a label.
-unlock <subject>       - Remove a reservation.  This can only be done by whomever made the request.
-steal <subject>        - Force removal of a reservation.  This can be done by anyone.
+lock <label>         - A basic reservation, with no time limit.
+unlock <label>       - Remove a reservation.  This can only be done by whomever made the request.
+steal <label>        - Force removal of a reservation.  This can be done by anyone.
 ```
 
 ### Time-based locking - Not implemented yet!

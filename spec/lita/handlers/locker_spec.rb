@@ -46,13 +46,11 @@ describe Lita::Handlers::Locker, lita_handler: true do
     Lita::User.create('9001@hipchat', name: 'Alice')
   end
 
-  describe '#lock' do
-    it 'locks a resource when it is available' do
-      send_command('locker resource create foobar')
-      send_command('lock foobar')
-      expect(replies.last).to eq('foobar locked')
-    end
+  let(:bob) do
+    Lita::User.create('9002@hipchat', name: 'Bob')
+  end
 
+  describe '#lock' do
     it 'locks a label when it is available and has resources' do
       send_command('locker resource create foobar')
       send_command('locker label create bazbat')
@@ -70,19 +68,14 @@ describe Lita::Handlers::Locker, lita_handler: true do
                                  'so it cannot be locked')
     end
 
-    it 'shows a warning when a resource is unavailable' do
-      send_command('locker resource create foobar')
-      send_command('lock foobar')
-      send_command('lock foobar')
-      expect(replies.last).to eq('foobar is locked')
-    end
-
     it 'shows a warning when a label is unavailable' do
-      send_command('locker resource create foobar')
-      send_command('locker label create bazbat')
-      send_command('locker label add foobar to bazbat')
-      send_command('lock foobar', as: alice)
-      send_command('lock bazbat', as: alice)
+      send_command('locker resource create r1')
+      send_command('locker label create l1')
+      send_command('locker label create l2')
+      send_command('locker label add r1 to l1')
+      send_command('locker label add r1 to l2')
+      send_command('lock l1', as: alice)
+      send_command('lock l2', as: alice)
       expect(replies.last).to eq('(failed) Label unable to be locked, ' \
                                  'blocked on a dependency')
     end
@@ -92,12 +85,11 @@ describe Lita::Handlers::Locker, lita_handler: true do
       send_command('locker label create bazbat')
       send_command('locker label add foobar to bazbat')
       send_command('lock bazbat', as: alice)
-      bob = Lita::User.create(2, name: 'Bob')
       send_command('lock bazbat', as: bob)
       expect(replies.last).to eq('(failed) bazbat is locked by Alice')
     end
 
-    it 'shows an error when a <subject> does not exist' do
+    it 'shows an error when a label does not exist' do
       send_command('lock foobar')
       expect(replies.last).to eq('Sorry, that does not exist')
     end
@@ -118,22 +110,6 @@ describe Lita::Handlers::Locker, lita_handler: true do
   end
 
   describe '#unlock' do
-    it 'unlocks a resource when it is available' do
-      send_command('locker resource create foobar')
-      send_command('lock foobar')
-      send_command('unlock foobar')
-      expect(replies.last).to eq('foobar unlocked')
-    end
-
-    it 'does not unlock a resource when someone else locked it' do
-      alice = Lita::User.create(1, name: 'Alice')
-      bob = Lita::User.create(2, name: 'Bob')
-      send_command('locker resource create foobar')
-      send_command('lock foobar', as: alice)
-      send_command('unlock foobar', as: bob)
-      expect(replies.last).to eq('foobar is locked by Alice')
-    end
-
     it 'unlocks a label when it is available' do
       send_command('locker resource create foobar')
       send_command('locker label create bazbat')
@@ -144,20 +120,12 @@ describe Lita::Handlers::Locker, lita_handler: true do
     end
 
     it 'does not unlock a label when someone else locked it' do
-      alice = Lita::User.create(1, name: 'Alice')
-      bob = Lita::User.create(2, name: 'Bob')
       send_command('locker resource create foobar')
       send_command('locker label create bazbat')
       send_command('locker label add foobar to bazbat')
       send_command('lock bazbat', as: alice)
       send_command('unlock bazbat', as: bob)
       expect(replies.last).to eq('(failed) bazbat is locked by Alice')
-    end
-
-    it 'shows a warning when a resource is already unlocked' do
-      send_command('locker resource create foobar')
-      send_command('unlock foobar')
-      expect(replies.last).to eq('foobar is unlocked')
     end
 
     it 'shows a warning when a label is already unlocked' do
@@ -176,18 +144,7 @@ describe Lita::Handlers::Locker, lita_handler: true do
   end
 
   describe '#steal' do
-    it 'steals a resource from someone else when it is available' do
-      alice = Lita::User.create(1, name: 'Alice')
-      bob = Lita::User.create(2, name: 'Bob')
-      send_command('locker resource create foobar')
-      send_command('lock foobar', as: alice)
-      send_command('steal foobar', as: bob)
-      expect(replies.last).to eq('foobar unlocked')
-    end
-
     it 'unlocks a label from someone else when it is available' do
-      alice = Lita::User.create(1, name: 'Alice')
-      bob = Lita::User.create(2, name: 'Bob')
       send_command('locker resource create foobar')
       send_command('locker label create bazbat')
       send_command('locker label add foobar to bazbat')
@@ -373,9 +330,6 @@ describe Lita::Handlers::Locker, lita_handler: true do
       send_command('locker resource create foobar')
       send_command('locker resource show foobar')
       expect(replies.last).to eq('Resource: foobar, state: unlocked')
-      send_command('lock foobar')
-      send_command('locker resource show foobar')
-      expect(replies.last).to eq('Resource: foobar, state: locked')
     end
 
     it 'shows a warning when <name> does not exist' do

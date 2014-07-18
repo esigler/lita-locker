@@ -174,13 +174,7 @@ module Lita
           time_until = nil
         end
 
-        if resource_exists?(name)
-          if lock_resource!(name, response.user, time_until)
-            response.reply(t('resource.lock', name: name))
-          else
-            response.reply(t('resource.is_locked', name: name))
-          end
-        elsif label_exists?(name)
+        if label_exists?(name)
           m = label_membership(name)
           if m.count > 0
             if lock_label!(name, response.user, time_until)
@@ -205,22 +199,7 @@ module Lita
 
       def unlock(response)
         name = response.matches[0][0]
-        if resource_exists?(name)
-          res = resource(name)
-          if res['state'] == 'unlocked'
-            response.reply(t('resource.is_unlocked', name: name))
-          else
-            # FIXME: NOT SECURE
-            if response.user.name == res['owner']
-              unlock_resource!(name)
-              response.reply(t('resource.unlock', name: name))
-              # FIXME: Handle the case where things can't be unlocked?
-            else
-              response.reply(t('resource.owned', name: name,
-                                                 owner: res['owner']))
-            end
-          end
-        elsif label_exists?(name)
+        if label_exists?(name)
           l = label(name)
           if l['state'] == 'unlocked'
             response.reply('(successful) ' + t('label.is_unlocked',
@@ -243,11 +222,7 @@ module Lita
 
       def steal(response)
         name = response.matches[0][0]
-        if resource_exists?(name)
-          unlock_resource!(name)
-          response.reply(t('resource.unlock', name: name))
-          # FIXME: Handle the case where things can't be unlocked?
-        elsif label_exists?(name)
+        if label_exists?(name)
           unlock_label!(name)
           response.reply(t('label.unlock', name: name))
           # FIXME: Handle the case where things can't be unlocked?
