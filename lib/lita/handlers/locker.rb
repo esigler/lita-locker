@@ -22,7 +22,7 @@ module Lita
         :lock,
         command: true,
         help: {
-          t('help.lock_key') => t('help.lock_value')
+          t('help.lock.syntax') => t('help.lock.desc')
         }
       )
 
@@ -40,7 +40,7 @@ module Lita
         :unlock,
         command: true,
         help: {
-          t('help.unlock_key') => t('help.unlock_value')
+          t('help.unlock.syntax') => t('help.unlock.desc')
         }
       )
 
@@ -49,7 +49,7 @@ module Lita
         :steal,
         command: true,
         help: {
-          t('help.unlock_force_key') => t('help.unlock_force_value')
+          t('help.steal.syntax') => t('help.steal.desc')
         }
       )
 
@@ -58,8 +58,7 @@ module Lita
         :resource_list,
         command: true,
         help: {
-          t('help.resource_list_key') =>
-          t('help.resource_list_value')
+          t('help.resource.list.syntax') => t('help.resource.list.desc')
         }
       )
 
@@ -69,8 +68,7 @@ module Lita
         command: true,
         restrict_to: [:locker_admins],
         help: {
-          t('help.resource_create_key') =>
-          t('help.resource_create_value')
+          t('help.resource.create.syntax') => t('help.resource.create.desc')
         }
       )
 
@@ -80,8 +78,7 @@ module Lita
         command: true,
         restrict_to: [:locker_admins],
         help: {
-          t('help.resource_delete_key') =>
-          t('help.resource_delete_value')
+          t('help.resource.delete.syntax') => t('help.resource.delete.desc')
         }
       )
 
@@ -90,8 +87,7 @@ module Lita
         :resource_show,
         command: true,
         help: {
-          t('help.resource_show_key') =>
-          t('help.resource_show_value')
+          t('help.resource.show.syntax') => t('help.resource.show.desc')
         }
       )
 
@@ -100,8 +96,7 @@ module Lita
         :label_list,
         command: true,
         help: {
-          t('help.label_list_key') =>
-          t('help.label_list_value')
+          t('help.label.list.syntax') => t('help.label.list.desc')
         }
       )
 
@@ -110,8 +105,7 @@ module Lita
         :label_create,
         command: true,
         help: {
-          t('help.label_create_key') =>
-          t('help.label_create_value')
+          t('help.label.create.syntax') => t('help.label.create.desc')
         }
       )
 
@@ -120,8 +114,7 @@ module Lita
         :label_delete,
         command: true,
         help: {
-          t('help.label_delete_key') =>
-          t('help.label_delete_value')
+          t('help.label.delete.syntax') => t('help.label.delete.desc')
         }
       )
 
@@ -130,8 +123,7 @@ module Lita
         :label_show,
         command: true,
         help: {
-          t('help.label_show_key') =>
-          t('help.label_show_value')
+          t('help.label.show.syntax') => t('help.label.show.desc')
         }
       )
 
@@ -140,8 +132,7 @@ module Lita
         :label_add,
         command: true,
         help: {
-          t('help.label_add_key') =>
-          t('help.label_add_value')
+          t('help.label.add.syntax') => t('help.label.add.desc')
         }
       )
 
@@ -150,8 +141,7 @@ module Lita
         :label_remove,
         command: true,
         help: {
-          t('help.label_remove_key') =>
-          t('help.label_remove_value')
+          t('help.label.remove.syntax') => t('help.label.remove.desc')
         }
       )
 

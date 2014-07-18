@@ -3,32 +3,47 @@ en:
     handlers:
       locker:
         help:
-          lock_key: lock <subject>
-          lock_value: Make something unavailable to others
-          unlock_key: unlock <subject>
-          unlock_value: Make something available to others
-          unlock_force_key: unlock <subject> force
-          unlock_force_value: Force removal of a reservation.
-          resource_list_key: locker resource list
-          resource_list_value: List all resources
-          resource_create_key: locker resource create <name>
-          resource_create_value: Create a resource with <name>
-          resource_delete_key: locker resource delete <name>
-          resource_delete_value: Delete the resource with <name>
-          resource_show_key: locker resource show <name>
-          resource_show_value: Show the state of <name>
-          label_list_key: locker label list
-          label_list_value: List all labels
-          label_create_key: locker label create <name>
-          label_create_value: Create a label with <name>
-          label_delete_key: locker label delete <name>
-          label_delete_value: Delete the label with <name>
-          label_show_key: locker label show <name>
-          label_show_value: Show all resources for <name>
-          label_add_key: locker label add <resource> to <name>
-          label_add_value: Adds <resource> to the list of things to lock/unlock for <name>
-          label_remove_key: locker label remove <resource> from <name>
-          label_remove_value: Removes <resource> from <name>
+          lock:
+            syntax: lock <subject>
+            desc: Make something unavailable to others
+          unlock:
+            syntax: unlock <subject>
+            desc: Make something available to others
+          steal:
+            syntax: unlock <subject> force
+            desc: Force removal of a reservation.
+          resource:
+            list:
+              syntax: locker resource list
+              desc: List all resources
+            create:
+              syntax: locker resource create <name>
+              desc: Create a resource with <name>
+            delete:
+              syntax: locker resource delete <name>
+              desc: Delete the resource with <name>
+            show:
+              syntax: locker resource show <name>
+              desc: Show the state of <name>
+          label:
+            list:
+              syntax: locker label list
+              desc: List all labels
+            create:
+              syntax: locker label create <name>
+              desc: Create a label with <name>
+            delete:
+              syntax: locker label delete <name>
+              desc: Delete the label with <name>
+            show:
+              syntax: locker label show <name>
+              desc: Show all resources for <name>
+            add:
+              syntax: locker label add <resource> to <name>
+              desc: Adds <resource> to the list of things to lock/unlock for <name>
+            remove:
+              syntax: locker label remove <resource> from <name>
+              desc: Removes <resource> from <name>
         resource:
           created: "Resource %{name} created"
           desc: "Resource: %{name}, state: %{state}"
