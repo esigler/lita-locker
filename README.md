@@ -34,7 +34,7 @@ lock web                - Make something unavailable to others
 lock web 30m            - Make something unavailable to others for 30 minutes
 unlock web              - Make something available to others
 locker reserve web      - Make yourself the next owner of something after it is unlocked
-locker status           - Show what is and isn't available
+locker status web       - Show the current state of web
 ```
 
 ### Locking, Unlocking, State

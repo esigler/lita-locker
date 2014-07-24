@@ -1,30 +1,33 @@
 require 'spec_helper'
 
 describe Lita::Handlers::Locker, lita_handler: true do
-  it { routes('(lock) foobar').to(:lock) }
-  it { routes('(unlock) foobar').to(:unlock) }
-  it { routes('(release) foobar').to(:unlock) }
+  label_examples = ['foobar', 'foo bar', 'foo-bar', 'foo_bar']
+  resource_examples = ['foobar', 'foo.bar', 'foo-bar', 'foo_bar']
 
-  it { routes_command('lock foobar').to(:lock) }
-  it { routes_command('lock foo bar').to(:lock) }
-  it { routes_command('lock foo-bar').to(:lock) }
-  it { routes_command('lock foo_bar').to(:lock) }
-  # it { routes_command('lock foobar 30m').to(:lock) }
+  label_examples.each do |l|
+    it { routes("(lock) #{l}").to(:lock) }
+    it { routes("(unlock) #{l}").to(:unlock) }
+    it { routes("(release) #{l}").to(:unlock) }
+    it { routes_command("lock #{l}").to(:lock) }
+    it { routes_command("unlock #{l}").to(:unlock) }
+    it { routes_command("steal #{l}").to(:steal) }
+  end
 
-  it { routes_command('unlock foobar').to(:unlock) }
-  it { routes_command('unlock foo bar').to(:unlock) }
-  it { routes_command('unlock foo-bar').to(:unlock) }
-  it { routes_command('unlock foo_bar').to(:unlock) }
+  # label_examples.each do |l|
+  #   it { routes_command("locker status #{l}").to(:status) }
+  # end
 
-  it { routes_command('steal foobar').to(:steal) }
+  # resource_examples.each do |r|
+  #   it { routes_command("locker status #{r}").to(:status) }
+  # end
 
   it { routes_command('locker resource list').to(:resource_list) }
-  it { routes_command('locker resource create foobar').to(:resource_create) }
-  it { routes_command('locker resource create foo.bar').to(:resource_create) }
-  it { routes_command('locker resource create foo-bar').to(:resource_create) }
-  it { routes_command('locker resource create foo_bar').to(:resource_create) }
-  it { routes_command('locker resource delete foobar').to(:resource_delete) }
-  it { routes_command('locker resource show foobar').to(:resource_show) }
+
+  resource_examples.each do |r|
+    it { routes_command("locker resource create #{r}").to(:resource_create) }
+    it { routes_command("locker resource delete #{r}").to(:resource_delete) }
+    it { routes_command("locker resource show #{r}").to(:resource_show) }
+  end
 
   it { routes_command('locker label list').to(:label_list) }
   it { routes_command('locker label create foobar').to(:label_create) }
