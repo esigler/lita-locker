@@ -191,7 +191,7 @@ module Lita
             response.reply('(failed) ' + t('label.no_resources', name: name))
           end
         else
-          response.reply(t('subject.does_not_exist', name: name))
+          response.reply('(failed) ' + t('subject.does_not_exist', name: name))
         end
       end
 
@@ -222,10 +222,10 @@ module Lita
         name = response.matches[0][0]
         if label_exists?(name)
           unlock_label!(name)
-          response.reply(t('label.unlock', name: name))
+          response.reply('(successful) ' + t('label.unlock', name: name))
           # FIXME: Handle the case where things can't be unlocked?
         else
-          response.reply(t('subject.does_not_exist', name: name))
+          response.reply('(failed) ' + t('subject.does_not_exist', name: name))
         end
       end
 

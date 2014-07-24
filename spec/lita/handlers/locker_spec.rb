@@ -92,7 +92,7 @@ describe Lita::Handlers::Locker, lita_handler: true do
 
     it 'shows an error when a label does not exist' do
       send_command('lock foobar')
-      expect(replies.last).to eq('Sorry, that does not exist')
+      expect(replies.last).to eq('(failed) Sorry, that does not exist')
     end
 
     # it 'locks a resource when it is available for a period of time' do
@@ -151,12 +151,12 @@ describe Lita::Handlers::Locker, lita_handler: true do
       send_command('locker label add foobar to bazbat')
       send_command('lock bazbat', as: alice)
       send_command('steal bazbat', as: bob)
-      expect(replies.last).to eq('bazbat unlocked')
+      expect(replies.last).to eq('(successful) bazbat unlocked')
     end
 
     it 'shows an error when a <subject> does not exist' do
       send_command('steal foobar')
-      expect(replies.last).to eq('Sorry, that does not exist')
+      expect(replies.last).to eq('(failed) Sorry, that does not exist')
     end
   end
 
