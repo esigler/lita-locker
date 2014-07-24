@@ -307,11 +307,13 @@ module Lita
       end
 
       def resource_list(response)
+        output = ''
         resources.each do |r|
           r_name = r.sub('resource_', '')
           res = resource(r_name)
-          response.reply(t('resource.desc', name: r_name, state: res['state']))
+          output += t('resource.desc', name: r_name, state: res['state'])
         end
+        response.reply(output)
       end
 
       def resource_create(response)
