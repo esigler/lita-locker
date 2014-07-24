@@ -27,15 +27,6 @@ module Lita
         }
       )
 
-      # route(
-      #   /^lock\s([a-zA-Z0-9_-]+)\s(\d+)(s|m|h)$/,
-      #   :lock,
-      #   command: true,
-      #   help: {
-      #     t('help.lock_time_key') => t('help.lock_time_value')
-      #   }
-      # )
-
       route(
         /^unlock\s#{LABEL_REGEX}#{COMMENT_REGEX}$/,
         :unlock,
@@ -169,23 +160,11 @@ module Lita
 
       def lock(response)
         name = response.matches[0][0]
-        timeamt = response.matches[0][1]
-        timeunit = response.matches[0][2]
-        case timeunit
-        when 's'
-          time_until = Time.now.utc + timeamt.to_i
-        when 'm'
-          time_until = Time.now.utc + (timeamt.to_i * 60)
-        when 'h'
-          time_until = Time.now.utc + (timeamt.to_i * 3600)
-        else
-          time_until = nil
-        end
 
         if label_exists?(name)
           m = label_membership(name)
           if m.count > 0
-            if lock_label!(name, response.user, time_until)
+            if lock_label!(name, response.user, nil)
               response.reply('(successful) ' + t('label.lock', name: name))
             else
               l = label(name)

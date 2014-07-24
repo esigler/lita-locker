@@ -283,7 +283,7 @@ describe Lita::Handlers::Locker, lita_handler: true do
       send_command('locker label add foo to bar')
       send_command('locker label add baz to bar')
       send_command('locker label show bar')
-      expect(replies.last).to eq('Label bar has: baz, foo')
+      expect(replies.last).to eq('Label bar has: foo, baz')
     end
 
     it 'shows an error if the label does not exist' do
