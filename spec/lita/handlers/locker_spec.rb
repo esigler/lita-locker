@@ -103,7 +103,8 @@ describe Lita::Handlers::Locker, lita_handler: true do
 
     it 'shows an error when a label does not exist' do
       send_command('lock foobar')
-      expect(replies.last).to eq('(failed) Sorry, that does not exist')
+      expect(replies.last).to eq('(failed) Label foobar does not exist.  To ' \
+                                 'create it: "!locker label create foobar"')
     end
 
     # it 'locks a resource when it is available for a period of time' do
@@ -238,7 +239,8 @@ describe Lita::Handlers::Locker, lita_handler: true do
 
     it 'shows a warning when <name> does not exist' do
       send_command('locker label delete foobar')
-      expect(replies.last).to eq('Label foobar does not exist')
+      expect(replies.last).to eq('Label foobar does not exist.  To create ' \
+                                 'it: "!locker label create foobar"')
     end
   end
 
@@ -259,7 +261,8 @@ describe Lita::Handlers::Locker, lita_handler: true do
 
     it 'shows an error if the label does not exist' do
       send_command('locker label show foobar')
-      expect(replies.last).to eq('Label foobar does not exist')
+      expect(replies.last).to eq('Label foobar does not exist.  To create ' \
+                                 'it: "!locker label create foobar"')
     end
   end
 
@@ -285,7 +288,8 @@ describe Lita::Handlers::Locker, lita_handler: true do
 
     it 'shows an error if the label does not exist' do
       send_command('locker label add foo to bar')
-      expect(replies.last).to eq('Label bar does not exist')
+      expect(replies.last).to eq('Label bar does not exist.  To create ' \
+                                 'it: "!locker label create bar"')
     end
 
     it 'shows an error if the resource does not exist' do
@@ -314,7 +318,8 @@ describe Lita::Handlers::Locker, lita_handler: true do
 
     it 'shows an error if the label does not exist' do
       send_command('locker label add foo to bar')
-      expect(replies.last).to eq('Label bar does not exist')
+      expect(replies.last).to eq('Label bar does not exist.  To create ' \
+                                 'it: "!locker label create bar"')
     end
 
     it 'shows an error if the resource does not exist' do

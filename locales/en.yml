@@ -70,7 +70,7 @@ en:
           created: "Label %{name} created"
           exists: "%{name} already exists"
           deleted: "Label %{name} deleted"
-          does_not_exist: "Label %{name} does not exist"
+          does_not_exist: "Label %{name} does not exist.  To create it: \"!locker label create %{name}\""
           has_no_resources: "Label %{name} has no resources"
           resource_added: "Resource %{resource} has been added to %{label}"
           resource_removed: "Resource %{resource} has been removed from %{label}"

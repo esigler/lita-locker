@@ -201,7 +201,7 @@ module Lita
             response.reply('(failed) ' + t('label.no_resources', name: name))
           end
         else
-          response.reply('(failed) ' + t('subject.does_not_exist', name: name))
+          response.reply('(failed) ' + t('label.does_not_exist', name: name))
         end
       end
 
