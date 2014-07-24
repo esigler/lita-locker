@@ -5,7 +5,7 @@ ClassLength:
   Max: 500
 
 CyclomaticComplexity:
-  Max: 10
+  Max: 8
 
 Documentation:
   Exclude:

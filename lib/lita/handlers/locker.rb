@@ -148,15 +148,13 @@ module Lita
       def http_label_show(request, response)
         name = request.env['router.params'][:name]
         response.headers['Content-Type'] = 'application/json'
-        result = label(name)
-        response.write(result.to_json)
+        response.write(label(name).to_json)
       end
 
       def http_resource_show(request, response)
         name = request.env['router.params'][:name]
         response.headers['Content-Type'] = 'application/json'
-        result = resource(name)
-        response.write(result.to_json)
+        response.write(resource(name).to_json)
       end
 
       def lock(response)
