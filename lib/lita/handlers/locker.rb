@@ -22,45 +22,35 @@ module Lita
         /^lock\s#{LABEL_REGEX}#{COMMENT_REGEX}$/,
         :lock,
         command: true,
-        help: {
-          t('help.lock.syntax') => t('help.lock.desc')
-        }
+        help: { t('help.lock.syntax') => t('help.lock.desc') }
       )
 
       route(
         /^unlock\s#{LABEL_REGEX}#{COMMENT_REGEX}$/,
         :unlock,
         command: true,
-        help: {
-          t('help.unlock.syntax') => t('help.unlock.desc')
-        }
+        help: { t('help.unlock.syntax') => t('help.unlock.desc') }
       )
 
       route(
         /^steal\s#{LABEL_REGEX}#{COMMENT_REGEX}$/,
         :steal,
         command: true,
-        help: {
-          t('help.steal.syntax') => t('help.steal.desc')
-        }
+        help: { t('help.steal.syntax') => t('help.steal.desc') }
       )
 
       route(
         /^locker\sstatus\s#{LABEL_REGEX}$/,
         :status,
         command: true,
-        help: {
-          t('help.status.syntax') => t('help.status.desc')
-        }
+        help: { t('help.status.syntax') => t('help.status.desc') }
       )
 
       route(
         /^locker\sresource\slist$/,
         :resource_list,
         command: true,
-        help: {
-          t('help.resource.list.syntax') => t('help.resource.list.desc')
-        }
+        help: { t('help.resource.list.syntax') => t('help.resource.list.desc') }
       )
 
       route(
@@ -87,63 +77,49 @@ module Lita
         /^locker\sresource\sshow\s#{RESOURCE_REGEX}$/,
         :resource_show,
         command: true,
-        help: {
-          t('help.resource.show.syntax') => t('help.resource.show.desc')
-        }
+        help: { t('help.resource.show.syntax') => t('help.resource.show.desc') }
       )
 
       route(
         /^locker\slabel\slist$/,
         :label_list,
         command: true,
-        help: {
-          t('help.label.list.syntax') => t('help.label.list.desc')
-        }
+        help: { t('help.label.list.syntax') => t('help.label.list.desc') }
       )
 
       route(
         /^locker\slabel\screate\s#{LABEL_REGEX}$/,
         :label_create,
         command: true,
-        help: {
-          t('help.label.create.syntax') => t('help.label.create.desc')
-        }
+        help: { t('help.label.create.syntax') => t('help.label.create.desc') }
       )
 
       route(
         /^locker\slabel\sdelete\s#{LABEL_REGEX}$/,
         :label_delete,
         command: true,
-        help: {
-          t('help.label.delete.syntax') => t('help.label.delete.desc')
-        }
+        help: { t('help.label.delete.syntax') => t('help.label.delete.desc') }
       )
 
       route(
         /^locker\slabel\sshow\s#{LABEL_REGEX}$/,
         :label_show,
         command: true,
-        help: {
-          t('help.label.show.syntax') => t('help.label.show.desc')
-        }
+        help: { t('help.label.show.syntax') => t('help.label.show.desc') }
       )
 
       route(
         /^locker\slabel\sadd\s#{RESOURCE_REGEX}\sto\s#{LABEL_REGEX}$/,
         :label_add,
         command: true,
-        help: {
-          t('help.label.add.syntax') => t('help.label.add.desc')
-        }
+        help: { t('help.label.add.syntax') => t('help.label.add.desc') }
       )
 
       route(
         /^locker\slabel\sremove\s#{RESOURCE_REGEX}\sfrom\s#{LABEL_REGEX}$/,
         :label_remove,
         command: true,
-        help: {
-          t('help.label.remove.syntax') => t('help.label.remove.desc')
-        }
+        help: { t('help.label.remove.syntax') => t('help.label.remove.desc') }
       )
 
       def http_label_show(request, response)
