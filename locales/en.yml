@@ -12,6 +12,9 @@ en:
           steal:
             syntax: unlock <subject> force
             desc: Force removal of a reservation.
+          status:
+            syntax: locker status <label or resource>
+            desc: Show the current state of <label or resource>
           resource:
             list:
               syntax: locker resource list
@@ -63,7 +66,7 @@ en:
           is_unlocked: "%{name} is unlocked"
           unable_to_lock: "%{name} unable to be locked"
           lock: "%{name} locked"
-          desc: "Label: %{name}"
+          desc: "Label: %{name}, state: %{state}"
           created: "Label %{name} created"
           exists: "%{name} already exists"
           deleted: "Label %{name} deleted"

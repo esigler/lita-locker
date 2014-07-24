@@ -54,6 +54,15 @@ module Lita
       )
 
       route(
+        /^locker\sstatus\s#{LABEL_REGEX}$/,
+        :status,
+        command: true,
+        help: {
+          t('help.status.syntax') => t('help.status.desc')
+        }
+      )
+
+      route(
         /^locker\sresource\slist$/,
         :resource_list,
         command: true,
@@ -229,9 +238,24 @@ module Lita
         end
       end
 
+      def status(response)
+        name = response.matches[0][0]
+        if label_exists?(name)
+          l = label(name)
+          response.reply(t('label.desc', name: name, state: l['state']))
+        elsif resource_exists?(name)
+          r = resource(name)
+          response.reply(t('resource.desc', name: name, state: r['state']))
+        else
+          response.reply(t('subject.does_not_exist', name: name))
+        end
+      end
+
       def label_list(response)
-        labels.each do |l|
-          response.reply(t('label.desc', name: l.sub('label_', '')))
+        labels.each do |n|
+          name = n.sub('label_', '')
+          l = label(name)
+          response.reply(t('label.desc', name: name, state: l['state']))
         end
       end
 

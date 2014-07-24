@@ -13,13 +13,13 @@ describe Lita::Handlers::Locker, lita_handler: true do
     it { routes_command("steal #{l}").to(:steal) }
   end
 
-  # label_examples.each do |l|
-  #   it { routes_command("locker status #{l}").to(:status) }
-  # end
+  label_examples.each do |l|
+    it { routes_command("locker status #{l}").to(:status) }
+  end
 
-  # resource_examples.each do |r|
-  #   it { routes_command("locker status #{r}").to(:status) }
-  # end
+  resource_examples.each do |r|
+    it { routes_command("locker status #{r}").to(:status) }
+  end
 
   it { routes_command('locker resource list').to(:resource_list) }
 
@@ -163,13 +163,42 @@ describe Lita::Handlers::Locker, lita_handler: true do
     end
   end
 
+  describe '#status' do
+    it 'shows the status of a label' do
+      send_command('locker resource create bar')
+      send_command('locker label create foo')
+      send_command('locker label add bar to foo')
+      send_command('locker status foo')
+      expect(replies.last).to eq('Label: foo, state: unlocked')
+      send_command('lock foo')
+      send_command('locker status foo')
+      expect(replies.last).to eq('Label: foo, state: locked')
+    end
+
+    it 'shows the status of a resource' do
+      send_command('locker resource create bar')
+      send_command('locker label create foo')
+      send_command('locker label add bar to foo')
+      send_command('locker status bar')
+      expect(replies.last).to eq('Resource: bar, state: unlocked')
+      send_command('lock foo')
+      send_command('locker status bar')
+      expect(replies.last).to eq('Resource: bar, state: locked')
+    end
+
+    it 'shows an error if nothing exists with that name' do
+      send_command('locker status foo')
+      expect(replies.last).to eq('Sorry, that does not exist')
+    end
+  end
+
   describe '#label_list' do
     it 'shows a list of labels if there are any' do
       send_command('locker label create foobar')
       send_command('locker label create bazbat')
       send_command('locker label list')
-      expect(replies.include?('Label: foobar')).to eq(true)
-      expect(replies.include?('Label: bazbat')).to eq(true)
+      expect(replies.include?('Label: foobar, state: unlocked')).to eq(true)
+      expect(replies.include?('Label: bazbat, state: unlocked')).to eq(true)
     end
   end
 
