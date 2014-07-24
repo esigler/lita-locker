@@ -31,17 +31,16 @@ if all of the resources it uses are available.
 ### Examples
 ```
 lock web                - Make something unavailable to others
-lock web 30m            - Make something unavailable to others for 30 minutes
 unlock web              - Make something available to others
-locker reserve web      - Make yourself the next owner of something after it is unlocked
+steal web               - Make yourself the owner of something locked by someone else
 locker status web       - Show the current state of web
 ```
 
 ### Locking, Unlocking, State
 ```
-lock <label>         - A basic reservation, with no time limit.
-unlock <label>       - Remove a reservation.  This can only be done by whomever made the request.
-steal <label>        - Force removal of a reservation.  This can be done by anyone.
+lock <label>         - A basic reservation, with no time limit. Can have # comments afterwards.
+unlock <label>       - Remove a reservation.  This can only be done by whomever made the request. Can have # comments afterwards.
+steal <label>        - Force removal of a reservation.  This can be done by anyone. Can have # comments afterwards.
 ```
 
 ### Time-based locking - Not implemented yet!

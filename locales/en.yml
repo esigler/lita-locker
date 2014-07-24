@@ -5,13 +5,13 @@ en:
         help:
           lock:
             syntax: lock <subject>
-            desc: Make something unavailable to others
+            desc: Make something unavailable to others. Can have # comments afterwards.
           unlock:
             syntax: unlock <subject>
-            desc: Make something available to others
+            desc: Make something available to others. Can have # comments afterwards.
           steal:
-            syntax: unlock <subject> force
-            desc: Force removal of a reservation.
+            syntax: steal <subject>
+            desc: Force removal of a reservation. Can have # comments afterwards.
           status:
             syntax: locker status <label or resource>
             desc: Show the current state of <label or resource>

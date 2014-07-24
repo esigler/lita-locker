@@ -8,9 +8,17 @@ describe Lita::Handlers::Locker, lita_handler: true do
     it { routes("(lock) #{l}").to(:lock) }
     it { routes("(unlock) #{l}").to(:unlock) }
     it { routes("(release) #{l}").to(:unlock) }
+
+    it { routes("(lock) #{l} #this is a comment").to(:lock) }
+    it { routes("(unlock) #{l} #this is a comment").to(:unlock) }
+    it { routes("(release) #{l} #this is a comment").to(:unlock) }
+
     it { routes_command("lock #{l}").to(:lock) }
+    it { routes_command("lock #{l} #this is a comment").to(:lock) }
     it { routes_command("unlock #{l}").to(:unlock) }
+    it { routes_command("unlock #{l} #this is a comment").to(:unlock) }
     it { routes_command("steal #{l}").to(:steal) }
+    it { routes_command("steal #{l} #this is a comment").to(:steal) }
   end
 
   label_examples.each do |l|
@@ -59,7 +67,7 @@ describe Lita::Handlers::Locker, lita_handler: true do
       send_command('locker resource create foobar')
       send_command('locker label create bazbat')
       send_command('locker label add foobar to bazbat')
-      send_command('lock bazbat')
+      send_command('lock bazbat # with a comment')
       expect(replies.last).to eq('(successful) bazbat locked')
       send_command('locker resource show foobar')
       expect(replies.last).to eq('Resource: foobar, state: locked')
@@ -119,7 +127,7 @@ describe Lita::Handlers::Locker, lita_handler: true do
       send_command('locker label create bazbat')
       send_command('locker label add foobar to bazbat')
       send_command('lock bazbat')
-      send_command('unlock bazbat')
+      send_command('unlock bazbat # with a comment')
       expect(replies.last).to eq('(successful) bazbat unlocked')
     end
 
@@ -153,7 +161,7 @@ describe Lita::Handlers::Locker, lita_handler: true do
       send_command('locker label create bazbat')
       send_command('locker label add foobar to bazbat')
       send_command('lock bazbat', as: alice)
-      send_command('steal bazbat', as: bob)
+      send_command('steal bazbat # with a comment', as: bob)
       expect(replies.last).to eq('(successful) bazbat unlocked')
     end
 

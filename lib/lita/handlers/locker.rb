@@ -4,21 +4,22 @@ module Lita
       http.get '/locker/label/:name', :http_label_show
       http.get '/locker/resource/:name', :http_resource_show
 
-      LABEL_REGEX    = /([\W\S_-]+)/
-      RESOURCE_REGEX = /([\.a-zA-Z0-9_-]+)/
+      LABEL_REGEX    = /([\.\w\s-]+)/
+      RESOURCE_REGEX = /([\.\w-]+)/
+      COMMENT_REGEX  = /(\s\#.+)?/
 
       route(
-        /^\(lock\)\s#{LABEL_REGEX}$/,
+        /^\(lock\)\s#{LABEL_REGEX}#{COMMENT_REGEX}$/,
         :lock
       )
 
       route(
-        /^(?:\(unlock\)|\(release\))\s#{LABEL_REGEX}$/,
+        /^(?:\(unlock\)|\(release\))\s#{LABEL_REGEX}#{COMMENT_REGEX}$/,
         :unlock
       )
 
       route(
-        /^lock\s#{LABEL_REGEX}$/,
+        /^lock\s#{LABEL_REGEX}#{COMMENT_REGEX}$/,
         :lock,
         command: true,
         help: {
@@ -36,7 +37,7 @@ module Lita
       # )
 
       route(
-        /^unlock\s#{LABEL_REGEX}$/,
+        /^unlock\s#{LABEL_REGEX}#{COMMENT_REGEX}$/,
         :unlock,
         command: true,
         help: {
@@ -45,7 +46,7 @@ module Lita
       )
 
       route(
-        /^steal\s#{LABEL_REGEX}$/,
+        /^steal\s#{LABEL_REGEX}#{COMMENT_REGEX}$/,
         :steal,
         command: true,
         help: {
