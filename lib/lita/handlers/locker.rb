@@ -420,12 +420,7 @@ module Lita
           key = "label_#{name}"
           members = label_membership(name)
           members.each do |m|
-            r = resource(m)
-            return false if r['state'] == 'locked'
-          end
-          # FIXME: No, really, race condition.
-          members.each do |m|
-            lock_resource!(m, owner, time_until)
+            return false unless lock_resource!(m, owner, time_until)
           end
           redis.hset(key, 'state', 'locked')
           redis.hset(key, 'owner', owner.name)
