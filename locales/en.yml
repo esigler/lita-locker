@@ -69,6 +69,7 @@ en:
           unable_to_lock: "%{name} unable to be locked"
           lock: "%{name} locked"
           desc: "Label: %{name}, state: %{state}"
+          desc_owner: "Label: %{name}, state: %{state}, owner: %{owner_name}"
           created: "Label %{name} created"
           exists: "%{name} already exists"
           deleted: "Label %{name} deleted"

@@ -213,7 +213,14 @@ module Lita
         name = response.matches[0][0]
         if label_exists?(name)
           l = label(name)
-          response.reply(t('label.desc', name: name, state: l['state']))
+          if l['owner_id'] && l['owner_id'] != ''
+            o = Lita::User.find_by_id(l['owner_id'])
+            response.reply(t('label.desc_owner', name: name,
+                                                 state: l['state'],
+                                                 owner_name: o.name))
+          else
+            response.reply(t('label.desc', name: name, state: l['state']))
+          end
         elsif resource_exists?(name)
           r = resource(name)
           response.reply(t('resource.desc', name: name, state: r['state']))

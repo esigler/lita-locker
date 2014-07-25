@@ -184,7 +184,7 @@ describe Lita::Handlers::Locker, lita_handler: true do
       expect(replies.last).to eq('Label: foo, state: unlocked')
       send_command('lock foo')
       send_command('locker status foo')
-      expect(replies.last).to eq('Label: foo, state: locked')
+      expect(replies.last).to eq('Label: foo, state: locked, owner: Test User')
     end
 
     it 'shows the status of a resource' do
