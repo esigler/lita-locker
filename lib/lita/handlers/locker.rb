@@ -147,7 +147,8 @@ module Lita
               if l['state'] == 'locked'
                 response.reply('(failed) ' + t('label.owned',
                                                name: name,
-                                               owner_name: l['owner_name']))
+                                               owner_name: l['owner_name'],
+                                               owner_mention: l['owner_mention']))
               else
                 response.reply('(failed) ' + t('label.dependency'))
               end
@@ -174,7 +175,8 @@ module Lita
             else
               response.reply('(failed) ' + t('label.owned',
                                              name: name,
-                                             owner_name: l['owner_name']))
+                                             owner_name: l['owner_name'],
+                                             owner_mention: l['owner_mention']))
             end
           end
         else
@@ -380,6 +382,7 @@ module Lita
             redis.hset(resource_key, 'state', 'locked')
             redis.hset(resource_key, 'owner_id', owner.id)
             redis.hset(resource_key, 'owner_name', owner.name)
+            redis.hset(resource_key, 'owner_mention', owner.mention_name)
             redis.hset(resource_key, 'until', time_until)
             true
           else
@@ -400,6 +403,7 @@ module Lita
           redis.hset(key, 'state', 'locked')
           redis.hset(key, 'owner_id', owner.id)
           redis.hset(key, 'owner_name', owner.name)
+          redis.hset(key, 'owner_mention', owner.mention_name)
           redis.hset(key, 'until', time_until)
           true
         else
@@ -412,6 +416,7 @@ module Lita
           key = "resource_#{name}"
           redis.hset(key, 'state', 'unlocked')
           redis.hset(key, 'owner_name', '')
+          redis.hset(key, 'owner_mention', '')
           redis.hset(key, 'owner_id', '')
         else
           false
@@ -427,6 +432,7 @@ module Lita
           end
           redis.hset(key, 'state', 'unlocked')
           redis.hset(key, 'owner_name', '')
+          redis.hset(key, 'owner_mention', '')
           redis.hset(key, 'owner_id', '')
           true
         else
