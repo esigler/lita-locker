@@ -146,10 +146,16 @@ module Lita
               l = label(name)
               if l['state'] == 'locked'
                 o = Lita::User.find_by_id(l['owner_id'])
-                response.reply('(failed) ' + t('label.owned',
-                                               name: name,
-                                               owner_name: o.name,
-                                               owner_mention: o.mention_name))
+                if o.mention_name
+                  response.reply('(failed) ' + t('label.owned_mention',
+                                                 name: name,
+                                                 owner_name: o.name,
+                                                 owner_mention: o.mention_name))
+                else
+                  response.reply('(failed) ' + t('label.owned',
+                                                 name: name,
+                                                 owner_name: o.name))
+                end
               else
                 response.reply('(failed) ' + t('label.dependency'))
               end
@@ -175,10 +181,16 @@ module Lita
               response.reply('(successful) ' + t('label.unlock', name: name))
             else
               o = Lita::User.find_by_id(l['owner_id'])
-              response.reply('(failed) ' + t('label.owned',
-                                             name: name,
-                                             owner_name: o.name,
-                                             owner_mention: o.mention_name))
+              if o.mention_name
+                response.reply('(failed) ' + t('label.owned_mention',
+                                               name: name,
+                                               owner_name: o.name,
+                                               owner_mention: o.mention_name))
+              else
+                response.reply('(failed) ' + t('label.owned',
+                                               name: name,
+                                               owner_name: o.name))
+              end
             end
           end
         else

@@ -58,11 +58,11 @@ describe Lita::Handlers::Locker, lita_handler: true do
   end
 
   let(:alice) do
-    Lita::User.create('9001@hipchat', name: 'Alice', mention_name: '@alice')
+    Lita::User.create('9001@hipchat', name: 'Alice', mention_name: 'alice')
   end
 
   let(:bob) do
-    Lita::User.create('9002@hipchat', name: 'Bob', mention_name: '@bob')
+    Lita::User.create('9002@hipchat', name: 'Bob', mention_name: 'bob')
   end
 
   describe '#lock' do
@@ -101,7 +101,7 @@ describe Lita::Handlers::Locker, lita_handler: true do
       send_command('locker label add foobar to bazbat')
       send_command('lock bazbat', as: alice)
       send_command('lock bazbat', as: bob)
-      expect(replies.last).to eq('(failed) bazbat is locked by Alice @alice')
+      expect(replies.last).to eq('(failed) bazbat is locked by Alice (@alice)')
     end
 
     it 'shows an error when a label does not exist' do
@@ -141,7 +141,7 @@ describe Lita::Handlers::Locker, lita_handler: true do
       send_command('locker label add foobar to bazbat')
       send_command('lock bazbat', as: alice)
       send_command('unlock bazbat', as: bob)
-      expect(replies.last).to eq('(failed) bazbat is locked by Alice @alice')
+      expect(replies.last).to eq('(failed) bazbat is locked by Alice (@alice)')
     end
 
     it 'shows a warning when a label is already unlocked' do

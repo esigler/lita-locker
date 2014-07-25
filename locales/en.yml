@@ -57,12 +57,14 @@ en:
           is_locked: "%{name} is locked"
           unlock: "%{name} unlocked"
           is_unlocked: "%{name} is unlocked"
-          owned: "%{name} is locked by %{owner_name} %{owner_mention}"
+          owned: "%{name} is locked by %{owner_name}"
+          owned_mention: "%{name} is locked by %{owner_name} (@%{owner_mention})"
         subject:
           does_not_exist: "Sorry, that does not exist"
         label:
           unlock: "%{name} unlocked"
-          owned: "%{name} is locked by %{owner_name} %{owner_mention}"
+          owned: "%{name} is locked by %{owner_name}"
+          owned_mention: "%{name} is locked by %{owner_name} (@%{owner_mention})"
           is_unlocked: "%{name} is unlocked"
           unable_to_lock: "%{name} unable to be locked"
           lock: "%{name} locked"
