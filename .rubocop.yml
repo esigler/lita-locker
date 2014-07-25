@@ -18,6 +18,9 @@ FileName:
 MethodLength:
   Max: 200
 
+LineLength:
+  Max: 85
+
 GuardClause:
   Exclude:
     - lib/lita/handlers/locker.rb

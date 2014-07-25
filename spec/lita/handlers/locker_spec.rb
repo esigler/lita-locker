@@ -38,11 +38,14 @@ describe Lita::Handlers::Locker, lita_handler: true do
   end
 
   it { routes_command('locker label list').to(:label_list) }
-  it { routes_command('locker label create foobar').to(:label_create) }
-  it { routes_command('locker label delete foobar').to(:label_delete) }
-  it { routes_command('locker label show foobar').to(:label_show) }
-  it { routes_command('locker label add foo to bar').to(:label_add) }
-  it { routes_command('locker label remove foo from bar').to(:label_remove) }
+
+  label_examples.each do |l|
+    it { routes_command("locker label create #{l}").to(:label_create) }
+    it { routes_command("locker label delete #{l}").to(:label_delete) }
+    it { routes_command("locker label show #{l}").to(:label_show) }
+    it { routes_command("locker label add resource to #{l}").to(:label_add) }
+    it { routes_command("locker label remove resource from #{l}").to(:label_remove) }
+  end
 
   it { routes_http(:get, '/locker/label/foobar').to(:http_label_show) }
   it { routes_http(:get, '/locker/resource/foobar').to(:http_resource_show) }
