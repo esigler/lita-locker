@@ -57,12 +57,12 @@ en:
           is_locked: "%{name} is locked"
           unlock: "%{name} unlocked"
           is_unlocked: "%{name} is unlocked"
-          owned: "%{name} is locked by %{owner}"
+          owned: "%{name} is locked by %{owner_name}"
         subject:
           does_not_exist: "Sorry, that does not exist"
         label:
           unlock: "%{name} unlocked"
-          owned: "%{name} is locked by %{owner}"
+          owned: "%{name} is locked by %{owner_name}"
           is_unlocked: "%{name} is unlocked"
           unable_to_lock: "%{name} unable to be locked"
           lock: "%{name} locked"

@@ -147,7 +147,7 @@ module Lita
               if l['state'] == 'locked'
                 response.reply('(failed) ' + t('label.owned',
                                                name: name,
-                                               owner: l['owner']))
+                                               owner_name: l['owner_name']))
               else
                 response.reply('(failed) ' + t('label.dependency'))
               end
@@ -168,14 +168,13 @@ module Lita
             response.reply('(successful) ' + t('label.is_unlocked',
                                                name: name))
           else
-            # FIXME: NOT SECURE
-            if response.user.name == l['owner']
+            if response.user.id == l['owner_id']
               unlock_label!(name)
               response.reply('(successful) ' + t('label.unlock', name: name))
-              # FIXME: Handle the case where things can't be unlocked?
             else
-              response.reply('(failed) ' + t('label.owned', name: name,
-                                                            owner: l['owner']))
+              response.reply('(failed) ' + t('label.owned',
+                                             name: name,
+                                             owner_name: l['owner_name']))
             end
           end
         else
@@ -378,9 +377,9 @@ module Lita
           value = redis.hget(resource_key, 'state')
           if value == 'unlocked'
             # FIXME: Race condition!
-            # FIXME: Store something better than name
             redis.hset(resource_key, 'state', 'locked')
-            redis.hset(resource_key, 'owner', owner.name)
+            redis.hset(resource_key, 'owner_id', owner.id)
+            redis.hset(resource_key, 'owner_name', owner.name)
             redis.hset(resource_key, 'until', time_until)
             true
           else
@@ -399,7 +398,8 @@ module Lita
             return false unless lock_resource!(m, owner, time_until)
           end
           redis.hset(key, 'state', 'locked')
-          redis.hset(key, 'owner', owner.name)
+          redis.hset(key, 'owner_id', owner.id)
+          redis.hset(key, 'owner_name', owner.name)
           redis.hset(key, 'until', time_until)
           true
         else
@@ -409,10 +409,10 @@ module Lita
 
       def unlock_resource!(name)
         if resource_exists?(name)
-          # FIXME: Tracking here?
           key = "resource_#{name}"
           redis.hset(key, 'state', 'unlocked')
-          redis.hset(key, 'owner', '')
+          redis.hset(key, 'owner_name', '')
+          redis.hset(key, 'owner_id', '')
         else
           false
         end
@@ -426,7 +426,8 @@ module Lita
             unlock_resource!(m)
           end
           redis.hset(key, 'state', 'unlocked')
-          redis.hset(key, 'owner', '')
+          redis.hset(key, 'owner_name', '')
+          redis.hset(key, 'owner_id', '')
           true
         else
           false
