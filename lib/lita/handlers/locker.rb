@@ -151,7 +151,6 @@ module Lita
 
       def unlock_attempt(payload)
         label      = payload[:label]
-        user       = Lita::User.find_by_id(payload[:user_id])
         request_id = payload[:request_id]
 
         if label_exists?(label) && unlock_label!(label)
