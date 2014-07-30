@@ -230,7 +230,7 @@ module Lita
       end
 
       def label_list(response)
-        labels.each do |n|
+        labels.sort.each do |n|
           name = n.sub('label_', '')
           l = label(name)
           response.reply(t('label.desc', name: name, state: l['state']))
