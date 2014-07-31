@@ -201,9 +201,20 @@ module Lita
       def steal(response)
         name = response.matches[0][0]
         if label_exists?(name)
-          unlock_label!(name)
-          response.reply('(successful) ' + t('label.unlock', name: name))
-          # FIXME: Handle the case where things can't be unlocked?
+          l = label(name)
+          if l['state'] == 'locked'
+            o = Lita::User.find_by_id(l['owner_id'])
+            if o.id != response.user.id
+              unlock_label!(name)
+              lock_label!(name, response.user, nil)
+              mention = o.mention_name ? "(@#{o.mention_name})" : ''
+              response.reply("(successful) #{name} stolen from #{o.name} #{mention}")
+            else
+              response.reply('Why are you stealing the lock from yourself?')
+            end
+          else
+            response.reply("#{name} was already unlocked")
+          end
         else
           response.reply('(failed) ' + t('subject.does_not_exist', name: name))
         end

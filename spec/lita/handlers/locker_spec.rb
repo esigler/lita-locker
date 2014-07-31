@@ -166,7 +166,24 @@ describe Lita::Handlers::Locker, lita_handler: true do
       send_command('locker label add foobar to bazbat')
       send_command('lock bazbat', as: alice)
       send_command('steal bazbat # with a comment', as: bob)
-      expect(replies.last).to eq('(successful) bazbat unlocked')
+      expect(replies.last).to eq('(successful) bazbat stolen from Alice (@alice)')
+    end
+
+    it 'shows a warning when the label is already unlocked' do
+      send_command('locker resource create foobar')
+      send_command('locker label create bazbat')
+      send_command('locker label add foobar to bazbat')
+      send_command('steal bazbat # with a comment', as: alice)
+      expect(replies.last).to eq('bazbat was already unlocked')
+    end
+
+    it 'shows a warning when the label is being stolen by the owner' do
+      send_command('locker resource create foobar')
+      send_command('locker label create bazbat')
+      send_command('locker label add foobar to bazbat')
+      send_command('lock bazbat', as: alice)
+      send_command('steal bazbat # with a comment', as: alice)
+      expect(replies.last).to eq('Why are you stealing the lock from yourself?')
     end
 
     it 'shows an error when a <subject> does not exist' do
