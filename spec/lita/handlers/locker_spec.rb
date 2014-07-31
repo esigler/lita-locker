@@ -9,6 +9,10 @@ describe Lita::Handlers::Locker, lita_handler: true do
     it { routes("(unlock) #{l}").to(:unlock) }
     it { routes("(release) #{l}").to(:unlock) }
 
+    it { routes("(Lock) #{l}").to(:lock) }
+    it { routes("(Unlock) #{l}").to(:unlock) }
+    it { routes("(Release) #{l}").to(:unlock) }
+
     it { routes("(lock) #{l} #this is a comment").to(:lock) }
     it { routes("(unlock) #{l} #this is a comment").to(:unlock) }
     it { routes("(release) #{l} #this is a comment").to(:unlock) }

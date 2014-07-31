@@ -7,14 +7,16 @@ module Lita
       LABEL_REGEX    = /([\.\w\s-]+)/
       RESOURCE_REGEX = /([\.\w-]+)/
       COMMENT_REGEX  = /(\s\#.+)?/
+      LOCK_REGEX     = /\(lock\)\s/i
+      UNLOCK_REGEX   = /(?:\(unlock\)|\(release\))\s/i
 
       route(
-        /^\(lock\)\s#{LABEL_REGEX}#{COMMENT_REGEX}$/,
+        /^#{LOCK_REGEX}#{LABEL_REGEX}#{COMMENT_REGEX}$/,
         :lock
       )
 
       route(
-        /^(?:\(unlock\)|\(release\))\s#{LABEL_REGEX}#{COMMENT_REGEX}$/,
+        /^#{UNLOCK_REGEX}#{LABEL_REGEX}#{COMMENT_REGEX}$/,
         :unlock
       )
 
