@@ -24,3 +24,6 @@ LineLength:
 GuardClause:
   Exclude:
     - lib/lita/handlers/locker.rb
+
+PerceivedComplexity:
+  Max: 12

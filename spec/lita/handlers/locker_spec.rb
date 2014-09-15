@@ -99,7 +99,7 @@ describe Lita::Handlers::Locker, lita_handler: true do
       send_command('lock l1', as: alice)
       send_command('lock l2', as: alice)
       expect(replies.last).to eq('(failed) Label unable to be locked, ' \
-                                 'blocked on a dependency')
+                                 "blocked on:\nr1 - Alice")
     end
 
     it 'shows a warning when a label is taken by someone else' do

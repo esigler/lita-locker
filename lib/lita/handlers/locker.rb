@@ -185,7 +185,17 @@ module Lita
                                                  owner_name: o.name))
                 end
               else
-                response.reply('(failed) ' + t('label.dependency'))
+                msg = '(failed) ' + t('label.dependency') + "\n"
+                deps = []
+                label_membership(name).each do |resource_name|
+                  resource = resource(resource_name)
+                  u = Lita::User.find_by_id(resource['owner_id'])
+                  if resource['state'] == 'locked'
+                    deps.push "#{resource_name} - #{u.name}"
+                  end
+                end
+                msg += deps.join("\n")
+                response.reply(msg)
               end
             end
           else
