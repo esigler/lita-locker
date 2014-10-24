@@ -246,12 +246,15 @@ module Lita
               unlock_label!(name)
               lock_label!(name, response.user, nil)
               mention = o.mention_name ? "(@#{o.mention_name})" : ''
-              response.reply("(successful) #{name} stolen from #{o.name} #{mention}")
+              response.reply('(successful) ' + t('steal.stolen',
+                                                 label: name,
+                                                 old_owner: o.name,
+                                                 mention: mention))
             else
-              response.reply('Why are you stealing the lock from yourself?')
+              response.reply(t('steal.self'))
             end
           else
-            response.reply("#{name} was already unlocked")
+            response.reply(t('steal.already_unlocked', label: name))
           end
         else
           response.reply('(failed) ' + t('subject.does_not_exist', name: name))

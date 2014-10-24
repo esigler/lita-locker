@@ -51,7 +51,9 @@ describe Lita::Handlers::Locker, lita_handler: true do
     it { routes_command("locker label delete #{l}").to(:label_delete) }
     it { routes_command("locker label show #{l}").to(:label_show) }
     it { routes_command("locker label add resource to #{l}").to(:label_add) }
-    it { routes_command("locker label remove resource from #{l}").to(:label_remove) }
+    it do
+      routes_command("locker label remove resource from #{l}").to(:label_remove)
+    end
   end
 
   it { routes_http(:get, '/locker/label/foobar').to(:http_label_show) }
@@ -173,7 +175,8 @@ describe Lita::Handlers::Locker, lita_handler: true do
       send_command('locker label add foobar to bazbat')
       send_command('lock bazbat', as: alice)
       send_command('steal bazbat # with a comment', as: bob)
-      expect(replies.last).to eq('(successful) bazbat stolen from Alice (@alice)')
+      expect(replies.last).to eq('(successful) bazbat stolen from ' \
+                                 'Alice (@alice)')
     end
 
     it 'shows a warning when the label is already unlocked' do

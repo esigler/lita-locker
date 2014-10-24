@@ -2,6 +2,10 @@ en:
   lita:
     handlers:
       locker:
+        steal:
+          stolen: "%{label} stolen from %{old_owner} %{mention}"
+          already_unlocked: "%{label} was already unlocked"
+          self: Why are you stealing the lock from yourself?
         help:
           lock:
             syntax: lock <subject>
