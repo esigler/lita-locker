@@ -1,69 +1,73 @@
 require 'spec_helper'
 
 describe Lita::Handlers::Locker, lita_handler: true do
-  it { routes_event(:lock_attempt).to(:lock_attempt) }
-  it { routes_event(:unlock_attempt).to(:unlock_attempt) }
+  it { is_expected.to route_event(:lock_attempt).to(:lock_attempt) }
+  it { is_expected.to route_event(:unlock_attempt).to(:unlock_attempt) }
 
   label_examples = ['foobar', 'foo bar', 'foo-bar', 'foo_bar']
   resource_examples = ['foobar', 'foo.bar', 'foo-bar', 'foo_bar']
 
   label_examples.each do |l|
-    it { routes("(lock) #{l}").to(:lock) }
-    it { routes("(unlock) #{l}").to(:unlock) }
-    it { routes("(release) #{l}").to(:unlock) }
-
-    it { routes("(Lock) #{l}").to(:lock) }
-    it { routes("(Unlock) #{l}").to(:unlock) }
-    it { routes("(Release) #{l}").to(:unlock) }
-
-    it { routes("(lock) #{l} #this is a comment").to(:lock) }
-    it { routes("(unlock) #{l} #this is a comment").to(:unlock) }
-    it { routes("(release) #{l} #this is a comment").to(:unlock) }
-
-    it { routes_command("lock #{l}").to(:lock) }
-    it { routes_command("lock #{l} #this is a comment").to(:lock) }
-    it { routes_command("unlock #{l}").to(:unlock) }
-    it { routes_command("unlock #{l} #this is a comment").to(:unlock) }
-    it { routes_command("steal #{l}").to(:steal) }
-    it { routes_command("steal #{l} #this is a comment").to(:steal) }
-  end
-
-  label_examples.each do |l|
-    it { routes_command("locker status #{l}").to(:status) }
-  end
-
-  resource_examples.each do |r|
-    it { routes_command("locker status #{r}").to(:status) }
-  end
-
-  it { routes_command('locker resource list').to(:resource_list) }
-
-  resource_examples.each do |r|
-    it { routes_command("locker resource create #{r}").to(:resource_create) }
-    it { routes_command("locker resource delete #{r}").to(:resource_delete) }
-    it { routes_command("locker resource show #{r}").to(:resource_show) }
-  end
-
-  it { routes_command('locker label list').to(:label_list) }
-
-  label_examples.each do |l|
-    it { routes_command("locker label create #{l}").to(:label_create) }
-    it { routes_command("locker label delete #{l}").to(:label_delete) }
-    it { routes_command("locker label show #{l}").to(:label_show) }
-    it { routes_command("locker label add resource to #{l}").to(:label_add) }
     it do
-      routes_command("locker label remove resource from #{l}").to(:label_remove)
+      is_expected.to route("(lock) #{l}").to(:lock)
+      is_expected.to route("(unlock) #{l}").to(:unlock)
+      is_expected.to route("(release) #{l}").to(:unlock)
+
+      is_expected.to route("(Lock) #{l}").to(:lock)
+      is_expected.to route("(Unlock) #{l}").to(:unlock)
+      is_expected.to route("(Release) #{l}").to(:unlock)
+
+      is_expected.to route("(lock) #{l} #this is a comment").to(:lock)
+      is_expected.to route("(unlock) #{l} #this is a comment").to(:unlock)
+      is_expected.to route("(release) #{l} #this is a comment").to(:unlock)
+
+      is_expected.to route_command("lock #{l}").to(:lock)
+      is_expected.to route_command("lock #{l} #this is a comment").to(:lock)
+      is_expected.to route_command("unlock #{l}").to(:unlock)
+      is_expected.to route_command("unlock #{l} #this is a comment").to(:unlock)
+      is_expected.to route_command("steal #{l}").to(:steal)
+      is_expected.to route_command("steal #{l} #this is a comment").to(:steal)
+
+      is_expected.to route_command("locker status #{l}").to(:status)
+
+      is_expected.to route_command("locker label create #{l}").to(:label_create)
+      is_expected.to route_command("locker label delete #{l}").to(:label_delete)
+      is_expected.to route_command("locker label show #{l}").to(:label_show)
+      is_expected.to route_command("locker label add resource to #{l}")
+        .to(:label_add)
+      is_expected.to route_command("locker label remove resource from #{l}")
+        .to(:label_remove)
     end
   end
 
-  it { routes_http(:get, '/locker/label/foobar').to(:http_label_show) }
-  it { routes_http(:get, '/locker/resource/foobar').to(:http_resource_show) }
+  resource_examples.each do |r|
+    it do
+      is_expected.to route_command("locker status #{r}").to(:status)
+
+      is_expected.to route_command("locker resource create #{r}")
+        .to(:resource_create)
+
+      is_expected.to route_command("locker resource delete #{r}")
+        .to(:resource_delete)
+
+      is_expected.to route_command("locker resource show #{r}")
+        .to(:resource_show)
+    end
+  end
+
+  it { is_expected.to route_command('locker resource list').to(:resource_list) }
+  it { is_expected.to route_command('locker label list').to(:label_list) }
+
+  it do
+    is_expected.to route_http(:get, '/locker/label/foobar')
+      .to(:http_label_show)
+
+    is_expected.to route_http(:get, '/locker/resource/foobar')
+      .to(:http_resource_show)
+  end
 
   before do
-    allow(Lita::Authorization).to receive(:user_in_group?).with(
-      user,
-      :locker_admins
-    ).and_return(true)
+    robot.auth.add_user_to_group!(user, :locker_admins)
   end
 
   let(:alice) do
