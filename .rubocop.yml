@@ -24,3 +24,9 @@ GuardClause:
 
 PerceivedComplexity:
   Max: 12
+
+LineLength:
+  Max: 120
+
+AbcSize:
+  Enabled: false

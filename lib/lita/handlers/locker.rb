@@ -11,6 +11,7 @@ module Lita
       RESOURCE_REGEX = /([\.\w-]+)/
       COMMENT_REGEX  = /(\s\#.+)?/
       LOCK_REGEX     = /\(lock\)\s/i
+      USER_REGEX     = /(?:@)?(?<username>[\w\s]+)/
       UNLOCK_REGEX   = /(?:\(unlock\)|\(release\))\s/i
 
       route(
@@ -125,6 +126,13 @@ module Lita
         :label_remove,
         command: true,
         help: { t('help.label.remove.syntax') => t('help.label.remove.desc') }
+      )
+
+      route(
+        /^locker\slist\s#{USER_REGEX}$/,
+        :user_list,
+        command: true,
+        help: { t('help.list.syntax') => t('help.list.desc') }
       )
 
       def http_label_show(request, response)
@@ -310,10 +318,10 @@ module Lita
       def label_show(response)
         name = response.matches[0][0]
         return response.reply(t('label.does_not_exist', name: name)) unless label_exists?(name)
-          members = label_membership(name)
+        members = label_membership(name)
         return response.reply(t('label.has_no_resources', name: name)) unless members.count > 0
-            response.reply(t('label.resources', name: name,
-                                                resources: members.join(', ')))
+        response.reply(t('label.resources', name: name,
+                                            resources: members.join(', ')))
       end
 
       def label_add(response)
@@ -373,6 +381,19 @@ module Lita
         return response.reply(t('resource.does_not_exist', name: name)) unless resource_exists?(name)
         r = resource(name)
         response.reply(t('resource.desc', name: name, state: r['state']))
+      end
+
+      def user_list(response)
+        username = response.match_data['username']
+        user = Lita::User.fuzzy_find(username)
+        return response.reply('Unknown user') unless user
+        l = user_locks(user)
+        return response.reply('That user has no active locks') unless l.size > 0
+        composed = ''
+        l.each do |label_name|
+          composed += "Label: #{label_name}\n"
+        end
+        response.reply(composed)
       end
 
       private
@@ -482,6 +503,16 @@ module Lita
 
       def labels
         redis.keys('label_*')
+      end
+
+      def user_locks(user)
+        owned = []
+        labels.each do |name|
+          name.slice! 'label_'
+          label = label(name)
+          owned.push(name) if label['owner_id'] == user.id
+        end
+        owned
       end
     end
 

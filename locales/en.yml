@@ -19,6 +19,9 @@ en:
           status:
             syntax: locker status <label or resource>
             desc: Show the current state of <label or resource>
+          list:
+            syntax: locker list <username>
+            desc: Show what locks a user currently holds
           resource:
             list:
               syntax: locker resource list

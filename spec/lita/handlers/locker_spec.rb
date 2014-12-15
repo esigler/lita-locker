@@ -35,6 +35,7 @@ describe Lita::Handlers::Locker, lita_handler: true do
       is_expected.to route_command("locker label show #{l}").to(:label_show)
       is_expected.to route_command("locker label add resource to #{l}")
         .to(:label_add)
+
       is_expected.to route_command("locker label remove resource from #{l}")
         .to(:label_remove)
     end
@@ -57,6 +58,8 @@ describe Lita::Handlers::Locker, lita_handler: true do
 
   it { is_expected.to route_command('locker resource list').to(:resource_list) }
   it { is_expected.to route_command('locker label list').to(:label_list) }
+  it { is_expected.to route_command('locker list @alice').to(:user_list) }
+  it { is_expected.to route_command('locker list Alice').to(:user_list) }
 
   it do
     is_expected.to route_http(:get, '/locker/label/foobar')
@@ -417,6 +420,46 @@ describe Lita::Handlers::Locker, lita_handler: true do
     it 'shows a warning when <name> does not exist' do
       send_command('locker resource show foobar')
       expect(replies.last).to eq('Resource foobar does not exist')
+    end
+  end
+
+  describe '#user_locks' do
+    it 'shows if a user has taken any locks' do
+      send_command('locker resource create foobar')
+      send_command('locker label create bazbat')
+      send_command('locker label add foobar to bazbat')
+      Lita::User.create('9001@hipchat', name: 'Alice Alpha', mention_name: 'alice')
+      send_command('lock bazbat', as: alice)
+      send_command('locker list Alice Alpha')
+      expect(replies.last).to eq("Label: bazbat\n")
+    end
+
+    it 'shows if a mention name has taken any locks' do
+      send_command('locker resource create foobar')
+      send_command('locker label create bazbat')
+      send_command('locker label add foobar to bazbat')
+      Lita::User.create('9001@hipchat', name: 'Alice Alpha', mention_name: 'alice')
+      send_command('lock bazbat', as: alice)
+      send_command('locker list @alice')
+      expect(replies.last).to eq("Label: bazbat\n")
+    end
+
+    it 'shows an empty set if the user has not taken any locks' do
+      send_command('locker resource create foobar')
+      send_command('locker label create bazbat')
+      send_command('locker label add foobar to bazbat')
+      Lita::User.create('9001@hipchat', name: 'Alice', mention_name: 'alice')
+      send_command('locker list Alice', as: alice)
+      expect(replies.last).to eq('That user has no active locks')
+      send_command('lock bazbat', as: alice)
+      send_command('unlock bazbat', as: alice)
+      send_command('locker list Alice', as: alice)
+      expect(replies.last).to eq('That user has no active locks')
+    end
+
+    it 'shows a warning when the user does not exist' do
+      send_command('locker list foobar')
+      expect(replies.last).to eq('Unknown user')
     end
   end
 end
