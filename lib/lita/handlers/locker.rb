@@ -309,54 +309,36 @@ module Lita
 
       def label_show(response)
         name = response.matches[0][0]
-        if label_exists?(name)
+        return response.reply(t('label.does_not_exist', name: name)) unless label_exists?(name)
           members = label_membership(name)
-          if members.count > 0
+        return response.reply(t('label.has_no_resources', name: name)) unless members.count > 0
             response.reply(t('label.resources', name: name,
                                                 resources: members.join(', ')))
-          else
-            response.reply(t('label.has_no_resources', name: name))
-          end
-        else
-          response.reply(t('label.does_not_exist', name: name))
-        end
       end
 
       def label_add(response)
         resource_name = response.matches[0][0]
         label_name = response.matches[0][1]
-        if label_exists?(label_name)
-          if resource_exists?(resource_name)
-            add_resource_to_label(label_name, resource_name)
-            response.reply(t('label.resource_added', label: label_name,
-                                                     resource: resource_name))
-          else
-            response.reply(t('resource.does_not_exist', name: resource_name))
-          end
-        else
-          response.reply(t('label.does_not_exist', name: label_name))
-        end
+        return response.reply(t('label.does_not_exist', name: label_name)) unless label_exists?(label_name)
+        return response.reply(t('resource.does_not_exist', name: resource_name)) unless resource_exists?(resource_name)
+        add_resource_to_label(label_name, resource_name)
+        response.reply(t('label.resource_added', label: label_name,
+                                                 resource: resource_name))
       end
 
       def label_remove(response)
         resource_name = response.matches[0][0]
         label_name = response.matches[0][1]
-        if label_exists?(label_name)
-          if resource_exists?(resource_name)
-            members = label_membership(label_name)
-            if members.include?(resource_name)
-              remove_resource_from_label(label_name, resource_name)
-              response.reply(t('label.resource_removed',
-                               label: label_name, resource: resource_name))
-            else
-              response.reply(t('label.does_not_have_resource',
-                               label: label_name, resource: resource_name))
-            end
-          else
-            response.reply(t('resource.does_not_exist', name: resource_name))
-          end
+        return response.reply(t('label.does_not_exist', name: label_name)) unless label_exists?(label_name)
+        return response.reply(t('resource.does_not_exist', name: resource_name)) unless resource_exists?(resource_name)
+        members = label_membership(label_name)
+        if members.include?(resource_name)
+          remove_resource_from_label(label_name, resource_name)
+          response.reply(t('label.resource_removed',
+                           label: label_name, resource: resource_name))
         else
-          response.reply(t('label.does_not_exist', name: label_name))
+          response.reply(t('label.does_not_have_resource',
+                           label: label_name, resource: resource_name))
         end
       end
 
@@ -381,21 +363,16 @@ module Lita
 
       def resource_delete(response)
         name = response.matches[0][0]
-        if delete_resource(name)
-          response.reply(t('resource.deleted', name: name))
-        else
-          response.reply(t('resource.does_not_exist', name: name))
-        end
+        return response.reply(t('resource.does_not_exist', name: name)) unless resource_exists?(name)
+        delete_resource(name)
+        response.reply(t('resource.deleted', name: name))
       end
 
       def resource_show(response)
         name = response.matches[0][0]
-        if resource_exists?(name)
-          r = resource(name)
-          response.reply(t('resource.desc', name: name, state: r['state']))
-        else
-          response.reply(t('resource.does_not_exist', name: name))
-        end
+        return response.reply(t('resource.does_not_exist', name: name)) unless resource_exists?(name)
+        r = resource(name)
+        response.reply(t('resource.desc', name: name, state: r['state']))
       end
 
       private
@@ -447,62 +424,48 @@ module Lita
       end
 
       def lock_resource!(name, owner, time_until)
-        if resource_exists?(name)
-          resource_key = "resource_#{name}"
-          value = redis.hget(resource_key, 'state')
-          if value == 'unlocked'
-            # FIXME: Race condition!
-            redis.hset(resource_key, 'state', 'locked')
-            redis.hset(resource_key, 'owner_id', owner.id)
-            redis.hset(resource_key, 'until', time_until)
-            true
-          else
-            false
-          end
-        else
-          false
-        end
+        return false unless resource_exists?(name)
+        resource_key = "resource_#{name}"
+        value = redis.hget(resource_key, 'state')
+        return false unless value == 'unlocked'
+        # FIXME: Race condition!
+        redis.hset(resource_key, 'state', 'locked')
+        redis.hset(resource_key, 'owner_id', owner.id)
+        redis.hset(resource_key, 'until', time_until)
+        true
       end
 
       def lock_label!(name, owner, time_until)
-        if label_exists?(name)
-          key = "label_#{name}"
-          members = label_membership(name)
-          members.each do |m|
-            return false unless lock_resource!(m, owner, time_until)
-          end
-          redis.hset(key, 'state', 'locked')
-          redis.hset(key, 'owner_id', owner.id)
-          redis.hset(key, 'until', time_until)
-          true
-        else
-          false
+        return false unless label_exists?(name)
+        key = "label_#{name}"
+        members = label_membership(name)
+        members.each do |m|
+          return false unless lock_resource!(m, owner, time_until)
         end
+        redis.hset(key, 'state', 'locked')
+        redis.hset(key, 'owner_id', owner.id)
+        redis.hset(key, 'until', time_until)
+        true
       end
 
       def unlock_resource!(name)
-        if resource_exists?(name)
-          key = "resource_#{name}"
-          redis.hset(key, 'state', 'unlocked')
-          redis.hset(key, 'owner_id', '')
-        else
-          false
-        end
+        return false unless resource_exists?(name)
+        key = "resource_#{name}"
+        redis.hset(key, 'state', 'unlocked')
+        redis.hset(key, 'owner_id', '')
+        true
       end
 
       def unlock_label!(name)
-        if label_exists?(name)
-          key = "label_#{name}"
-          members = label_membership(name)
-          members.each do |m|
-            unlock_resource!(m)
-          end
-          redis.hset(key, 'state', 'unlocked')
-          redis.hset(key, 'owner_id', '')
-          true
-        else
-          false
+        return false unless label_exists?(name)
+        key = "label_#{name}"
+        members = label_membership(name)
+        members.each do |m|
+          unlock_resource!(m)
         end
+        redis.hset(key, 'state', 'unlocked')
+        redis.hset(key, 'owner_id', '')
+        true
       end
 
       def resource(name)
