@@ -428,9 +428,9 @@ describe Lita::Handlers::Locker, lita_handler: true do
       send_command('locker resource create foobar')
       send_command('locker label create bazbat')
       send_command('locker label add foobar to bazbat')
-      Lita::User.create('9001@hipchat', name: 'Alice', mention_name: 'alice')
+      Lita::User.create('9001@hipchat', name: 'Alice Alpha', mention_name: 'alice')
       send_command('lock bazbat', as: alice)
-      send_command('locker list Alice')
+      send_command('locker list Alice Alpha')
       expect(replies.last).to eq("Label: bazbat\n")
     end
 
@@ -438,7 +438,7 @@ describe Lita::Handlers::Locker, lita_handler: true do
       send_command('locker resource create foobar')
       send_command('locker label create bazbat')
       send_command('locker label add foobar to bazbat')
-      Lita::User.create('9001@hipchat', name: 'Alice', mention_name: 'alice')
+      Lita::User.create('9001@hipchat', name: 'Alice Alpha', mention_name: 'alice')
       send_command('lock bazbat', as: alice)
       send_command('locker list @alice')
       expect(replies.last).to eq("Label: bazbat\n")

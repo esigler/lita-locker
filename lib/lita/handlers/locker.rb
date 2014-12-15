@@ -11,7 +11,7 @@ module Lita
       RESOURCE_REGEX = /([\.\w-]+)/
       COMMENT_REGEX  = /(\s\#.+)?/
       LOCK_REGEX     = /\(lock\)\s/i
-      USER_REGEX     = /(?:@)?(?<username>[\w]+)/
+      USER_REGEX     = /(?:@)?(?<username>[\w\s]+)/
       UNLOCK_REGEX   = /(?:\(unlock\)|\(release\))\s/i
 
       route(
