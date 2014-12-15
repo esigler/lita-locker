@@ -391,7 +391,7 @@ module Lita
         return response.reply('That user has no active locks') unless l.size > 0
         composed = ''
         l.each do |label_name|
-          composed += "Label: #{label_name}"
+          composed += "Label: #{label_name}\n"
         end
         response.reply(composed)
       end

@@ -424,14 +424,24 @@ describe Lita::Handlers::Locker, lita_handler: true do
   end
 
   describe '#user_locks' do
-    it 'shows a full set if a user has taken any locks' do
+    it 'shows if a user has taken any locks' do
       send_command('locker resource create foobar')
       send_command('locker label create bazbat')
       send_command('locker label add foobar to bazbat')
       Lita::User.create('9001@hipchat', name: 'Alice', mention_name: 'alice')
       send_command('lock bazbat', as: alice)
       send_command('locker list Alice')
-      expect(replies.last).to eq('Label: bazbat')
+      expect(replies.last).to eq("Label: bazbat\n")
+    end
+
+    it 'shows if a mention name has taken any locks' do
+      send_command('locker resource create foobar')
+      send_command('locker label create bazbat')
+      send_command('locker label add foobar to bazbat')
+      Lita::User.create('9001@hipchat', name: 'Alice', mention_name: 'alice')
+      send_command('lock bazbat', as: alice)
+      send_command('locker list @alice')
+      expect(replies.last).to eq("Label: bazbat\n")
     end
 
     it 'shows an empty set if the user has not taken any locks' do
