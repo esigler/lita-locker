@@ -1,6 +1,6 @@
 module Lita
   module Handlers
-    # Label-related handlers
+    # Resource-related handlers
     class LockerResources < Handler
       namespace 'Locker'
 

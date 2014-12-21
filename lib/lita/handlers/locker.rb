@@ -10,9 +10,6 @@ module Lita
       on :lock_attempt, :lock_attempt
       on :unlock_attempt, :unlock_attempt
 
-      http.get '/locker/label/:name', :http_label_show
-      http.get '/locker/resource/:name', :http_resource_show
-
       route(
         /^#{LOCK_REGEX}#{LABEL_REGEX}#{COMMENT_REGEX}$/,
         :lock
@@ -57,18 +54,6 @@ module Lita
         command: true,
         help: { t('help.list.syntax') => t('help.list.desc') }
       )
-
-      def http_label_show(request, response)
-        name = request.env['router.params'][:name]
-        response.headers['Content-Type'] = 'application/json'
-        response.write(label(name).to_json)
-      end
-
-      def http_resource_show(request, response)
-        name = request.env['router.params'][:name]
-        response.headers['Content-Type'] = 'application/json'
-        response.write(resource(name).to_json)
-      end
 
       def lock_attempt(payload)
         label      = payload[:label]

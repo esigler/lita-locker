@@ -41,14 +41,6 @@ describe Lita::Handlers::Locker, lita_handler: true do
   it { is_expected.to route_command('locker list @alice').to(:user_list) }
   it { is_expected.to route_command('locker list Alice').to(:user_list) }
 
-  it do
-    is_expected.to route_http(:get, '/locker/label/foobar')
-      .to(:http_label_show)
-
-    is_expected.to route_http(:get, '/locker/resource/foobar')
-      .to(:http_resource_show)
-  end
-
   before do
     robot.auth.add_user_to_group!(user, :locker_admins)
   end
