@@ -29,15 +29,6 @@ describe Lita::Handlers::Locker, lita_handler: true do
       is_expected.to route_command("steal #{l} #this is a comment").to(:steal)
 
       is_expected.to route_command("locker status #{l}").to(:status)
-
-      is_expected.to route_command("locker label create #{l}").to(:label_create)
-      is_expected.to route_command("locker label delete #{l}").to(:label_delete)
-      is_expected.to route_command("locker label show #{l}").to(:label_show)
-      is_expected.to route_command("locker label add resource to #{l}")
-        .to(:label_add)
-
-      is_expected.to route_command("locker label remove resource from #{l}")
-        .to(:label_remove)
     end
   end
 
@@ -57,7 +48,6 @@ describe Lita::Handlers::Locker, lita_handler: true do
   end
 
   it { is_expected.to route_command('locker resource list').to(:resource_list) }
-  it { is_expected.to route_command('locker label list').to(:label_list) }
   it { is_expected.to route_command('locker list @alice').to(:user_list) }
   it { is_expected.to route_command('locker list Alice').to(:user_list) }
 

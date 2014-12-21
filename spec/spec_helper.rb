@@ -9,3 +9,9 @@ SimpleCov.start { add_filter '/spec/' }
 require 'lita-locker'
 require 'lita/rspec'
 Lita.version_3_compatibility_mode = false
+
+RSpec.configure do |config|
+  config.before do
+    registry.register_handler(Lita::Handlers::LockerLabels)
+  end
+end
