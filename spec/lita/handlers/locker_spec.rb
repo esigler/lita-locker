@@ -35,19 +35,9 @@ describe Lita::Handlers::Locker, lita_handler: true do
   resource_examples.each do |r|
     it do
       is_expected.to route_command("locker status #{r}").to(:status)
-
-      is_expected.to route_command("locker resource create #{r}")
-        .to(:resource_create)
-
-      is_expected.to route_command("locker resource delete #{r}")
-        .to(:resource_delete)
-
-      is_expected.to route_command("locker resource show #{r}")
-        .to(:resource_show)
     end
   end
 
-  it { is_expected.to route_command('locker resource list').to(:resource_list) }
   it { is_expected.to route_command('locker list @alice').to(:user_list) }
   it { is_expected.to route_command('locker list Alice').to(:user_list) }
 
