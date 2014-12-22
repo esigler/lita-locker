@@ -8,6 +8,7 @@ require 'locker/regex'
 require 'locker/label'
 require 'locker/resource'
 
+require 'lita/handlers/locker_events'
 require 'lita/handlers/locker_http'
 require 'lita/handlers/locker_labels'
 require 'lita/handlers/locker_resources'

@@ -1,9 +1,6 @@
 require 'spec_helper'
 
 describe Lita::Handlers::Locker, lita_handler: true do
-  it { is_expected.to route_event(:lock_attempt).to(:lock_attempt) }
-  it { is_expected.to route_event(:unlock_attempt).to(:unlock_attempt) }
-
   label_examples = ['foobar', 'foo bar', 'foo-bar', 'foo_bar']
   resource_examples = ['foobar', 'foo.bar', 'foo-bar', 'foo_bar']
 

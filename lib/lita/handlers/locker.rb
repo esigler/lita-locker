@@ -7,9 +7,6 @@ module Lita
       include ::Locker::Label
       include ::Locker::Resource
 
-      on :lock_attempt, :lock_attempt
-      on :unlock_attempt, :unlock_attempt
-
       route(
         /^#{LOCK_REGEX}#{LABEL_REGEX}#{COMMENT_REGEX}$/,
         :lock
@@ -54,29 +51,6 @@ module Lita
         command: true,
         help: { t('help.list.syntax') => t('help.list.desc') }
       )
-
-      def lock_attempt(payload)
-        label      = payload[:label]
-        user       = Lita::User.find_by_id(payload[:user_id])
-        request_id = payload[:request_id]
-
-        if label_exists?(label) && lock_label!(label, user, nil)
-          robot.trigger(:lock_success, request_id: request_id)
-        else
-          robot.trigger(:lock_failure, request_id: request_id)
-        end
-      end
-
-      def unlock_attempt(payload)
-        label      = payload[:label]
-        request_id = payload[:request_id]
-
-        if label_exists?(label) && unlock_label!(label)
-          robot.trigger(:unlock_success, request_id: request_id)
-        else
-          robot.trigger(:unlock_failure, request_id: request_id)
-        end
-      end
 
       def lock(response)
         name = response.matches[0][0]
