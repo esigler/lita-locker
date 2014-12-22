@@ -8,14 +8,6 @@ describe Lita::Handlers::LockerMisc, lita_handler: true do
   label_examples = ['foobar', 'foo bar', 'foo-bar', 'foo_bar']
   resource_examples = ['foobar', 'foo.bar', 'foo-bar', 'foo_bar']
 
-  # let(:alice) do
-  #   Lita::User.create('9001@hipchat', name: 'Alice', mention_name: 'alice')
-  # end
-  #
-  # let(:bob) do
-  #   Lita::User.create('9002@hipchat', name: 'Bob', mention_name: 'bob')
-  # end
-
   label_examples.each do |l|
     it { is_expected.to route_command("locker status #{l}").to(:status) }
   end
@@ -24,8 +16,8 @@ describe Lita::Handlers::LockerMisc, lita_handler: true do
     it { is_expected.to route_command("locker status #{r}").to(:status) }
   end
 
-  it { is_expected.to route_command('locker list @alice').to(:user_list) }
-  it { is_expected.to route_command('locker list Alice').to(:user_list) }
+  it { is_expected.to route_command('locker list @alice').to(:list) }
+  it { is_expected.to route_command('locker list Alice').to(:list) }
 
   describe '#status' do
     it 'shows the status of a label' do

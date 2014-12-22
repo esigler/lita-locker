@@ -18,7 +18,7 @@ module Lita
 
       route(
         /^locker\slist\s#{USER_REGEX}$/,
-        :user_list,
+        :list,
         command: true,
         help: { t('help.list.syntax') => t('help.list.desc') }
       )
@@ -43,7 +43,7 @@ module Lita
         end
       end
 
-      def user_list(response)
+      def list(response)
         username = response.match_data['username']
         user = Lita::User.fuzzy_find(username)
         return response.reply('Unknown user') unless user

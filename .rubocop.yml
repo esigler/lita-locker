@@ -18,4 +18,4 @@ LineLength:
   Max: 120
 
 AbcSize:
-  Enabled: false
+  Max: 49

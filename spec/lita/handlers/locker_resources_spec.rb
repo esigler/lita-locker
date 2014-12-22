@@ -9,18 +9,13 @@ describe Lita::Handlers::LockerResources, lita_handler: true do
 
   resource_examples.each do |r|
     it do
-      is_expected.to route_command("locker resource create #{r}")
-        .to(:resource_create)
-
-      is_expected.to route_command("locker resource delete #{r}")
-        .to(:resource_delete)
-
-      is_expected.to route_command("locker resource show #{r}")
-        .to(:resource_show)
+      is_expected.to route_command("locker resource create #{r}").to(:create)
+      is_expected.to route_command("locker resource delete #{r}").to(:delete)
+      is_expected.to route_command("locker resource show #{r}").to(:show)
     end
   end
 
-  it { is_expected.to route_command('locker resource list').to(:resource_list) }
+  it { is_expected.to route_command('locker resource list').to(:list) }
 
   describe '#resource_list' do
     it 'shows a list of resources if there are any' do
