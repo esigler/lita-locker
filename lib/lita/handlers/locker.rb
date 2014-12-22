@@ -47,38 +47,34 @@ module Lita
         return response.reply(t('label.no_resources', name: name)) unless m.count > 0
         return response.reply(t('label.lock', name: name)) if lock_label!(name, response.user, nil)
 
-        response.reply(show_ownership(name))
+        response.reply(label_ownership(name))
       end
 
       def unlock(response)
         name = response.matches[0][0]
         return response.reply(t('subject.does_not_exist', name: name)) unless label_exists?(name)
-        l = label(name)
-        return response.reply(t('label.is_unlocked', name: name)) if l['state'] == 'unlocked'
-
-        response.reply(attempt_unlock(name, l, response.user))
+        return response.reply(t('label.is_unlocked', name: name)) unless label_locked?(name)
+        response.reply(attempt_unlock(name, response.user))
       end
 
       def steal(response)
         name = response.matches[0][0]
         return response.reply(t('subject.does_not_exist', name: name)) unless label_exists?(name)
-        l = label(name)
-        return response.reply(t('steal.already_unlocked', label: name)) unless l['state'] == 'locked'
-
-        response.reply(attempt_steal(name, l, response.user))
+        return response.reply(t('steal.already_unlocked', label: name)) unless label_locked?(name)
+        response.reply(attempt_steal(name, response.user))
       end
 
       private
 
-      def show_ownership(name)
+      def label_ownership(name)
         l = label(name)
-        return show_dependencies(name) unless l['state'] == 'locked'
+        return label_dependencies(name) unless label_locked?(name)
         o = Lita::User.find_by_id(l['owner_id'])
         mention = o.mention_name ? "(@#{o.mention_name})" : ''
         t('label.owned', name: name, owner_name: o.name, mention: mention)
       end
 
-      def show_dependencies(name)
+      def label_dependencies(name)
         msg = t('label.dependency') + "\n"
         deps = []
         label_membership(name).each do |resource_name|
@@ -92,7 +88,8 @@ module Lita
         msg
       end
 
-      def attempt_steal(name, label, user)
+      def attempt_steal(name, user)
+        label = label(name)
         o = Lita::User.find_by_id(label['owner_id'])
         return t('steal.self') if o.id == user.id
         unlock_label!(name)
@@ -101,7 +98,8 @@ module Lita
         t('steal.stolen', label: name, old_owner: o.name, mention: mention)
       end
 
-      def attempt_unlock(name, label, user)
+      def attempt_unlock(name, user)
+        label = label(name)
         if user.id == label['owner_id']
           unlock_label!(name)
           t('label.unlock', name: name)

@@ -14,6 +14,11 @@ module Locker
       redis.exists("label_#{name}")
     end
 
+    def label_locked?(name)
+      l = label(name)
+      l['state'] == 'locked'
+    end
+
     def lock_label!(name, owner, time_until)
       return false unless label_exists?(name)
       key = "label_#{name}"
