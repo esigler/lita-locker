@@ -1,22 +1,15 @@
-BlockNesting:
-  Max: 5
-
 ClassLength:
-  Max: 125
+  Max: 103
 
 CyclomaticComplexity:
-  Max: 8
+  Max: 7
 
 FileName:
   Exclude:
     - lib/lita-locker.rb
 
 MethodLength:
- Max: 40
-
-GuardClause:
-  Exclude:
-    - lib/lita/handlers/locker.rb
+ Max: 31
 
 PerceivedComplexity:
   Max: 12
