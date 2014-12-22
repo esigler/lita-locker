@@ -44,7 +44,7 @@ describe Lita::Handlers::LockerMisc, lita_handler: true do
 
     it 'shows an error if nothing exists with that name' do
       send_command('locker status foo')
-      expect(replies.last).to eq('Sorry, that does not exist')
+      expect(replies.last).to eq('(failed) Sorry, that does not exist')
     end
   end
 

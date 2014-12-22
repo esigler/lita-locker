@@ -3,7 +3,7 @@ en:
     handlers:
       locker:
         steal:
-          stolen: "%{label} stolen from %{old_owner} %{mention}"
+          stolen: "(successful) %{label} stolen from %{old_owner} %{mention}"
           already_unlocked: "%{label} was already unlocked"
           self: Why are you stealing the lock from yourself?
         help:
@@ -67,24 +67,26 @@ en:
           owned: "%{name} is locked by %{owner_name}"
           owned_mention: "%{name} is locked by %{owner_name} (@%{owner_mention})"
         subject:
-          does_not_exist: "Sorry, that does not exist"
+          does_not_exist: "(failed) Sorry, that does not exist"
         label:
-          unlock: "%{name} unlocked"
-          owned: "%{name} is locked by %{owner_name}"
-          owned_mention: "%{name} is locked by %{owner_name} (@%{owner_mention})"
-          is_unlocked: "%{name} is unlocked"
+          unlock: "(successful) %{name} unlocked"
+          owned: "(failed) %{name} is locked by %{owner_name} %{mention}"
+          is_unlocked: "(successful) %{name} is unlocked"
           unable_to_lock: "%{name} unable to be locked"
-          lock: "%{name} locked"
+          lock: "(successful) %{name} locked"
           desc: "Label: %{name}, state: %{state}"
           desc_owner: "Label: %{name}, state: %{state}, owner: %{owner_name}"
           created: "Label %{name} created"
           exists: "%{name} already exists"
           deleted: "Label %{name} deleted"
-          does_not_exist: "Label %{name} does not exist.  To create it: \"!locker label create %{name}\""
+          does_not_exist: "(failed) Label %{name} does not exist.  To create it: \"!locker label create %{name}\""
           has_no_resources: "Label %{name} has no resources"
           resource_added: "Resource %{resource} has been added to %{label}"
           resource_removed: "Resource %{resource} has been removed from %{label}"
           resources: "Label %{name} has: %{resources}"
           does_not_have_resource: "Label %{label} does not have Resource %{resource}"
-          no_resources: "%{name} has no resources, so it cannot be locked"
-          dependency: 'Label unable to be locked, blocked on:'
+          no_resources: "(failed) %{name} has no resources, so it cannot be locked"
+          dependency: '(failed) Label unable to be locked, blocked on:'
+        user:
+          unknown: Unknown user
+          no_active_locks: That user has no active locks

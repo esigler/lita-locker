@@ -29,9 +29,7 @@ module Lita
           l = label(name)
           if l['owner_id'] && l['owner_id'] != ''
             o = Lita::User.find_by_id(l['owner_id'])
-            response.reply(t('label.desc_owner', name: name,
-                                                 state: l['state'],
-                                                 owner_name: o.name))
+            response.reply(t('label.desc_owner', name: name, state: l['state'], owner_name: o.name))
           else
             response.reply(t('label.desc', name: name, state: l['state']))
           end
@@ -46,9 +44,9 @@ module Lita
       def list(response)
         username = response.match_data['username']
         user = Lita::User.fuzzy_find(username)
-        return response.reply('Unknown user') unless user
+        return response.reply(t('user.unknown')) unless user
         l = user_locks(user)
-        return response.reply('That user has no active locks') unless l.size > 0
+        return response.reply(t('user.no_active_locks')) unless l.size > 0
         composed = ''
         l.each do |label_name|
           composed += "Label: #{label_name}\n"
