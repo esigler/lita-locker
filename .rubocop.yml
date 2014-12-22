@@ -1,21 +1,12 @@
-ClassLength:
-  Max: 103
-
-CyclomaticComplexity:
-  Max: 7
-
 FileName:
   Exclude:
     - lib/lita-locker.rb
 
 MethodLength:
- Max: 31
-
-PerceivedComplexity:
-  Max: 12
+  Max: 17
 
 LineLength:
   Max: 120
 
 AbcSize:
-  Max: 49
+  Max: 25
