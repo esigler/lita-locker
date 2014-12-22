@@ -4,8 +4,9 @@ module Lita
     class LockerEvents < Handler
       namespace 'Locker'
 
-      include ::Locker::Regex
       include ::Locker::Label
+      include ::Locker::Misc
+      include ::Locker::Regex
       include ::Locker::Resource
 
       on :lock_attempt, :lock_attempt

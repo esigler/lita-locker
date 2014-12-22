@@ -4,8 +4,9 @@ module Lita
     class LockerResources < Handler
       namespace 'Locker'
 
-      include ::Locker::Regex
       include ::Locker::Label
+      include ::Locker::Misc
+      include ::Locker::Regex
       include ::Locker::Resource
 
       route(

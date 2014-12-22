@@ -4,8 +4,9 @@ module Lita
     class LockerHttp < Handler
       namespace 'Locker'
 
-      include ::Locker::Regex
       include ::Locker::Label
+      include ::Locker::Misc
+      include ::Locker::Regex
       include ::Locker::Resource
 
       http.get '/locker/label/:name', :http_label_show
