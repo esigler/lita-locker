@@ -5,7 +5,7 @@ describe Lita::Handlers::Locker, lita_handler: true do
     robot.auth.add_user_to_group!(user, :locker_admins)
   end
 
-  label_examples = ['foobar', 'foo bar', 'foo-bar', 'foo_bar']
+  label_examples = ['foobar', 'foo bar', 'foo-bar', 'foo_bar', 'foobar ']
 
   label_examples.each do |l|
     it do
@@ -47,6 +47,14 @@ describe Lita::Handlers::Locker, lita_handler: true do
       expect(replies.last).to eq('(successful) bazbat locked')
       send_command('locker resource show foobar')
       expect(replies.last).to eq('Resource: foobar, state: locked')
+    end
+
+    it 'locks the same label with spaces after the name' do
+      send_command('locker resource create foobar')
+      send_command('locker label create bazbat')
+      send_command('locker label add foobar to bazbat')
+      send_command('lock bazbat ')
+      expect(replies.last).to eq('(successful) bazbat  locked')
     end
 
     it 'shows a warning when a label has no resources' do

@@ -3,7 +3,7 @@ module Locker
   # Label helpers
   module Label
     def label(name)
-      redis.hgetall("label_#{name}")
+      redis.hgetall(normalize_label_key(name))
     end
 
     def labels
@@ -11,7 +11,7 @@ module Locker
     end
 
     def label_exists?(name)
-      redis.exists("label_#{name}")
+      redis.exists(normalize_label_key(name))
     end
 
     def label_locked?(name)
@@ -21,7 +21,7 @@ module Locker
 
     def lock_label!(name, owner, time_until)
       return false unless label_exists?(name)
-      key = "label_#{name}"
+      key = normalize_label_key(name)
       members = label_membership(name)
       members.each do |m|
         return false unless lock_resource!(m, owner, time_until)
@@ -34,7 +34,7 @@ module Locker
 
     def unlock_label!(name)
       return false unless label_exists?(name)
-      key = "label_#{name}"
+      key = normalize_label_key(name)
       members = label_membership(name)
       members.each do |m|
         unlock_resource!(m)
@@ -45,18 +45,18 @@ module Locker
     end
 
     def create_label(name)
-      label_key = "label_#{name}"
+      label_key = normalize_label_key(name)
       redis.hset(label_key, 'state', 'unlocked') unless
         resource_exists?(name) || label_exists?(name)
     end
 
     def delete_label(name)
-      label_key = "label_#{name}"
+      label_key = normalize_label_key(name)
       redis.del(label_key) if label_exists?(name)
     end
 
     def label_membership(name)
-      redis.smembers("membership_#{name}")
+      redis.smembers("membership_#{normalize_name(name)}")
     end
 
     def add_resource_to_label(label, resource)
@@ -89,6 +89,14 @@ module Locker
       end
       msg += deps.join("\n")
       msg
+    end
+
+    def normalize_label_key(name)
+      "label_#{normalize_name(name)}"
+    end
+
+    def normalize_name(name)
+      name.strip
     end
   end
 end

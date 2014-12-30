@@ -2,7 +2,7 @@
 module Locker
   # Regex definitions
   module Regex
-    LABEL_REGEX    = /([\.\w\s-]+)/
+    LABEL_REGEX    = /([\.\w\s-]+)(\s)?/
     RESOURCE_REGEX = /([\.\w-]+)/
     COMMENT_REGEX  = /(\s\#.+)?/
     LOCK_REGEX     = /\(lock\)\s/i
