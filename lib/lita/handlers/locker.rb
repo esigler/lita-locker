@@ -66,28 +66,6 @@ module Lita
 
       private
 
-      def label_ownership(name)
-        l = label(name)
-        return label_dependencies(name) unless label_locked?(name)
-        o = Lita::User.find_by_id(l['owner_id'])
-        mention = o.mention_name ? "(@#{o.mention_name})" : ''
-        t('label.owned', name: name, owner_name: o.name, mention: mention)
-      end
-
-      def label_dependencies(name)
-        msg = t('label.dependency') + "\n"
-        deps = []
-        label_membership(name).each do |resource_name|
-          resource = resource(resource_name)
-          u = Lita::User.find_by_id(resource['owner_id'])
-          if resource['state'] == 'locked'
-            deps.push "#{resource_name} - #{u.name}"
-          end
-        end
-        msg += deps.join("\n")
-        msg
-      end
-
       def attempt_steal(name, user)
         label = label(name)
         o = Lita::User.find_by_id(label['owner_id'])
