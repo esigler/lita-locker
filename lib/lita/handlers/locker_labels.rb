@@ -53,9 +53,8 @@ module Lita
 
       def list(response)
         labels.sort.each do |n|
-          name = n.sub('label_', '')
-          l = label(name)
-          response.reply(t('label.desc', name: name, state: l.state.value))
+          l = Label.new(n)
+          response.reply(t('label.desc', name: n, state: l.state.value))
         end
       end
 
@@ -70,7 +69,7 @@ module Lita
 
       def delete(response)
         name = response.matches[0][0]
-        if delete_label(name)
+        if Label.exists?(name) && Label.delete(name)
           response.reply(t('label.deleted', name: name))
         else
           response.reply(t('label.does_not_exist', name: name))
@@ -79,7 +78,7 @@ module Lita
 
       def show(response)
         name = response.matches[0][0]
-        return response.reply(t('label.does_not_exist', name: name)) unless label_exists?(name)
+        return response.reply(t('label.does_not_exist', name: name)) unless Label.exists?(name)
         members = label_membership(name)
         return response.reply(t('label.has_no_resources', name: name)) unless members.count > 0
         res = []
@@ -92,7 +91,7 @@ module Lita
       def add(response)
         resource_name = response.matches[0][0]
         label_name = response.matches[0][1]
-        return response.reply(t('label.does_not_exist', name: label_name)) unless label_exists?(label_name)
+        return response.reply(t('label.does_not_exist', name: label_name)) unless Label.exists?(label_name)
         return response.reply(t('resource.does_not_exist', name: resource_name)) unless resource_exists?(resource_name)
         add_resource_to_label(label_name, resource_name)
         response.reply(t('label.resource_added', label: label_name, resource: resource_name))
@@ -101,7 +100,7 @@ module Lita
       def remove(response)
         resource_name = response.matches[0][0]
         label_name = response.matches[0][1]
-        return response.reply(t('label.does_not_exist', name: label_name)) unless label_exists?(label_name)
+        return response.reply(t('label.does_not_exist', name: label_name)) unless Label.exists?(label_name)
         return response.reply(t('resource.does_not_exist', name: resource_name)) unless resource_exists?(resource_name)
         members = label_membership(label_name)
         if members.include?(resource_name)

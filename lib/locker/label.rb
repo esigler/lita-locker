@@ -104,10 +104,6 @@ module Locker
       Label.list
     end
 
-    def label_exists?(name)
-      Label.exists?(name)
-    end
-
     def label_locked?(name)
       l = Label.new(name)
       l.locked?

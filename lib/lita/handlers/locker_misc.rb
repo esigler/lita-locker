@@ -25,7 +25,7 @@ module Lita
 
       def status(response)
         name = response.matches[0][0]
-        if label_exists?(name)
+        if Label.exists?(name)
           l = label(name)
           if l.owner_id.value != ''
             o = Lita::User.find_by_id(l.owner_id.value)
