@@ -82,8 +82,8 @@ module Locker
       deps = []
       label_membership(name).each do |resource_name|
         resource = resource(resource_name)
-        u = Lita::User.find_by_id(resource['owner_id'])
-        if resource['state'] == 'locked'
+        u = Lita::User.find_by_id(resource.owner_id.value)
+        if resource.state.value == 'locked'
           deps.push "#{resource_name} - #{u.name}"
         end
       end

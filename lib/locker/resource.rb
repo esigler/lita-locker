@@ -2,47 +2,96 @@
 module Locker
   # Resource helpers
   module Resource
+    # Proper Resource class
+    class Resource
+      include Redis::Objects
+
+      value :name
+      value :state
+      value :owner_id
+
+      lock :coord, expiration: 5
+
+      attr_reader :id
+
+      def initialize(key)
+        fail 'Unknown resource key' unless Resource.exists?(key)
+        @id = key
+      end
+
+      def self.exists?(key)
+        redis.sismember('resource-list', key)
+      end
+
+      def self.create(key)
+        fail 'Resource key already exists' if Resource.exists?(key)
+        redis.sadd('resource-list', key)
+        r = Resource.new(key)
+        r.state    = 'unlocked'
+        r.owner_id = ''
+        r
+      end
+
+      def self.delete(key)
+        fail 'Unknown resource key' unless Resource.exists?(key)
+        # FIXME: Better way to enumerate?
+        %w(name, state, owner_id).each do |item|
+          redis.del("resource:#{key}:#{item}")
+        end
+        redis.srem('resource-list', key)
+      end
+
+      def self.list
+        redis.smembers('resource-list')
+      end
+
+      def lock!(owner_id)
+        return false if state == 'locked'
+        coord_lock.lock do
+          self.owner_id = owner_id
+          self.state = 'locked'
+        end
+        true
+      end
+
+      def unlock!
+        return true if state == 'unlocked'
+        coord_lock.lock do
+          self.owner_id = ''
+          self.state = 'unlocked'
+        end
+        true
+      end
+    end
+
     def resource(name)
-      redis.hgetall("resource_#{name}")
+      Resource.new(name)
     end
 
     def resources
-      redis.keys('resource_*')
+      Resource.list
     end
 
     def resource_exists?(name)
-      redis.exists("resource_#{name}")
+      Resource.exists?(name)
     end
 
-    def lock_resource!(name, owner, time_until)
-      return false unless resource_exists?(name)
-      resource_key = "resource_#{name}"
-      value = redis.hget(resource_key, 'state')
-      return false unless value == 'unlocked'
-      # FIXME: Race condition!
-      redis.hset(resource_key, 'state', 'locked')
-      redis.hset(resource_key, 'owner_id', owner.id)
-      redis.hset(resource_key, 'until', time_until)
-      true
+    def lock_resource!(name, owner, _time_until)
+      r = Resource.new(name)
+      r.lock!(owner.id)
     end
 
     def unlock_resource!(name)
-      return false unless resource_exists?(name)
-      key = "resource_#{name}"
-      redis.hset(key, 'state', 'unlocked')
-      redis.hset(key, 'owner_id', '')
-      true
+      r = Resource.new(name)
+      r.unlock!
     end
 
     def create_resource(name)
-      resource_key = "resource_#{name}"
-      redis.hset(resource_key, 'state', 'unlocked') unless
-        resource_exists?(name) || label_exists?(name)
+      Resource.create(name)
     end
 
     def delete_resource(name)
-      resource_key = "resource_#{name}"
-      redis.del(resource_key) if resource_exists?(name)
+      Resource.delete(name)
     end
   end
 end

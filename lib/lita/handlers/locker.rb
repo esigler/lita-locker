@@ -3,6 +3,8 @@ module Lita
   module Handlers
     # Top-level class for Locker
     class Locker < Handler
+      Redis::Objects.redis = Lita.redis
+
       include ::Locker::Label
       include ::Locker::Misc
       include ::Locker::Regex

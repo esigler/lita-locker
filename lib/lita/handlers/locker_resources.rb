@@ -46,20 +46,17 @@ module Lita
       def list(response)
         output = ''
         resources.each do |r|
-          r_name = r.sub('resource_', '')
-          res = resource(r_name)
-          output += t('resource.desc', name: r_name, state: res['state'])
+          res = resource(r)
+          output += t('resource.desc', name: r, state: res.state.value)
         end
         response.reply(output)
       end
 
       def create(response)
         name = response.matches[0][0]
-        if create_resource(name)
-          response.reply(t('resource.created', name: name))
-        else
-          response.reply(t('resource.exists', name: name))
-        end
+        return response.reply(t('resource.exists', name: name)) if Resource.exists?(name)
+        create_resource(name)
+        response.reply(t('resource.created', name: name))
       end
 
       def delete(response)
@@ -73,7 +70,7 @@ module Lita
         name = response.matches[0][0]
         return response.reply(t('resource.does_not_exist', name: name)) unless resource_exists?(name)
         r = resource(name)
-        response.reply(t('resource.desc', name: name, state: r['state']))
+        response.reply(t('resource.desc', name: name, state: r.state.value))
       end
 
       Lita.register_handler(LockerResources)

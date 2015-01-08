@@ -35,7 +35,7 @@ module Lita
           end
         elsif resource_exists?(name)
           r = resource(name)
-          response.reply(t('resource.desc', name: name, state: r['state']))
+          response.reply(t('resource.desc', name: name, state: r.state.value))
         else
           response.reply(t('subject.does_not_exist', name: name))
         end
