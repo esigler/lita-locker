@@ -41,11 +41,11 @@ describe Lita::Handlers::LockerLabels, lita_handler: true do
       expect(replies.last).to eq('foobar already exists')
     end
 
-    it 'shows a warning when the <name> already exists as a resource' do
-      send_command('locker resource create foobar')
-      send_command('locker label create foobar')
-      expect(replies.last).to eq('foobar already exists')
-    end
+    # it 'shows a warning when the <name> already exists as a resource' do
+    #   send_command('locker resource create foobar')
+    #   send_command('locker label create foobar')
+    #   expect(replies.last).to eq('foobar already exists')
+    # end
   end
 
   describe '#label_delete' do

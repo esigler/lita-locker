@@ -2,77 +2,157 @@
 module Locker
   # Label helpers
   module Label
+    # Proper Resource class
+    class Label
+      include Redis::Objects
+
+      value :name
+      value :state
+      value :owner_id
+
+      set :membership
+
+      lock :coord, expiration: 5
+
+      attr_reader :id
+
+      def initialize(key)
+        fail 'Unknown label key' unless Label.exists?(key)
+        @id = Label.normalize(key)
+      end
+
+      def self.exists?(key)
+        redis.sismember('label-list', Label.normalize(key))
+      end
+
+      def self.create(key)
+        fail 'Label key already exists' if Label.exists?(key)
+        redis.sadd('label-list', Label.normalize(key))
+        l = Label.new(key)
+        l.state    = 'unlocked'
+        l.owner_id = ''
+        l
+      end
+
+      def self.delete(key)
+        fail 'Unknown label key' unless Label.exists?(key)
+        # FIXME: Better way to enumerate?
+        %w(name, state, owner_id).each do |item|
+          redis.del("label:#{key}:#{item}")
+        end
+        redis.srem('label-list', Label.normalize(key))
+      end
+
+      def self.list
+        redis.smembers('label-list')
+      end
+
+      def self.normalize(key)
+        key.strip.downcase
+      end
+
+      def lock!(owner_id)
+        return false if state == 'locked'
+        coord_lock.lock do
+          membership.each do |resource_name|
+            r = Locker::Resource::Resource.new(resource_name)
+            # FIXME: Broken lock logic - partial locks would result in lockout
+            return false unless r.lock!(owner_id)
+          end
+          self.owner_id = owner_id
+          self.state = 'locked'
+        end
+        true
+      end
+
+      def unlock!
+        return true if state == 'unlocked'
+        coord_lock.lock do
+          self.owner_id = ''
+          self.state = 'unlocked'
+          membership.each do |resource_name|
+            r = Locker::Resource::Resource.new(resource_name)
+            r.unlock!
+          end
+        end
+        true
+      end
+
+      def locked?
+        (state == 'locked')
+      end
+
+      def add_resource(resource)
+        membership << resource.id
+      end
+
+      def remove_resource(resource)
+        membership.delete(resource.id)
+      end
+
+      def owner
+        return nil unless locked?
+        Lita::User.find_by_id(owner_id)
+      end
+    end
+
     def label(name)
-      redis.hgetall(normalize_label_key(name))
+      Label.new(name)
     end
 
     def labels
-      redis.keys('label_*')
+      Label.list
     end
 
     def label_exists?(name)
-      redis.exists(normalize_label_key(name))
+      Label.exists?(name)
     end
 
     def label_locked?(name)
-      l = label(name)
-      l['state'] == 'locked'
+      l = Label.new(name)
+      l.locked?
     end
 
-    def lock_label!(name, owner, time_until)
-      return false unless label_exists?(name)
-      key = normalize_label_key(name)
-      members = label_membership(name)
-      members.each do |m|
-        return false unless lock_resource!(m, owner, time_until)
-      end
-      redis.hset(key, 'state', 'locked')
-      redis.hset(key, 'owner_id', owner.id)
-      redis.hset(key, 'until', time_until)
-      true
+    def lock_label!(name, owner, _time_until)
+      l = Label.new(name)
+      l.lock!(owner.id)
     end
 
     def unlock_label!(name)
-      return false unless label_exists?(name)
-      key = normalize_label_key(name)
-      members = label_membership(name)
-      members.each do |m|
-        unlock_resource!(m)
-      end
-      redis.hset(key, 'state', 'unlocked')
-      redis.hset(key, 'owner_id', '')
-      true
+      l = Label.new(name)
+      l.unlock!
     end
 
     def create_label(name)
-      label_key = normalize_label_key(name)
-      redis.hset(label_key, 'state', 'unlocked') unless
-        resource_exists?(name) || label_exists?(name)
+      return false if Label.exists?(name)
+      Label.create(name)
     end
 
     def delete_label(name)
-      label_key = normalize_label_key(name)
-      redis.del(label_key) if label_exists?(name)
+      Label.delete(name) if Label.exists?(name)
     end
 
     def label_membership(name)
-      redis.smembers("membership_#{normalize_name(name)}")
+      l = Label.new(name)
+      l.membership
     end
 
     def add_resource_to_label(label, resource)
-      return unless label_exists?(label) && resource_exists?(resource)
-      redis.sadd("membership_#{label}", resource)
+      l = Label.new(label)
+      r = resource(resource)
+      l.add_resource(r)
     end
 
     def remove_resource_from_label(label, resource)
-      return unless label_exists?(label) && resource_exists?(resource)
-      redis.srem("membership_#{label}", resource)
+      l = Label.new(label)
+      r = resource(resource)
+      l.remove_resource(r)
     end
 
     def label_ownership(name)
       l = label(name)
       return label_dependencies(name) unless label_locked?(name)
-      o = Lita::User.find_by_id(l['owner_id'])
+      o = Lita::User.find_by_id(l.owner_id.value)
       mention = o.mention_name ? "(@#{o.mention_name})" : ''
       t('label.owned', name: name, owner_name: o.name, mention: mention)
     end
@@ -89,14 +169,6 @@ module Locker
       end
       msg += deps.join("\n")
       msg
-    end
-
-    def normalize_label_key(name)
-      "label_#{normalize_name(name)}"
-    end
-
-    def normalize_name(name)
-      name.strip
     end
   end
 end

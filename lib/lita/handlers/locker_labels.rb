@@ -55,7 +55,7 @@ module Lita
         labels.sort.each do |n|
           name = n.sub('label_', '')
           l = label(name)
-          response.reply(t('label.desc', name: name, state: l['state']))
+          response.reply(t('label.desc', name: name, state: l.state.value))
         end
       end
 
@@ -82,7 +82,11 @@ module Lita
         return response.reply(t('label.does_not_exist', name: name)) unless label_exists?(name)
         members = label_membership(name)
         return response.reply(t('label.has_no_resources', name: name)) unless members.count > 0
-        response.reply(t('label.resources', name: name, resources: members.join(', ')))
+        res = []
+        members.each do |member|
+          res.push(member)
+        end
+        response.reply(t('label.resources', name: name, resources: res.join(', ')))
       end
 
       def add(response)

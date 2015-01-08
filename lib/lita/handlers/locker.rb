@@ -70,7 +70,7 @@ module Lita
 
       def attempt_steal(name, user)
         label = label(name)
-        o = Lita::User.find_by_id(label['owner_id'])
+        o = Lita::User.find_by_id(label.owner_id.value)
         return t('steal.self') if o.id == user.id
         unlock_label!(name)
         lock_label!(name, user, nil)
@@ -80,11 +80,11 @@ module Lita
 
       def attempt_unlock(name, user)
         label = label(name)
-        if user.id == label['owner_id']
+        if user.id == label.owner_id.value
           unlock_label!(name)
           t('label.unlock', name: name)
         else
-          o = Lita::User.find_by_id(label['owner_id'])
+          o = Lita::User.find_by_id(label.owner_id.value)
           mention = o.mention_name ? "(@#{o.mention_name})" : ''
           t('label.owned', name: name, owner_name: o.name, mention: mention)
         end

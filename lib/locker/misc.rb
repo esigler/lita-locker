@@ -5,9 +5,8 @@ module Locker
     def user_locks(user)
       owned = []
       labels.each do |name|
-        name.slice! 'label_'
         label = label(name)
-        owned.push(name) if label['owner_id'] == user.id
+        owned.push(name) if label.owner_id.value == user.id
       end
       owned
     end
