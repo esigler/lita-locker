@@ -3,7 +3,7 @@ en:
     handlers:
       locker:
         steal:
-          stolen: "(successful) %{label} stolen from %{old_owner} %{mention}"
+          stolen: "(lock) %{label} stolen from %{old_owner} %{mention}"
           already_unlocked: "%{label} was already unlocked"
           self: Why are you stealing the lock from yourself?
         help:
@@ -69,11 +69,11 @@ en:
         subject:
           does_not_exist: "(failed) Sorry, that does not exist"
         label:
-          unlock: "(successful) %{name} unlocked"
+          unlock: "(unlock) %{name} unlocked"
           owned: "(failed) %{name} is locked by %{owner_name} %{mention}"
-          is_unlocked: "(successful) %{name} is unlocked"
+          is_unlocked: "(unlock) %{name} is unlocked"
           unable_to_lock: "%{name} unable to be locked"
-          lock: "(successful) %{name} locked"
+          lock: "(lock) %{name} locked"
           desc: "Label: %{name}, state: %{state}"
           desc_owner: "Label: %{name}, state: %{state}, owner: %{owner_name}"
           created: "Label %{name} created"

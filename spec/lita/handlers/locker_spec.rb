@@ -44,7 +44,7 @@ describe Lita::Handlers::Locker, lita_handler: true do
       send_command('locker label create bazbat')
       send_command('locker label add foobar to bazbat')
       send_command('lock bazbat # with a comment')
-      expect(replies.last).to eq('(successful) bazbat locked')
+      expect(replies.last).to eq('(lock) bazbat locked')
       send_command('locker resource show foobar')
       expect(replies.last).to eq('Resource: foobar, state: locked')
     end
@@ -54,7 +54,7 @@ describe Lita::Handlers::Locker, lita_handler: true do
       send_command('locker label create bazbat')
       send_command('locker label add foobar to bazbat')
       send_command('lock bazbat ')
-      expect(replies.last).to eq('(successful) bazbat  locked')
+      expect(replies.last).to eq('(lock) bazbat  locked')
     end
 
     it 'shows a warning when a label has no resources' do
@@ -113,7 +113,7 @@ describe Lita::Handlers::Locker, lita_handler: true do
       send_command('locker label add foobar to bazbat')
       send_command('lock bazbat')
       send_command('unlock bazbat # with a comment')
-      expect(replies.last).to eq('(successful) bazbat unlocked')
+      expect(replies.last).to eq('(unlock) bazbat unlocked')
     end
 
     it 'does not unlock a label when someone else locked it' do
@@ -131,7 +131,7 @@ describe Lita::Handlers::Locker, lita_handler: true do
       send_command('locker label add foobar to bazbat')
       send_command('unlock bazbat')
       send_command('unlock bazbat')
-      expect(replies.last).to eq('(successful) bazbat is unlocked')
+      expect(replies.last).to eq('(unlock) bazbat is unlocked')
     end
 
     it 'shows an error when a <subject> does not exist' do
@@ -147,7 +147,7 @@ describe Lita::Handlers::Locker, lita_handler: true do
       send_command('locker label add foobar to bazbat')
       send_command('lock bazbat', as: alice)
       send_command('steal bazbat # with a comment', as: bob)
-      expect(replies.last).to eq('(successful) bazbat stolen from ' \
+      expect(replies.last).to eq('(lock) bazbat stolen from ' \
                                  'Alice (@alice)')
     end
 
