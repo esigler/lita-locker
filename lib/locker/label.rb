@@ -53,7 +53,7 @@ module Locker
       end
 
       def lock!(owner_id)
-        if state == 'locked'
+        if locked?
           wait_queue << owner_id
           return false
         end
@@ -81,6 +81,7 @@ module Locker
           end
         end
 
+        # FIXME: Possible race condition where resources become unavailable  between unlock and relock
         if wait_queue.count > 0
           next_user = wait_queue.shift
           self.lock!(next_user)
