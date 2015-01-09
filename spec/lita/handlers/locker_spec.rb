@@ -137,8 +137,7 @@ describe Lita::Handlers::Locker, lita_handler: true do
       send_command('locker label add foobar to bazbat')
       send_command('lock bazbat', as: alice)
       send_command('unlock bazbat', as: bob)
-      expect(replies.last).to eq('(failed) bazbat is locked by Alice (@alice), you have been added ' \
-                                 'to the queue, type \'locker dequeue bazbat\' to be removed')
+      expect(replies.last).to eq('(failed) bazbat is locked by Alice (@alice)')
     end
 
     it 'shows a warning when a label is already unlocked' do

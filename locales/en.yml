@@ -73,7 +73,8 @@ en:
           does_not_exist: "(failed) Sorry, that does not exist"
         label:
           unlock: "(unlock) %{name} unlocked"
-          owned: "(failed) %{name} is locked by %{owner_name} %{mention}, you have been added to the queue, type 'locker dequeue %{name}' to be removed"
+          owned_lock: "(failed) %{name} is locked by %{owner_name} %{mention}, you have been added to the queue, type 'locker dequeue %{name}' to be removed"
+          owned_unlock: "(failed) %{name} is locked by %{owner_name} %{mention}"
           is_unlocked: "(unlock) %{name} is unlocked"
           unable_to_lock: "%{name} unable to be locked"
           lock: "(lock) %{name} locked"

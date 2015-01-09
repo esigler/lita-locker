@@ -165,7 +165,7 @@ module Locker
       return label_dependencies(name) unless label_locked?(name)
       o = Lita::User.find_by_id(l.owner_id.value)
       mention = o.mention_name ? "(@#{o.mention_name})" : ''
-      t('label.owned', name: name, owner_name: o.name, mention: mention)
+      t('label.owned_lock', name: name, owner_name: o.name, mention: mention)
     end
 
     def label_dependencies(name)
