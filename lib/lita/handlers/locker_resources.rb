@@ -53,21 +53,21 @@ module Lita
       end
 
       def create(response)
-        name = response.matches[0][0]
+        name = response.match_data['resource']
         return response.reply(t('resource.exists', name: name)) if Resource.exists?(name)
         Resource.create(name)
         response.reply(t('resource.created', name: name))
       end
 
       def delete(response)
-        name = response.matches[0][0]
+        name = response.match_data['resource']
         return response.reply(t('resource.does_not_exist', name: name)) unless Resource.exists?(name)
         Resource.delete(name)
         response.reply(t('resource.deleted', name: name))
       end
 
       def show(response)
-        name = response.matches[0][0]
+        name = response.match_data['resource']
         return response.reply(t('resource.does_not_exist', name: name)) unless Resource.exists?(name)
         r = Resource.new(name)
         response.reply(t('resource.desc', name: name, state: r.state.value))

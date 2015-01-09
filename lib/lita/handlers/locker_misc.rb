@@ -31,7 +31,7 @@ module Lita
       )
 
       def status(response)
-        name = response.matches[0][0]
+        name = response.match_data['label']
         if Label.exists?(name)
           l = Label.new(name)
           if l.owner_id.value != ''
@@ -63,7 +63,7 @@ module Lita
       end
 
       def dequeue(response)
-        name = response.matches[0][0]
+        name = response.match_data['label']
         return response.reply(t('subject.does_not_exist', name: name)) unless Label.exists?(name)
         l = Label.new(name)
         l.wait_queue.delete(response.user.id)

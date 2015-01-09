@@ -59,7 +59,7 @@ module Lita
       end
 
       def create(response)
-        name = response.matches[0][0]
+        name = response.match_data['label']
         if !Label.exists?(name) && Label.create(name)
           response.reply(t('label.created', name: name))
         else
@@ -68,7 +68,7 @@ module Lita
       end
 
       def delete(response)
-        name = response.matches[0][0]
+        name = response.match_data['label']
         if Label.exists?(name) && Label.delete(name)
           response.reply(t('label.deleted', name: name))
         else
@@ -77,7 +77,7 @@ module Lita
       end
 
       def show(response)
-        name = response.matches[0][0]
+        name = response.match_data['label']
         return response.reply(t('label.does_not_exist', name: name)) unless Label.exists?(name)
         l = Label.new(name)
         return response.reply(t('label.has_no_resources', name: name)) unless l.membership.count > 0
@@ -89,8 +89,8 @@ module Lita
       end
 
       def add(response)
-        resource_name = response.matches[0][0]
-        label_name = response.matches[0][1]
+        resource_name = response.match_data['resource']
+        label_name = response.match_data['label']
         return response.reply(t('label.does_not_exist', name: label_name)) unless Label.exists?(label_name)
         return response.reply(t('resource.does_not_exist', name: resource_name)) unless Resource.exists?(resource_name)
         l = Label.new(label_name)
@@ -100,8 +100,8 @@ module Lita
       end
 
       def remove(response)
-        resource_name = response.matches[0][0]
-        label_name = response.matches[0][1]
+        resource_name = response.match_data['resource']
+        label_name = response.match_data['label']
         return response.reply(t('label.does_not_exist', name: label_name)) unless Label.exists?(label_name)
         return response.reply(t('resource.does_not_exist', name: resource_name)) unless Resource.exists?(resource_name)
         l = Label.new(label_name)

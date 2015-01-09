@@ -42,7 +42,7 @@ module Lita
       )
 
       def lock(response)
-        name = response.matches[0][0]
+        name = response.match_data['label']
 
         return response.reply(t('label.does_not_exist', name: name)) unless Label.exists?(name)
         l = Label.new(name)
@@ -54,7 +54,7 @@ module Lita
       end
 
       def unlock(response)
-        name = response.matches[0][0]
+        name = response.match_data['label']
         return response.reply(t('subject.does_not_exist', name: name)) unless Label.exists?(name)
         l = Label.new(name)
         return response.reply(t('label.is_unlocked', name: name)) unless l.locked?
@@ -62,7 +62,7 @@ module Lita
       end
 
       def steal(response)
-        name = response.matches[0][0]
+        name = response.match_data['label']
         return response.reply(t('subject.does_not_exist', name: name)) unless Label.exists?(name)
         l = Label.new(name)
         return response.reply(t('steal.already_unlocked', label: name)) unless l.locked?
