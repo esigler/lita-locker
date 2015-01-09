@@ -174,7 +174,7 @@ describe Lita::Handlers::Locker, lita_handler: true do
       send_command('lock bazbat', as: bob)
       send_command('steal bazbat', as: charlie)
       send_command('locker status bazbat')
-      expect(replies.last).to eq('Label: bazbat, state: locked, owner: Charlie, queued: Bob')
+      expect(replies.last).to eq('(lock) bazbat is currently locked by Charlie. Next up: Bob')
     end
 
     it 'shows a warning when the label is already unlocked' do

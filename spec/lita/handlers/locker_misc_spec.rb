@@ -45,16 +45,16 @@ describe Lita::Handlers::LockerMisc, lita_handler: true do
       send_command('locker label create foo')
       send_command('locker label add bar to foo')
       send_command('locker status foo')
-      expect(replies.last).to eq('Label: foo, state: unlocked')
+      expect(replies.last).to eq('(unlock) foo is currently unlocked')
       send_command('lock foo')
       send_command('locker status foo')
-      expect(replies.last).to eq('Label: foo, state: locked, owner: Test User')
+      expect(replies.last).to eq('(lock) foo is currently locked by Test User')
       send_command('lock foo', as: alice)
       send_command('locker status foo')
-      expect(replies.last).to eq('Label: foo, state: locked, owner: Test User, queued: Alice')
+      expect(replies.last).to eq('(lock) foo is currently locked by Test User. Next up: Alice')
       send_command('lock foo', as: bob)
       send_command('locker status foo')
-      expect(replies.last).to eq('Label: foo, state: locked, owner: Test User, queued: Alice, Bob')
+      expect(replies.last).to eq('(lock) foo is currently locked by Test User. Next up: Alice, Bob')
     end
 
     it 'shows the status of a resource' do
