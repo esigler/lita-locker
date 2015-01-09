@@ -54,7 +54,7 @@ module Locker
 
       def lock!(owner_id)
         if locked?
-          wait_queue << owner_id
+          wait_queue << owner_id if wait_queue.last != owner_id
           return false
         end
 

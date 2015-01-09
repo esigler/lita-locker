@@ -61,6 +61,26 @@ describe Lita::Handlers::Locker, lita_handler: true do
       expect(replies.last).to eq('(lock) bazbat  locked')
     end
 
+    it 'does not enqueue the user that currently has a lock' do
+      send_command('locker resource create foobar')
+      send_command('locker label create bazbat')
+      send_command('locker label add foobar to bazbat')
+      send_command('lock bazbat')
+      send_command('lock bazbat')
+      expect(replies.last).to eq('You already have the lock on bazbat')
+    end
+
+    it 'does not add a user multiple times to the end of a queue' do
+      send_command('locker resource create foobar')
+      send_command('locker label create bazbat')
+      send_command('locker label add foobar to bazbat')
+      send_command('lock bazbat', as: alice)
+      send_command('lock bazbat', as: bob)
+      send_command('lock bazbat', as: bob)
+      send_command('locker status bazbat')
+      expect(replies.last).to eq('(lock) bazbat is currently locked by Alice. Next up: Bob')
+    end
+
     it 'shows a warning when a label has no resources' do
       send_command('locker label create foobar')
       send_command('lock foobar')

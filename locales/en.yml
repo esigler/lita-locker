@@ -72,6 +72,7 @@ en:
         subject:
           does_not_exist: "(failed) Sorry, that does not exist"
         label:
+          self_lock: "You already have the lock on %{name}"
           unlock: "(unlock) %{name} unlocked"
           owned_lock: "(failed) %{name} is locked by %{owner_name} %{mention}, you have been added to the queue, type 'locker dequeue %{name}' to be removed"
           owned_unlock: "(failed) %{name} is locked by %{owner_name} %{mention}"
