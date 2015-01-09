@@ -23,13 +23,34 @@ module Lita
         help: { t('help.list.syntax') => t('help.list.desc') }
       )
 
+      route(
+        /^locker\sdequeue\s#{LABEL_REGEX}$/,
+        :dequeue,
+        command: true,
+        help: { t('help.dequeue.syntax') => t('help.dequeue.desc') }
+      )
+
       def status(response)
         name = response.matches[0][0]
         if Label.exists?(name)
           l = label(name)
           if l.owner_id.value != ''
             o = Lita::User.find_by_id(l.owner_id.value)
-            response.reply(t('label.desc_owner', name: name, state: l.state.value, owner_name: o.name))
+            if l.wait_queue.count > 0
+              queue = []
+              l.wait_queue.each do |u|
+                usr = Lita::User.find_by_id(u)
+                queue.push(usr.name)
+              end
+              response.reply(t('label.desc_owner_queue', name: name,
+                                                         state: l.state.value,
+                                                         owner_name: o.name,
+                                                         queue: queue.join(', ')))
+            else
+              response.reply(t('label.desc_owner', name: name,
+                                                   state: l.state.value,
+                                                   owner_name: o.name))
+            end
           else
             response.reply(t('label.desc', name: name, state: l.state.value))
           end
@@ -39,6 +60,14 @@ module Lita
         else
           response.reply(t('subject.does_not_exist', name: name))
         end
+      end
+
+      def dequeue(response)
+        name = response.matches[0][0]
+        return response.reply(t('subject.does_not_exist', name: name)) unless Label.exists?(name)
+        l = Label.new(name)
+        l.wait_queue.delete(response.user.id)
+        response.reply(t('label.removed_from_queue', name: name))
       end
 
       def list(response)

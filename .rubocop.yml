@@ -2,11 +2,19 @@ FileName:
   Exclude:
     - lib/lita-locker.rb
 
-MethodLength:
-  Max: 17
-
 LineLength:
   Max: 120
 
 AbcSize:
+  Exclude:
+    - lib/lita/handlers/locker_misc.rb
   Max: 30
+
+MethodLength:
+  Max: 17
+  Exclude:
+    - lib/lita/handlers/locker_misc.rb
+
+PerceivedComplexity:
+  Exclude:
+    - lib/lita/handlers/locker_misc.rb

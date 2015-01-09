@@ -11,6 +11,7 @@ module Locker
       value :owner_id
 
       set :membership
+      list :wait_queue
 
       lock :coord, expiration: 5
 
@@ -52,7 +53,11 @@ module Locker
       end
 
       def lock!(owner_id)
-        return false if state == 'locked'
+        if locked?
+          wait_queue << owner_id if wait_queue.last != owner_id
+          return false
+        end
+
         coord_lock.lock do
           membership.each do |resource_name|
             r = Locker::Resource::Resource.new(resource_name)
@@ -75,7 +80,18 @@ module Locker
             r.unlock!
           end
         end
+
+        # FIXME: Possible race condition where resources become unavailable  between unlock and relock
+        if wait_queue.count > 0
+          next_user = wait_queue.shift
+          self.lock!(next_user)
+        end
         true
+      end
+
+      def steal!(owner_id)
+        wait_queue.unshift(owner_id)
+        self.unlock!
       end
 
       def locked?
@@ -150,7 +166,7 @@ module Locker
       return label_dependencies(name) unless label_locked?(name)
       o = Lita::User.find_by_id(l.owner_id.value)
       mention = o.mention_name ? "(@#{o.mention_name})" : ''
-      t('label.owned', name: name, owner_name: o.name, mention: mention)
+      t('label.owned_lock', name: name, owner_name: o.name, mention: mention)
     end
 
     def label_dependencies(name)

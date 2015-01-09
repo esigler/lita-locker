@@ -45,9 +45,10 @@ module Lita
         name = response.matches[0][0]
 
         return response.reply(t('label.does_not_exist', name: name)) unless Label.exists?(name)
-        m = label_membership(name)
-        return response.reply(t('label.no_resources', name: name)) unless m.count > 0
-        return response.reply(t('label.lock', name: name)) if lock_label!(name, response.user, nil)
+        l = Label.new(name)
+        return response.reply(t('label.no_resources', name: name)) unless l.membership.count > 0
+        return response.reply(t('label.self_lock', name: name)) if l.owner_id.value == response.user.id
+        return response.reply(t('label.lock', name: name)) if l.lock!(response.user.id)
 
         response.reply(label_ownership(name))
       end
@@ -72,8 +73,7 @@ module Lita
         label = label(name)
         o = Lita::User.find_by_id(label.owner_id.value)
         return t('steal.self') if o.id == user.id
-        unlock_label!(name)
-        lock_label!(name, user, nil)
+        label.steal!(user.id)
         mention = o.mention_name ? "(@#{o.mention_name})" : ''
         t('steal.stolen', label: name, old_owner: o.name, mention: mention)
       end
@@ -81,12 +81,18 @@ module Lita
       def attempt_unlock(name, user)
         label = label(name)
         if user.id == label.owner_id.value
-          unlock_label!(name)
-          t('label.unlock', name: name)
+          label.unlock!
+          if label.locked?
+            o = Lita::User.find_by_id(label.owner_id.value)
+            mention = o.mention_name ? "(@#{o.mention_name})" : ''
+            t('label.now_locked_by', name: name, owner: o.name, mention: mention)
+          else
+            t('label.unlock', name: name)
+          end
         else
           o = Lita::User.find_by_id(label.owner_id.value)
           mention = o.mention_name ? "(@#{o.mention_name})" : ''
-          t('label.owned', name: name, owner_name: o.name, mention: mention)
+          t('label.owned_unlock', name: name, owner_name: o.name, mention: mention)
         end
       end
     end

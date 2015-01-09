@@ -7,6 +7,9 @@ en:
           already_unlocked: "%{label} was already unlocked"
           self: Why are you stealing the lock from yourself?
         help:
+          dequeue:
+            syntax: locker dequeue <label>
+            desc: Remove yourself from the queue for a label
           lock:
             syntax: lock <subject>
             desc: Make something unavailable to others. Can have # comments afterwards.
@@ -69,13 +72,16 @@ en:
         subject:
           does_not_exist: "(failed) Sorry, that does not exist"
         label:
+          self_lock: "You already have the lock on %{name}"
           unlock: "(unlock) %{name} unlocked"
-          owned: "(failed) %{name} is locked by %{owner_name} %{mention}"
+          owned_lock: "(failed) %{name} is locked by %{owner_name} %{mention}, you have been added to the queue, type 'locker dequeue %{name}' to be removed"
+          owned_unlock: "(failed) %{name} is locked by %{owner_name} %{mention}"
           is_unlocked: "(unlock) %{name} is unlocked"
           unable_to_lock: "%{name} unable to be locked"
           lock: "(lock) %{name} locked"
-          desc: "Label: %{name}, state: %{state}"
-          desc_owner: "Label: %{name}, state: %{state}, owner: %{owner_name}"
+          desc: "(unlock) %{name} is currently unlocked"
+          desc_owner: "(lock) %{name} is currently locked by %{owner_name}"
+          desc_owner_queue: "(lock) %{name} is currently locked by %{owner_name}. Next up: %{queue}"
           created: "Label %{name} created"
           exists: "%{name} already exists"
           deleted: "Label %{name} deleted"
@@ -87,6 +93,9 @@ en:
           does_not_have_resource: "Label %{label} does not have Resource %{resource}"
           no_resources: "(failed) %{name} has no resources, so it cannot be locked"
           dependency: '(failed) Label unable to be locked, blocked on:'
+          now_locked_by: "(lock) %{name} now locked by %{owner} %{mention}"
+          removed_from_queue: "You have been removed from the queue for %{name}"
+          unknown_in_queue: "You weren't in the queue for %{name}"
         user:
           unknown: Unknown user
           no_active_locks: That user has no active locks
