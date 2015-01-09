@@ -11,6 +11,7 @@ module Locker
       value :owner_id
 
       set :membership
+      list :wait_queue
 
       lock :coord, expiration: 5
 
@@ -52,7 +53,11 @@ module Locker
       end
 
       def lock!(owner_id)
-        return false if state == 'locked'
+        if state == 'locked'
+          wait_queue << owner_id
+          return false
+        end
+
         coord_lock.lock do
           membership.each do |resource_name|
             r = Locker::Resource::Resource.new(resource_name)
@@ -75,7 +80,17 @@ module Locker
             r.unlock!
           end
         end
+
+        if wait_queue.count > 0
+          next_user = wait_queue.shift
+          self.lock!(next_user)
+        end
         true
+      end
+
+      def steal!(owner_id)
+        wait_queue.unshift(owner_id)
+        self.unlock!
       end
 
       def locked?

@@ -72,8 +72,7 @@ module Lita
         label = label(name)
         o = Lita::User.find_by_id(label.owner_id.value)
         return t('steal.self') if o.id == user.id
-        unlock_label!(name)
-        lock_label!(name, user, nil)
+        label.steal!(user.id)
         mention = o.mention_name ? "(@#{o.mention_name})" : ''
         t('steal.stolen', label: name, old_owner: o.name, mention: mention)
       end
@@ -81,8 +80,14 @@ module Lita
       def attempt_unlock(name, user)
         label = label(name)
         if user.id == label.owner_id.value
-          unlock_label!(name)
-          t('label.unlock', name: name)
+          label.unlock!
+          if label.locked?
+            o = Lita::User.find_by_id(label.owner_id.value)
+            mention = o.mention_name ? "(@#{o.mention_name})" : ''
+            t('label.now_locked_by', name: name, owner: o.name, mention: mention)
+          else
+            t('label.unlock', name: name)
+          end
         else
           o = Lita::User.find_by_id(label.owner_id.value)
           mention = o.mention_name ? "(@#{o.mention_name})" : ''

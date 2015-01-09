@@ -38,6 +38,10 @@ describe Lita::Handlers::Locker, lita_handler: true do
     Lita::User.create('9002@hipchat', name: 'Bob', mention_name: 'bob')
   end
 
+  let(:charlie) do
+    Lita::User.create('9003@hipchat', name: 'Charlie', mention_name: 'charlie')
+  end
+
   describe '#lock' do
     it 'locks a label when it is available and has resources' do
       send_command('locker resource create foobar')
@@ -82,7 +86,8 @@ describe Lita::Handlers::Locker, lita_handler: true do
       send_command('locker label add foobar to bazbat')
       send_command('lock bazbat', as: alice)
       send_command('lock bazbat', as: bob)
-      expect(replies.last).to eq('(failed) bazbat is locked by Alice (@alice)')
+      expect(replies.last).to eq('(failed) bazbat is locked by Alice (@alice), you have been ' \
+                                 'added to the queue, type \'locker dequeue bazbat\' to be removed')
     end
 
     it 'shows an error when a label does not exist' do
@@ -116,13 +121,24 @@ describe Lita::Handlers::Locker, lita_handler: true do
       expect(replies.last).to eq('(unlock) bazbat unlocked')
     end
 
+    it 'moves to the next queued person when there is one' do
+      send_command('locker resource create foobar')
+      send_command('locker label create bazbat')
+      send_command('locker label add foobar to bazbat')
+      send_command('lock bazbat', as: alice)
+      send_command('lock bazbat', as: bob)
+      send_command('unlock bazbat # with a comment', as: alice)
+      expect(replies.last).to eq('(lock) bazbat now locked by Bob (@bob)')
+    end
+
     it 'does not unlock a label when someone else locked it' do
       send_command('locker resource create foobar')
       send_command('locker label create bazbat')
       send_command('locker label add foobar to bazbat')
       send_command('lock bazbat', as: alice)
       send_command('unlock bazbat', as: bob)
-      expect(replies.last).to eq('(failed) bazbat is locked by Alice (@alice)')
+      expect(replies.last).to eq('(failed) bazbat is locked by Alice (@alice), you have been added ' \
+                                 'to the queue, type \'locker dequeue bazbat\' to be removed')
     end
 
     it 'shows a warning when a label is already unlocked' do
@@ -149,6 +165,17 @@ describe Lita::Handlers::Locker, lita_handler: true do
       send_command('steal bazbat # with a comment', as: bob)
       expect(replies.last).to eq('(lock) bazbat stolen from ' \
                                  'Alice (@alice)')
+    end
+
+    it 'preserves the state of the queue when there is one' do
+      send_command('locker resource create foobar')
+      send_command('locker label create bazbat')
+      send_command('locker label add foobar to bazbat')
+      send_command('lock bazbat', as: alice)
+      send_command('lock bazbat', as: bob)
+      send_command('steal bazbat', as: charlie)
+      send_command('locker status bazbat')
+      expect(replies.last).to eq('Label: bazbat, state: locked, owner: Charlie, queued: Bob')
     end
 
     it 'shows a warning when the label is already unlocked' do
