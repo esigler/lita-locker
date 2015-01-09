@@ -56,21 +56,23 @@ module Lita
       def unlock(response)
         name = response.matches[0][0]
         return response.reply(t('subject.does_not_exist', name: name)) unless Label.exists?(name)
-        return response.reply(t('label.is_unlocked', name: name)) unless label_locked?(name)
+        l = Label.new(name)
+        return response.reply(t('label.is_unlocked', name: name)) unless l.locked?
         response.reply(attempt_unlock(name, response.user))
       end
 
       def steal(response)
         name = response.matches[0][0]
         return response.reply(t('subject.does_not_exist', name: name)) unless Label.exists?(name)
-        return response.reply(t('steal.already_unlocked', label: name)) unless label_locked?(name)
+        l = Label.new(name)
+        return response.reply(t('steal.already_unlocked', label: name)) unless l.locked?
         response.reply(attempt_steal(name, response.user))
       end
 
       private
 
       def attempt_steal(name, user)
-        label = label(name)
+        label = Label.new(name)
         o = Lita::User.find_by_id(label.owner_id.value)
         return t('steal.self') if o.id == user.id
         label.steal!(user.id)
@@ -79,7 +81,7 @@ module Lita
       end
 
       def attempt_unlock(name, user)
-        label = label(name)
+        label = Label.new(name)
         if user.id == label.owner_id.value
           label.unlock!
           if label.locked?

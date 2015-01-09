@@ -52,7 +52,7 @@ module Lita
       )
 
       def list(response)
-        labels.sort.each do |n|
+        Label.list.each do |n|
           l = Label.new(n)
           response.reply(t('label.desc', name: n, state: l.state.value))
         end
@@ -60,7 +60,7 @@ module Lita
 
       def create(response)
         name = response.matches[0][0]
-        if create_label(name)
+        if !Label.exists?(name) && Label.create(name)
           response.reply(t('label.created', name: name))
         else
           response.reply(t('label.exists', name: name))
@@ -79,10 +79,10 @@ module Lita
       def show(response)
         name = response.matches[0][0]
         return response.reply(t('label.does_not_exist', name: name)) unless Label.exists?(name)
-        members = label_membership(name)
-        return response.reply(t('label.has_no_resources', name: name)) unless members.count > 0
+        l = Label.new(name)
+        return response.reply(t('label.has_no_resources', name: name)) unless l.membership.count > 0
         res = []
-        members.each do |member|
+        l.membership.each do |member|
           res.push(member)
         end
         response.reply(t('label.resources', name: name, resources: res.join(', ')))
@@ -92,8 +92,10 @@ module Lita
         resource_name = response.matches[0][0]
         label_name = response.matches[0][1]
         return response.reply(t('label.does_not_exist', name: label_name)) unless Label.exists?(label_name)
-        return response.reply(t('resource.does_not_exist', name: resource_name)) unless resource_exists?(resource_name)
-        add_resource_to_label(label_name, resource_name)
+        return response.reply(t('resource.does_not_exist', name: resource_name)) unless Resource.exists?(resource_name)
+        l = Label.new(label_name)
+        r = Resource.new(resource_name)
+        l.add_resource(r)
         response.reply(t('label.resource_added', label: label_name, resource: resource_name))
       end
 
@@ -101,10 +103,11 @@ module Lita
         resource_name = response.matches[0][0]
         label_name = response.matches[0][1]
         return response.reply(t('label.does_not_exist', name: label_name)) unless Label.exists?(label_name)
-        return response.reply(t('resource.does_not_exist', name: resource_name)) unless resource_exists?(resource_name)
-        members = label_membership(label_name)
-        if members.include?(resource_name)
-          remove_resource_from_label(label_name, resource_name)
+        return response.reply(t('resource.does_not_exist', name: resource_name)) unless Resource.exists?(resource_name)
+        l = Label.new(label_name)
+        if l.membership.include?(resource_name)
+          r = Resource.new(resource_name)
+          l.remove_resource(r)
           response.reply(t('label.resource_removed', label: label_name, resource: resource_name))
         else
           response.reply(t('label.does_not_have_resource', label: label_name, resource: resource_name))

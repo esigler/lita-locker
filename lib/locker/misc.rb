@@ -4,8 +4,8 @@ module Locker
   module Misc
     def user_locks(user)
       owned = []
-      labels.each do |name|
-        label = label(name)
+      Locker::Label::Label.list.each do |name|
+        label = Locker::Label::Label.new(name)
         owned.push(name) if label.owner_id.value == user.id
       end
       owned

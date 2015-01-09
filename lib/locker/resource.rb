@@ -42,7 +42,7 @@ module Locker
       end
 
       def self.list
-        redis.smembers('resource-list')
+        redis.smembers('resource-list').sort
       end
 
       def lock!(owner_id)
@@ -62,36 +62,6 @@ module Locker
         end
         true
       end
-    end
-
-    def resource(name)
-      Resource.new(name)
-    end
-
-    def resources
-      Resource.list
-    end
-
-    def resource_exists?(name)
-      Resource.exists?(name)
-    end
-
-    def lock_resource!(name, owner, _time_until)
-      r = Resource.new(name)
-      r.lock!(owner.id)
-    end
-
-    def unlock_resource!(name)
-      r = Resource.new(name)
-      r.unlock!
-    end
-
-    def create_resource(name)
-      Resource.create(name)
-    end
-
-    def delete_resource(name)
-      Resource.delete(name)
     end
   end
 end

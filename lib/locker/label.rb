@@ -45,7 +45,7 @@ module Locker
       end
 
       def self.list
-        redis.smembers('label-list')
+        redis.smembers('label-list').sort
       end
 
       def self.normalize(key)
@@ -112,58 +112,9 @@ module Locker
       end
     end
 
-    def label(name)
-      Label.new(name)
-    end
-
-    def labels
-      Label.list
-    end
-
-    def label_locked?(name)
-      l = Label.new(name)
-      l.locked?
-    end
-
-    def lock_label!(name, owner, _time_until)
-      l = Label.new(name)
-      l.lock!(owner.id)
-    end
-
-    def unlock_label!(name)
-      l = Label.new(name)
-      l.unlock!
-    end
-
-    def create_label(name)
-      return false if Label.exists?(name)
-      Label.create(name)
-    end
-
-    def delete_label(name)
-      Label.delete(name) if Label.exists?(name)
-    end
-
-    def label_membership(name)
-      l = Label.new(name)
-      l.membership
-    end
-
-    def add_resource_to_label(label, resource)
-      l = Label.new(label)
-      r = resource(resource)
-      l.add_resource(r)
-    end
-
-    def remove_resource_from_label(label, resource)
-      l = Label.new(label)
-      r = resource(resource)
-      l.remove_resource(r)
-    end
-
     def label_ownership(name)
-      l = label(name)
-      return label_dependencies(name) unless label_locked?(name)
+      l = Label.new(name)
+      return label_dependencies(name) unless l.locked?
       o = Lita::User.find_by_id(l.owner_id.value)
       mention = o.mention_name ? "(@#{o.mention_name})" : ''
       t('label.owned_lock', name: name, owner_name: o.name, mention: mention)
@@ -172,8 +123,9 @@ module Locker
     def label_dependencies(name)
       msg = t('label.dependency') + "\n"
       deps = []
-      label_membership(name).each do |resource_name|
-        resource = resource(resource_name)
+      l = Label.new(name)
+      l.membership.each do |resource_name|
+        resource = Locker::Resource::Resource.new(resource_name)
         u = Lita::User.find_by_id(resource.owner_id.value)
         if resource.state.value == 'locked'
           deps.push "#{resource_name} - #{u.name}"

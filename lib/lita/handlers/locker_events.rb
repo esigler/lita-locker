@@ -17,7 +17,9 @@ module Lita
         user       = Lita::User.find_by_id(payload[:user_id])
         request_id = payload[:request_id]
 
-        if Label.exists?(label) && lock_label!(label, user, nil)
+        return unless Label.exists?(label)
+        l = Label.new(label)
+        if l.lock!(user.id)
           robot.trigger(:lock_success, request_id: request_id)
         else
           robot.trigger(:lock_failure, request_id: request_id)
@@ -28,7 +30,9 @@ module Lita
         label      = payload[:label]
         request_id = payload[:request_id]
 
-        if Label.exists?(label) && unlock_label!(label)
+        return unless Label.exists?(label)
+        l = Label.new(label)
+        if l.unlock!
           robot.trigger(:unlock_success, request_id: request_id)
         else
           robot.trigger(:unlock_failure, request_id: request_id)

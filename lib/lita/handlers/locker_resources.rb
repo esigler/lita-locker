@@ -45,8 +45,8 @@ module Lita
 
       def list(response)
         output = ''
-        resources.each do |r|
-          res = resource(r)
+        Resource.list.each do |r|
+          res = Resource.new(r)
           output += t('resource.desc', name: r, state: res.state.value)
         end
         response.reply(output)
@@ -55,21 +55,21 @@ module Lita
       def create(response)
         name = response.matches[0][0]
         return response.reply(t('resource.exists', name: name)) if Resource.exists?(name)
-        create_resource(name)
+        Resource.create(name)
         response.reply(t('resource.created', name: name))
       end
 
       def delete(response)
         name = response.matches[0][0]
-        return response.reply(t('resource.does_not_exist', name: name)) unless resource_exists?(name)
-        delete_resource(name)
+        return response.reply(t('resource.does_not_exist', name: name)) unless Resource.exists?(name)
+        Resource.delete(name)
         response.reply(t('resource.deleted', name: name))
       end
 
       def show(response)
         name = response.matches[0][0]
-        return response.reply(t('resource.does_not_exist', name: name)) unless resource_exists?(name)
-        r = resource(name)
+        return response.reply(t('resource.does_not_exist', name: name)) unless Resource.exists?(name)
+        r = Resource.new(name)
         response.reply(t('resource.desc', name: name, state: r.state.value))
       end
 

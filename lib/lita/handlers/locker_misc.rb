@@ -33,7 +33,7 @@ module Lita
       def status(response)
         name = response.matches[0][0]
         if Label.exists?(name)
-          l = label(name)
+          l = Label.new(name)
           if l.owner_id.value != ''
             o = Lita::User.find_by_id(l.owner_id.value)
             if l.wait_queue.count > 0
@@ -54,8 +54,8 @@ module Lita
           else
             response.reply(t('label.desc', name: name, state: l.state.value))
           end
-        elsif resource_exists?(name)
-          r = resource(name)
+        elsif Resource.exists?(name)
+          r = Resource.new(name)
           response.reply(t('resource.desc', name: name, state: r.state.value))
         else
           response.reply(t('subject.does_not_exist', name: name))
