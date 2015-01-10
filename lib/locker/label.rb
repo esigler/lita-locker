@@ -124,11 +124,11 @@ module Locker
       l = Label.new(name)
       return label_dependencies(name) unless l.locked?
       mention = l.owner.mention_name ? "(@#{l.owner.mention_name})" : ''
-      t('label.owned_lock', name: name, owner_name: l.owner.name, mention: mention)
+      failed(t('label.owned_lock', name: name, owner_name: l.owner.name, mention: mention))
     end
 
     def label_dependencies(name)
-      msg = t('label.dependency') + "\n"
+      msg = failed(t('label.dependency')) + "\n"
       deps = []
       l = Label.new(name)
       l.membership.each do |resource_name|

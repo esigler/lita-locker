@@ -3,6 +3,7 @@ require 'spec_helper'
 describe Lita::Handlers::LockerLabels, lita_handler: true do
   before do
     robot.auth.add_user_to_group!(user, :locker_admins)
+    Lita.config.robot.adapter = :hipchat
   end
 
   label_examples = ['foobar', 'foo bar', 'foo-bar', 'foo_bar']

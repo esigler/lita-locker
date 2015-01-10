@@ -34,7 +34,7 @@ module Lita
         name = response.match_data['label']
         return response.reply(status_label(name)) if Label.exists?(name)
         return response.reply(status_resource(name)) if Resource.exists?(name)
-        response.reply(t('subject.does_not_exist', name: name))
+        response.reply(failed(t('subject.does_not_exist', name: name)))
       end
 
       def dequeue(response)
@@ -62,21 +62,21 @@ module Lita
 
       def status_label(name)
         l = Label.new(name)
-        return t('label.desc', name: name, state: l.state.value) unless l.locked?
+        return unlocked(t('label.desc', name: name, state: l.state.value)) unless l.locked?
         if l.wait_queue.count > 0
           queue = []
           l.wait_queue.each do |u|
             usr = Lita::User.find_by_id(u)
             queue.push(usr.name)
           end
-          t('label.desc_owner_queue', name: name,
-                                      state: l.state.value,
-                                      owner_name: l.owner.name,
-                                      queue: queue.join(', '))
+          locked(t('label.desc_owner_queue', name: name,
+                                             state: l.state.value,
+                                             owner_name: l.owner.name,
+                                             queue: queue.join(', ')))
         else
-          t('label.desc_owner', name: name,
-                                state: l.state.value,
-                                owner_name: l.owner.name)
+          locked(t('label.desc_owner', name: name,
+                                       state: l.state.value,
+                                       owner_name: l.owner.name))
         end
       end
 
