@@ -32,34 +32,9 @@ module Lita
 
       def status(response)
         name = response.match_data['label']
-        if Label.exists?(name)
-          l = Label.new(name)
-          if l.owner_id.value != ''
-            o = Lita::User.find_by_id(l.owner_id.value)
-            if l.wait_queue.count > 0
-              queue = []
-              l.wait_queue.each do |u|
-                usr = Lita::User.find_by_id(u)
-                queue.push(usr.name)
-              end
-              response.reply(t('label.desc_owner_queue', name: name,
-                                                         state: l.state.value,
-                                                         owner_name: o.name,
-                                                         queue: queue.join(', ')))
-            else
-              response.reply(t('label.desc_owner', name: name,
-                                                   state: l.state.value,
-                                                   owner_name: o.name))
-            end
-          else
-            response.reply(t('label.desc', name: name, state: l.state.value))
-          end
-        elsif Resource.exists?(name)
-          r = Resource.new(name)
-          response.reply(t('resource.desc', name: name, state: r.state.value))
-        else
-          response.reply(t('subject.does_not_exist', name: name))
-        end
+        return response.reply(status_label(name)) if Label.exists?(name)
+        return response.reply(status_resource(name)) if Resource.exists?(name)
+        response.reply(t('subject.does_not_exist', name: name))
       end
 
       def dequeue(response)
@@ -81,6 +56,33 @@ module Lita
           composed += "Label: #{label_name}\n"
         end
         response.reply(composed)
+      end
+
+      private
+
+      def status_label(name)
+        l = Label.new(name)
+        return t('label.desc', name: name, state: l.state.value) unless l.locked?
+        if l.wait_queue.count > 0
+          queue = []
+          l.wait_queue.each do |u|
+            usr = Lita::User.find_by_id(u)
+            queue.push(usr.name)
+          end
+          t('label.desc_owner_queue', name: name,
+                                      state: l.state.value,
+                                      owner_name: l.owner.name,
+                                      queue: queue.join(', '))
+        else
+          t('label.desc_owner', name: name,
+                                state: l.state.value,
+                                owner_name: l.owner.name)
+        end
+      end
+
+      def status_resource(name)
+        r = Resource.new(name)
+        t('resource.desc', name: name, state: r.state.value)
       end
 
       Lita.register_handler(LockerMisc)

@@ -47,7 +47,7 @@ module Lita
         return response.reply(t('label.does_not_exist', name: name)) unless Label.exists?(name)
         l = Label.new(name)
         return response.reply(t('label.no_resources', name: name)) unless l.membership.count > 0
-        return response.reply(t('label.self_lock', name: name)) if l.owner_id.value == response.user.id
+        return response.reply(t('label.self_lock', name: name)) if l.owner == response.user
         return response.reply(t('label.lock', name: name)) if l.lock!(response.user.id)
 
         response.reply(label_ownership(name))
@@ -73,28 +73,26 @@ module Lita
 
       def attempt_steal(name, user)
         label = Label.new(name)
-        o = Lita::User.find_by_id(label.owner_id.value)
-        return t('steal.self') if o.id == user.id
+        return t('steal.self') if label.owner == user
+        old_owner = label.owner
         label.steal!(user.id)
-        mention = o.mention_name ? "(@#{o.mention_name})" : ''
-        t('steal.stolen', label: name, old_owner: o.name, mention: mention)
+        mention = old_owner.mention_name ? "(@#{old_owner.mention_name})" : ''
+        t('steal.stolen', label: name, old_owner: old_owner.name, mention: mention)
       end
 
       def attempt_unlock(name, user)
         label = Label.new(name)
-        if user.id == label.owner_id.value
+        if label.owner == user
           label.unlock!
           if label.locked?
-            o = Lita::User.find_by_id(label.owner_id.value)
-            mention = o.mention_name ? "(@#{o.mention_name})" : ''
-            t('label.now_locked_by', name: name, owner: o.name, mention: mention)
+            mention = label.owner.mention_name ? "(@#{label.owner.mention_name})" : ''
+            t('label.now_locked_by', name: name, owner: label.owner.name, mention: mention)
           else
             t('label.unlock', name: name)
           end
         else
-          o = Lita::User.find_by_id(label.owner_id.value)
-          mention = o.mention_name ? "(@#{o.mention_name})" : ''
-          t('label.owned_unlock', name: name, owner_name: o.name, mention: mention)
+          mention = label.owner.mention_name ? "(@#{label.owner.mention_name})" : ''
+          t('label.owned_unlock', name: name, owner_name: label.owner.name, mention: mention)
         end
       end
     end

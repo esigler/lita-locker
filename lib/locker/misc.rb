@@ -6,7 +6,7 @@ module Locker
       owned = []
       Locker::Label::Label.list.each do |name|
         label = Locker::Label::Label.new(name)
-        owned.push(name) if label.owner_id.value == user.id
+        owned.push(name) if label.owner == user
       end
       owned
     end

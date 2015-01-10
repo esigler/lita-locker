@@ -62,6 +62,15 @@ module Locker
         end
         true
       end
+
+      def locked?
+        (state == 'locked')
+      end
+
+      def owner
+        return nil unless locked?
+        Lita::User.find_by_id(owner_id.value)
+      end
     end
   end
 end

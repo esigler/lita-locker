@@ -108,7 +108,7 @@ module Locker
 
       def owner
         return nil unless locked?
-        Lita::User.find_by_id(owner_id)
+        Lita::User.find_by_id(owner_id.value)
       end
     end
 
@@ -126,9 +126,8 @@ module Locker
       l = Label.new(name)
       l.membership.each do |resource_name|
         resource = Locker::Resource::Resource.new(resource_name)
-        u = Lita::User.find_by_id(resource.owner_id.value)
         if resource.state.value == 'locked'
-          deps.push "#{resource_name} - #{u.name}"
+          deps.push "#{resource_name} - #{resource.owner.name}"
         end
       end
       msg += deps.join("\n")
