@@ -6,7 +6,6 @@ module Locker
     class Label
       include Redis::Objects
 
-      value :name
       value :state
       value :owner_id
 
@@ -110,14 +109,23 @@ module Locker
         return nil unless locked?
         Lita::User.find_by_id(owner_id.value)
       end
+
+      def to_json
+        {
+          id: id,
+          state: state.value,
+          owner_id: owner_id.value,
+          membership: membership,
+          wait_queue: wait_queue
+        }.to_json
+      end
     end
 
     def label_ownership(name)
       l = Label.new(name)
       return label_dependencies(name) unless l.locked?
-      o = Lita::User.find_by_id(l.owner_id.value)
-      mention = o.mention_name ? "(@#{o.mention_name})" : ''
-      t('label.owned_lock', name: name, owner_name: o.name, mention: mention)
+      mention = l.owner.mention_name ? "(@#{l.owner.mention_name})" : ''
+      t('label.owned_lock', name: name, owner_name: l.owner.name, mention: mention)
     end
 
     def label_dependencies(name)

@@ -9,19 +9,29 @@ module Lita
       include ::Locker::Regex
       include ::Locker::Resource
 
-      http.get '/locker/label/:name', :http_label_show
-      http.get '/locker/resource/:name', :http_resource_show
+      http.get '/locker/label/:name', :label_show
+      http.get '/locker/resource/:name', :resource_show
 
-      def http_label_show(request, response)
+      def label_show(request, response)
         name = request.env['router.params'][:name]
         response.headers['Content-Type'] = 'application/json'
-        response.write(Label.new(name).to_json)
+        unless Label.exists?(name)
+          response.status = 404
+          return
+        end
+        l = Label.new(name)
+        response.write(l.to_json)
       end
 
-      def http_resource_show(request, response)
+      def resource_show(request, response)
         name = request.env['router.params'][:name]
         response.headers['Content-Type'] = 'application/json'
-        response.write(Resource.new(name).to_json)
+        unless Resource.exists?(name)
+          response.status = 404
+          return
+        end
+        r = Resource.new(name)
+        response.write(r.to_json)
       end
 
       Lita.register_handler(LockerHttp)

@@ -6,7 +6,6 @@ module Locker
     class Resource
       include Redis::Objects
 
-      value :name
       value :state
       value :owner_id
 
@@ -70,6 +69,14 @@ module Locker
       def owner
         return nil unless locked?
         Lita::User.find_by_id(owner_id.value)
+      end
+
+      def to_json
+        {
+          id: id,
+          state: state.value,
+          owner_id: owner_id.value
+        }.to_json
       end
     end
   end
