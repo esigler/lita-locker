@@ -33,8 +33,7 @@ module Locker
 
       def self.delete(key)
         fail 'Unknown resource key' unless Resource.exists?(key)
-        # FIXME: Better way to enumerate?
-        %w(name, state, owner_id).each do |item|
+        %w(state, owner_id).each do |item|
           redis.del("resource:#{key}:#{item}")
         end
         redis.srem('resource-list', key)
