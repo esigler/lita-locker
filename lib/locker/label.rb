@@ -5,7 +5,6 @@ module Locker
     # Proper Resource class
     class Label
       include Redis::Objects
-      include ActionView::Helpers::DateHelper
 
       value :state
       value :owner_id
@@ -115,7 +114,7 @@ module Locker
 
       def held_for
         return '' unless locked?
-        distance_of_time_in_words(Time.parse(taken_at.value), Time.now)
+        TimeLord::Time.new(Time.parse(taken_at.value) - 1).period.to_words
       end
 
       def to_json

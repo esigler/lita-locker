@@ -5,7 +5,7 @@ Lita.load_locales Dir[File.expand_path(
 )]
 
 require 'redis-objects'
-require 'action_view'
+require 'time-lord'
 
 require 'locker/label'
 require 'locker/misc'

@@ -49,13 +49,13 @@ describe Lita::Handlers::LockerMisc, lita_handler: true do
       expect(replies.last).to eq('(unlock) foo is unlocked')
       send_command('lock foo')
       send_command('locker status foo')
-      expect(replies.last).to eq('(lock) foo is locked by Test User (taken less than a minute ago)')
+      expect(replies.last).to eq('(lock) foo is locked by Test User (taken 1 second ago)')
       send_command('lock foo', as: alice)
       send_command('locker status foo')
-      expect(replies.last).to eq('(lock) foo is locked by Test User (taken less than a minute ago). Next up: Alice')
+      expect(replies.last).to eq('(lock) foo is locked by Test User (taken 1 second ago). Next up: Alice')
       send_command('lock foo', as: bob)
       send_command('locker status foo')
-      expect(replies.last).to eq('(lock) foo is locked by Test User (taken less than a minute ago). Next up: Alice, Bob')
+      expect(replies.last).to eq('(lock) foo is locked by Test User (taken 1 second ago). Next up: Alice, Bob')
     end
 
     it 'shows the status of a resource' do
