@@ -5,6 +5,7 @@ Lita.load_locales Dir[File.expand_path(
 )]
 
 require 'redis-objects'
+require 'action_view'
 
 require 'locker/label'
 require 'locker/misc'

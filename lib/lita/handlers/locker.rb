@@ -92,7 +92,7 @@ module Lita
           end
         else
           mention = label.owner.mention_name ? "(@#{label.owner.mention_name})" : ''
-          failed(t('label.owned_unlock', name: name, owner_name: label.owner.name, mention: mention))
+          failed(t('label.owned_unlock', name: name, owner_name: label.owner.name, mention: mention, time: label.held_for))
         end
       end
     end

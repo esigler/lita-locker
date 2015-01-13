@@ -16,6 +16,7 @@ Gem::Specification.new do |spec|
 
   spec.add_runtime_dependency 'lita', '>= 4.0.1'
   spec.add_runtime_dependency 'redis-objects'
+  spec.add_runtime_dependency 'actionview'
 
   spec.add_development_dependency 'bundler', '~> 1.3'
   spec.add_development_dependency 'coveralls'
