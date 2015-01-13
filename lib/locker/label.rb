@@ -12,6 +12,7 @@ module Locker
 
       set :membership
       list :wait_queue
+      list :journal
 
       lock :coord, expiration: 5
 
@@ -32,12 +33,13 @@ module Locker
         l = Label.new(key)
         l.state    = 'unlocked'
         l.owner_id = ''
+        l.log('Created')
         l
       end
 
       def self.delete(key)
         fail 'Unknown label key' unless Label.exists?(key)
-        %w(state, owner_id, membership, wait_queue).each do |item|
+        %w(state, owner_id, membership, wait_queue, journal).each do |item|
           redis.del("label:#{key}:#{item}")
         end
         redis.srem('label-list', Label.normalize(key))
@@ -67,6 +69,7 @@ module Locker
           self.state = 'locked'
           self.taken_at = Time.now.utc
         end
+        log("Locked by #{owner_id}")
         true
       end
 
@@ -81,6 +84,7 @@ module Locker
             r.unlock!
           end
         end
+        log('Unlocked')
 
         # FIXME: Possible race condition where resources become unavailable  between unlock and relock
         if wait_queue.count > 0
@@ -91,6 +95,7 @@ module Locker
       end
 
       def steal!(owner_id)
+        log("Stolen from #{owner.id} to #{owner_id}")
         wait_queue.unshift(owner_id)
         self.unlock!
       end
@@ -100,10 +105,12 @@ module Locker
       end
 
       def add_resource(resource)
+        log("Resource #{resource.id} added")
         membership << resource.id
       end
 
       def remove_resource(resource)
+        log("Resource #{resource.id} removed")
         membership.delete(resource.id)
       end
 
@@ -129,6 +136,10 @@ module Locker
         end
 
         val.to_json
+      end
+
+      def log(statement)
+        journal << "#{Time.now.utc}: #{statement}"
       end
     end
 

@@ -7,6 +7,9 @@ en:
           already_unlocked: "%{label} was already unlocked"
           self: Why are you stealing the lock from yourself?
         help:
+          log:
+            syntax: locker log <label>
+            desc: Show up to the last 10 activity log entries for <label>
           dequeue:
             syntax: locker dequeue <label>
             desc: Remove yourself from the queue for a label
@@ -72,6 +75,7 @@ en:
         subject:
           does_not_exist: "Sorry, that does not exist"
         label:
+          log_entry: "%{entry}"
           self_lock: "You already have the lock on %{name}"
           unlock: "%{name} unlocked"
           owned_lock: "%{name} is locked by %{owner_name} %{mention} (taken %{time}), you have been added to the queue, type 'locker dequeue %{name}' to be removed"
