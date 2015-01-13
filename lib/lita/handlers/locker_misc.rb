@@ -72,11 +72,13 @@ module Lita
           locked(t('label.desc_owner_queue', name: name,
                                              state: l.state.value,
                                              owner_name: l.owner.name,
+                                             time: l.held_for,
                                              queue: queue.join(', ')))
         else
           locked(t('label.desc_owner', name: name,
                                        state: l.state.value,
-                                       owner_name: l.owner.name))
+                                       owner_name: l.owner.name,
+                                       time: l.held_for))
         end
       end
 

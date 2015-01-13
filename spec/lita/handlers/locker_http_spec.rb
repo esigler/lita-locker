@@ -24,8 +24,7 @@ describe Lita::Handlers::LockerHttp, lita_handler: true do
     it 'shows json if the label exists' do
       send_command('locker label create foo')
       subject.label_show(request, response)
-      expect(response.body).to eq(["{\"id\":\"foo\",\"state\":\"unlocked\",\"owner_id\":\"\"," \
-                                   "\"membership\":\"\",\"wait_queue\":\"\"}"])
+      expect(response.body).to eq(["{\"id\":\"foo\",\"state\":\"unlocked\",\"membership\":\"\"}"])
     end
 
     it 'shows 404 if the label does not exist' do

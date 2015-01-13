@@ -8,6 +8,7 @@ module Locker
 
       value :state
       value :owner_id
+      value :taken_at
 
       set :membership
       list :wait_queue
@@ -64,6 +65,7 @@ module Locker
           end
           self.owner_id = owner_id
           self.state = 'locked'
+          self.taken_at = Time.now.utc
         end
         true
       end
@@ -73,6 +75,7 @@ module Locker
         coord_lock.lock do
           self.owner_id = ''
           self.state = 'unlocked'
+          self.taken_at = ''
           membership.each do |resource_name|
             r = Locker::Resource::Resource.new(resource_name)
             r.unlock!
@@ -109,14 +112,23 @@ module Locker
         Lita::User.find_by_id(owner_id.value)
       end
 
+      def held_for
+        return '' unless locked?
+        TimeLord::Time.new(Time.parse(taken_at.value) - 1).period.to_words
+      end
+
       def to_json
-        {
-          id: id,
-          state: state.value,
-          owner_id: owner_id.value,
-          membership: membership,
-          wait_queue: wait_queue
-        }.to_json
+        val = { id: id,
+                state: state.value,
+                membership: membership }
+
+        if locked?
+          val[:owner_id] = owner_id.value
+          val[:taken_at] = taken_at.value
+          val[:wait_queue] = wait_queue
+        end
+
+        val.to_json
       end
     end
 
@@ -124,7 +136,7 @@ module Locker
       l = Label.new(name)
       return label_dependencies(name) unless l.locked?
       mention = l.owner.mention_name ? "(@#{l.owner.mention_name})" : ''
-      failed(t('label.owned_lock', name: name, owner_name: l.owner.name, mention: mention))
+      failed(t('label.owned_lock', name: name, owner_name: l.owner.name, mention: mention, time: l.held_for))
     end
 
     def label_dependencies(name)

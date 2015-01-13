@@ -79,7 +79,7 @@ describe Lita::Handlers::Locker, lita_handler: true do
       send_command('lock bazbat', as: bob)
       send_command('lock bazbat', as: bob)
       send_command('locker status bazbat')
-      expect(replies.last).to eq('(lock) bazbat is currently locked by Alice. Next up: Bob')
+      expect(replies.last).to eq('(lock) bazbat is locked by Alice (taken 1 second ago). Next up: Bob')
     end
 
     it 'shows a warning when a label has no resources' do
@@ -107,7 +107,7 @@ describe Lita::Handlers::Locker, lita_handler: true do
       send_command('locker label add foobar to bazbat')
       send_command('lock bazbat', as: alice)
       send_command('lock bazbat', as: bob)
-      expect(replies.last).to eq('(failed) bazbat is locked by Alice (@alice), you have been ' \
+      expect(replies.last).to eq('(failed) bazbat is locked by Alice (@alice) (taken 1 second ago), you have been ' \
                                  'added to the queue, type \'locker dequeue bazbat\' to be removed')
     end
 
@@ -158,7 +158,7 @@ describe Lita::Handlers::Locker, lita_handler: true do
       send_command('locker label add foobar to bazbat')
       send_command('lock bazbat', as: alice)
       send_command('unlock bazbat', as: bob)
-      expect(replies.last).to eq('(failed) bazbat is locked by Alice (@alice)')
+      expect(replies.last).to eq('(failed) bazbat is locked by Alice (@alice) (taken 1 second ago)')
     end
 
     it 'shows a warning when a label is already unlocked' do
@@ -195,7 +195,7 @@ describe Lita::Handlers::Locker, lita_handler: true do
       send_command('lock bazbat', as: bob)
       send_command('steal bazbat', as: charlie)
       send_command('locker status bazbat')
-      expect(replies.last).to eq('(lock) bazbat is currently locked by Charlie. Next up: Bob')
+      expect(replies.last).to eq('(lock) bazbat is locked by Charlie (taken 1 second ago). Next up: Bob')
     end
 
     it 'shows a warning when the label is already unlocked' do
