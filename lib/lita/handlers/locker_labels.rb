@@ -38,14 +38,14 @@ module Lita
       )
 
       route(
-        /^locker\slabel\sadd\s#{RESOURCE_REGEX}\sto\s#{LABEL_REGEX}$/,
+        /^locker\slabel\sadd\s#{RESOURCES_REGEX}\sto\s#{LABEL_REGEX}$/,
         :add,
         command: true,
         help: { t('help.label.add.syntax') => t('help.label.add.desc') }
       )
 
       route(
-        /^locker\slabel\sremove\s#{RESOURCE_REGEX}\sfrom\s#{LABEL_REGEX}$/,
+        /^locker\slabel\sremove\s#{RESOURCES_REGEX}\sfrom\s#{LABEL_REGEX}$/,
         :remove,
         command: true,
         help: { t('help.label.remove.syntax') => t('help.label.remove.desc') }
@@ -101,29 +101,47 @@ module Lita
       end
 
       def add(response)
-        resource_name = response.match_data['resource']
+        results = []
+        resource_names = response.match_data['resources'].split(/,\s*/)
         label_name = response.match_data['label']
         return response.reply(failed(t('label.does_not_exist', name: label_name))) unless Label.exists?(label_name)
-        return response.reply(t('resource.does_not_exist', name: resource_name)) unless Resource.exists?(resource_name)
-        l = Label.new(label_name)
-        r = Resource.new(resource_name)
-        l.add_resource(r)
-        response.reply(t('label.resource_added', label: label_name, resource: resource_name))
+
+        resource_names.each do |resource_name|
+          if Resource.exists?(resource_name)
+            l = Label.new(label_name)
+            r = Resource.new(resource_name)
+            l.add_resource(r)
+            results <<= t('label.resource_added', label: label_name, resource: resource_name)
+          else
+            results <<= t('resource.does_not_exist', name: resource_name)
+          end
+        end
+
+        response.reply(results.join(', '))
       end
 
       def remove(response)
-        resource_name = response.match_data['resource']
+        results = []
+        resource_names = response.match_data['resources'].split(/,\s*/)
         label_name = response.match_data['label']
         return response.reply(failed(t('label.does_not_exist', name: label_name))) unless Label.exists?(label_name)
-        return response.reply(t('resource.does_not_exist', name: resource_name)) unless Resource.exists?(resource_name)
-        l = Label.new(label_name)
-        if l.membership.include?(resource_name)
-          r = Resource.new(resource_name)
-          l.remove_resource(r)
-          response.reply(t('label.resource_removed', label: label_name, resource: resource_name))
-        else
-          response.reply(t('label.does_not_have_resource', label: label_name, resource: resource_name))
+
+        resource_names.each do |resource_name|
+          if Resource.exists?(resource_name)
+            l = Label.new(label_name)
+            if l.membership.include?(resource_name)
+              r = Resource.new(resource_name)
+              l.remove_resource(r)
+              results <<= t('label.resource_removed', label: label_name, resource: resource_name)
+            else
+              results <<= t('label.does_not_have_resource', label: label_name, resource: resource_name)
+            end
+          else
+            results <<= t('resource.does_not_exist', name: resource_name)
+          end
         end
+
+        response.reply(results.join(', '))
       end
 
       Lita.register_handler(LockerLabels)
