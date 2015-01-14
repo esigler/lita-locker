@@ -17,7 +17,7 @@ module Lita
       )
 
       route(
-        /^locker\sresource\screate\s#{RESOURCE_REGEX}$/,
+        /^locker\sresource\screate\s#{RESOURCES_REGEX}$/,
         :create,
         command: true,
         restrict_to: [:locker_admins],
@@ -27,7 +27,7 @@ module Lita
       )
 
       route(
-        /^locker\sresource\sdelete\s#{RESOURCE_REGEX}$/,
+        /^locker\sresource\sdelete\s#{RESOURCES_REGEX}$/,
         :delete,
         command: true,
         restrict_to: [:locker_admins],
@@ -53,17 +53,33 @@ module Lita
       end
 
       def create(response)
-        name = response.match_data['resource']
-        return response.reply(t('resource.exists', name: name)) if Resource.exists?(name)
-        Resource.create(name)
-        response.reply(t('resource.created', name: name))
+        results = []
+
+        response.match_data['resources'].split(/,\s*/).each do |name|
+          if Resource.exists?(name)
+            results <<= t('resource.exists', name: name)
+          else
+            Resource.create(name)
+            results <<= t('resource.created', name: name)
+          end
+        end
+
+        response.reply(results.join(', '))
       end
 
       def delete(response)
-        name = response.match_data['resource']
-        return response.reply(t('resource.does_not_exist', name: name)) unless Resource.exists?(name)
-        Resource.delete(name)
-        response.reply(t('resource.deleted', name: name))
+        results = []
+
+        response.match_data['resources'].split(/,\s*/).each do |name|
+          if Resource.exists?(name)
+            Resource.delete(name)
+            results <<= t('resource.deleted', name: name)
+          else
+            results <<= t('resource.does_not_exist', name: name)
+          end
+        end
+
+        response.reply(results.join(', '))
       end
 
       def show(response)
