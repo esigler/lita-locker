@@ -17,14 +17,14 @@ module Lita
       )
 
       route(
-        /^locker\slabel\screate\s#{LABEL_REGEX}$/,
+        /^locker\slabel\screate\s#{LABELS_REGEX}$/,
         :create,
         command: true,
         help: { t('help.label.create.syntax') => t('help.label.create.desc') }
       )
 
       route(
-        /^locker\slabel\sdelete\s#{LABEL_REGEX}$/,
+        /^locker\slabel\sdelete\s#{LABELS_REGEX}$/,
         :delete,
         command: true,
         help: { t('help.label.delete.syntax') => t('help.label.delete.desc') }
@@ -59,21 +59,33 @@ module Lita
       end
 
       def create(response)
-        name = response.match_data['label']
-        if !Label.exists?(name) && Label.create(name)
-          response.reply(t('label.created', name: name))
-        else
-          response.reply(t('label.exists', name: name))
+        names = response.match_data['labels'].split(/,\s*/)
+        results = []
+
+        names.each do |name|
+          if !Label.exists?(name) && Label.create(name)
+            results <<= t('label.created', name: name)
+          else
+            results <<= t('label.exists', name: name)
+          end
         end
+
+        response.reply(results.join(', '))
       end
 
       def delete(response)
-        name = response.match_data['label']
-        if Label.exists?(name) && Label.delete(name)
-          response.reply(t('label.deleted', name: name))
-        else
-          response.reply(failed(t('label.does_not_exist', name: name)))
+        names = response.match_data['labels'].split(/,\s*/)
+        results = []
+
+        names.each do |name|
+          if Label.exists?(name) && Label.delete(name)
+            results <<= t('label.deleted', name: name)
+          else
+            results <<= failed(t('label.does_not_exist', name: name))
+          end
         end
+
+        response.reply(results.join(', '))
       end
 
       def show(response)
