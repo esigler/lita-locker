@@ -53,9 +53,10 @@ module Lita
       end
 
       def create(response)
+        names = response.match_data['resources'].split(/,\s*/)
         results = []
 
-        response.match_data['resources'].split(/,\s*/).each do |name|
+        names.each do |name|
           if Resource.exists?(name)
             results <<= t('resource.exists', name: name)
           else
@@ -68,9 +69,10 @@ module Lita
       end
 
       def delete(response)
+        names = response.match_data['resources'].split(/,\s*/)
         results = []
 
-        response.match_data['resources'].split(/,\s*/).each do |name|
+        names.each do |name|
           if Resource.exists?(name)
             Resource.delete(name)
             results <<= t('resource.deleted', name: name)
