@@ -30,11 +30,11 @@ en:
               syntax: locker resource list
               desc: List all resources
             create:
-              syntax: locker resource create <name>
-              desc: Create a resource with <name>
+              syntax: "locker resource create <name>[, <name> ...]"
+              desc: Create resource(s) with each <name>
             delete:
-              syntax: locker resource delete <name>
-              desc: Delete the resource with <name>
+              syntax: "locker resource delete <name>[, <name> ...]"
+              desc: Delete the resource(s) with each <name>
             show:
               syntax: locker resource show <name>
               desc: Show the state of <name>
@@ -43,20 +43,20 @@ en:
               syntax: locker label list
               desc: List all labels
             create:
-              syntax: locker label create <name>
-              desc: Create a label with <name>
+              syntax: "locker label create <name>[, <name> ...]"
+              desc: Create label(s) with each <name>
             delete:
-              syntax: locker label delete <name>
-              desc: Delete the label with <name>
+              syntax: "locker label delete <name>[, <name> ...]"
+              desc: Delete the label(s) with each <name>
             show:
               syntax: locker label show <name>
               desc: Show all resources for <name>
             add:
-              syntax: locker label add <resource> to <name>
-              desc: Adds <resource> to the list of things to lock/unlock for <name>
+              syntax: "locker label add <resource>[, <resource> ...] to <name>"
+              desc: Adds each <resource> to the list of things to lock/unlock for <name>
             remove:
-              syntax: locker label remove <resource> from <name>
-              desc: Removes <resource> from <name>
+              syntax: "locker label remove <resource>[, <resource> ...] from <name>"
+              desc: Removes each <resource> from <name>
         resource:
           created: "Resource %{name} created"
           desc: "Resource: %{name}, state: %{state}"
