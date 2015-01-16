@@ -30,6 +30,22 @@ module Lita
         help: { t('help.dequeue.syntax') => t('help.dequeue.desc') }
       )
 
+      route(
+        /^locker\slog\s#{LABEL_REGEX}$/,
+        :log,
+        command: true,
+        help: { t('help.log.syntax.') => t('help.log.desc') }
+      )
+
+      def log(response)
+        name = response.match_data['label']
+        return response.reply(failed(t('subject.does_not_exist', name: name))) unless Label.exists?(name)
+        l = Label.new(name)
+        l.journal.range(-10, -1).each do |entry|
+          response.reply(t('label.log_entry', entry: entry))
+        end
+      end
+
       def status(response)
         name = response.match_data['label']
         return response.reply(status_label(name)) if Label.exists?(name)

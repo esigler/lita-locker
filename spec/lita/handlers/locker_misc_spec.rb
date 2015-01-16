@@ -17,8 +17,14 @@ describe Lita::Handlers::LockerMisc, lita_handler: true do
     it { is_expected.to route_command("locker status #{r}").to(:status) }
   end
 
-  it { is_expected.to route_command('locker list @alice').to(:list) }
-  it { is_expected.to route_command('locker list Alice').to(:list) }
+  it do
+    is_expected.to route_command('locker list @alice').to(:list)
+    is_expected.to route_command('locker list Alice').to(:list)
+  end
+
+  it do
+    is_expected.to route_command('locker log something').to(:log)
+  end
 
   let(:alice) do
     Lita::User.create('9001@hipchat', name: 'Alice', mention_name: 'alice')
@@ -26,6 +32,22 @@ describe Lita::Handlers::LockerMisc, lita_handler: true do
 
   let(:bob) do
     Lita::User.create('9002@hipchat', name: 'Bob', mention_name: 'bob')
+  end
+
+  describe '#log' do
+    it 'shows an activity log for labels if one exists' do
+      send_command('locker resource create bar')
+      send_command('locker label create foo')
+      send_command('locker label add bar to foo')
+      send_command('lock foo', as: alice)
+      send_command('locker log foo')
+      expect(replies.count).to eq(7)
+    end
+
+    it 'shows a warning if the label does not exist' do
+      send_command('locker log something')
+      expect(replies.last).to eq('(failed) Sorry, that does not exist')
+    end
   end
 
   describe '#dequeue' do
@@ -74,8 +96,6 @@ describe Lita::Handlers::LockerMisc, lita_handler: true do
       expect(replies.last).to eq('(failed) Sorry, that does not exist')
     end
   end
-
-  describe '#user_queue'
 
   describe '#user_locks' do
     it 'shows if a user has taken any locks' do
