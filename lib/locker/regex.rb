@@ -8,7 +8,7 @@ module Locker
     RESOURCES_REGEX = /(?<resources>[\.\w-]+(?:,\s*[\.\w-]+)*)/
     COMMENT_REGEX  = /(\s\#.+)?/
     LOCK_REGEX     = /\(lock\)\s/i
-    USER_REGEX     = /(?:@)?(?<username>[\w\s]+)/
+    USER_REGEX     = /(?:@)?(?<username>[\w\s-]+)/
     UNLOCK_REGEX   = /(?:\(unlock\)|\(release\))\s/i
   end
 end
