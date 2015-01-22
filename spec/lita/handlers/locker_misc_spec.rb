@@ -34,6 +34,10 @@ describe Lita::Handlers::LockerMisc, lita_handler: true do
     Lita::User.create('9002@hipchat', name: 'Bob', mention_name: 'bob')
   end
 
+  let(:doris) do
+    Lita::User.create('9004@hipchat', name: 'Doris Da-Awesome', mention_name: 'doris')
+  end
+
   describe '#log' do
     it 'shows an activity log for labels if one exists' do
       send_command('locker resource create bar')
@@ -113,6 +117,15 @@ describe Lita::Handlers::LockerMisc, lita_handler: true do
       send_command('locker label add foobar to bazbat')
       send_command('lock bazbat', as: alice)
       send_command('locker list @alice')
+      expect(replies.last).to eq("Label: bazbat\n")
+    end
+
+    it 'shows if a name with dashes has taken any locks' do
+      send_command('locker resource create foobar')
+      send_command('locker label create bazbat')
+      send_command('locker label add foobar to bazbat')
+      send_command('lock bazbat', as: doris)
+      send_command('locker list Doris Da-Awesome')
       expect(replies.last).to eq("Label: bazbat\n")
     end
 
