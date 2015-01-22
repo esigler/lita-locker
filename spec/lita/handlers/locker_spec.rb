@@ -100,6 +100,20 @@ describe Lita::Handlers::Locker, lita_handler: true do
       expect(replies.last).to eq("(failed) Label unable to be locked, blocked on:\nr1 - Alice")
     end
 
+    it 'does not half-lock underlying resources' do
+      send_command('locker resource create r1')
+      send_command('locker resource create r2')
+      send_command('locker label create l1')
+      send_command('locker label create l2')
+      send_command('locker label add r1, r2 to l1')
+      send_command('locker label add r1 to l2')
+      send_command('lock l2', as: alice)
+      send_command('lock l1', as: bob)
+      send_command('unlock l2', as: alice)
+      send_command('lock l1', as: alice)
+      expect(replies.last).to eq('(lock) l1 locked')
+    end
+
     it 'shows a warning when a label is taken by someone else' do
       send_command('locker resource create foobar')
       send_command('locker label create bazbat')

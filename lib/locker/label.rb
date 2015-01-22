@@ -62,8 +62,12 @@ module Locker
         coord_lock.lock do
           membership.each do |resource_name|
             r = Locker::Resource::Resource.new(resource_name)
-            # FIXME: Broken lock logic - partial locks would result in lockout
-            return false unless r.lock!(owner_id)
+            return false if r.locked?
+          end
+          # TODO: read-modify-write cycle, not the best
+          membership.each do |resource_name|
+            r = Locker::Resource::Resource.new(resource_name)
+            r.lock!(owner_id)
           end
           self.owner_id = owner_id
           self.state = 'locked'
@@ -86,7 +90,7 @@ module Locker
         end
         log('Unlocked')
 
-        # FIXME: Possible race condition where resources become unavailable  between unlock and relock
+        # FIXME: Possible race condition where resources become unavailable between unlock and relock
         if wait_queue.count > 0
           next_user = wait_queue.shift
           self.lock!(next_user)
