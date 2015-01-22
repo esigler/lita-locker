@@ -101,6 +101,18 @@ describe Lita::Handlers::LockerResources, lita_handler: true do
       expect(replies.last).to eq('Resource: foobar, state: unlocked')
     end
 
+    it 'shows what labels use a resource' do
+      send_command('locker resource create foobar')
+      send_command('locker resource show foobar')
+      send_command('locker label create l1')
+      send_command('locker label add foobar to l1')
+      send_command('locker resource show foobar')
+      expect(replies.last).to eq('Resource: foobar, state: unlocked, used by: l1')
+      send_command('locker label remove foobar from l1')
+      send_command('locker resource show foobar')
+      expect(replies.last).to eq('Resource: foobar, state: unlocked')
+    end
+
     it 'shows a warning when <name> does not exist' do
       send_command('locker resource show foobar')
       expect(replies.last).to eq('Resource foobar does not exist')

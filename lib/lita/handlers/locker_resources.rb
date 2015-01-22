@@ -88,7 +88,14 @@ module Lita
         name = response.match_data['resource']
         return response.reply(t('resource.does_not_exist', name: name)) unless Resource.exists?(name)
         r = Resource.new(name)
-        response.reply(t('resource.desc', name: name, state: r.state.value))
+        resp = t('resource.desc', name: name, state: r.state.value)
+        if r.labels.count > 0
+          resp += ', used by: '
+          r.labels.each do |label|
+            resp += Label.new(label).id
+          end
+        end
+        response.reply(resp)
       end
 
       Lita.register_handler(LockerResources)

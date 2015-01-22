@@ -8,6 +8,7 @@ module Locker
 
       value :state
       value :owner_id
+      set :labels
 
       lock :coord, expiration: 5
 

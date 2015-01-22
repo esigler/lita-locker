@@ -51,7 +51,7 @@ describe Lita::Handlers::Locker, lita_handler: true do
       send_command('lock bazbat # with a comment')
       expect(replies.last).to eq('(lock) bazbat locked')
       send_command('locker resource show foobar')
-      expect(replies.last).to eq('Resource: foobar, state: locked')
+      expect(replies.last).to eq('Resource: foobar, state: locked, used by: bazbat')
     end
 
     it 'locks the same label with spaces after the name' do
@@ -97,8 +97,7 @@ describe Lita::Handlers::Locker, lita_handler: true do
       send_command('locker label add r1 to l2')
       send_command('lock l1', as: alice)
       send_command('lock l2', as: alice)
-      expect(replies.last).to eq('(failed) Label unable to be locked, ' \
-                                 "blocked on:\nr1 - Alice")
+      expect(replies.last).to eq("(failed) Label unable to be locked, blocked on:\nr1 - Alice")
     end
 
     it 'shows a warning when a label is taken by someone else' do
@@ -113,23 +112,8 @@ describe Lita::Handlers::Locker, lita_handler: true do
 
     it 'shows an error when a label does not exist' do
       send_command('lock foobar')
-      expect(replies.last).to eq('(failed) Label foobar does not exist.  To ' \
-                                 'create it: "!locker label create foobar"')
+      expect(replies.last).to eq('(failed) Label foobar does not exist.  To create it: "!locker label create foobar"')
     end
-
-    # it 'locks a resource when it is available for a period of time' do
-    #   send_command('locker resource create foobar')
-    #   send_command('lock foobar 17m')
-    #   expect(replies.last).to eq('foobar locked for 17 minutes')
-    #   send_command('locker resource show foobar')
-    #   expect(replies.last).to eq('Resource: foobar, state: locked')
-    #   send_command('unlock foobar')
-    #   send_command('lock foobar 12s')
-    #   expect(replies.last).to eq('foobar locked for 17 seconds')
-    #   send_command('unlock foobar')
-    #   send_command('lock foobar 14h')
-    #   expect(replies.last).to eq('foobar locked for 14 hours')
-    # end
   end
 
   describe '#unlock' do
@@ -183,8 +167,7 @@ describe Lita::Handlers::Locker, lita_handler: true do
       send_command('locker label add foobar to bazbat')
       send_command('lock bazbat', as: alice)
       send_command('steal bazbat # with a comment', as: bob)
-      expect(replies.last).to eq('(lock) bazbat stolen from ' \
-                                 'Alice (@alice)')
+      expect(replies.last).to eq('(lock) bazbat stolen from Alice (@alice)')
     end
 
     it 'preserves the state of the queue when there is one' do

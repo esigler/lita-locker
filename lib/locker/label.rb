@@ -106,11 +106,13 @@ module Locker
 
       def add_resource(resource)
         log("Resource #{resource.id} added")
+        resource.labels << id
         membership << resource.id
       end
 
       def remove_resource(resource)
         log("Resource #{resource.id} removed")
+        resource.labels.delete(id)
         membership.delete(resource.id)
       end
 
