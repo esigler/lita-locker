@@ -21,6 +21,16 @@ module Lita
       )
 
       route(
+        /^#{OBSERVE_REGEX}#{LABEL_REGEX}#{COMMENT_REGEX}$/,
+        :observe
+      )
+
+      route(
+        /^#{UNOBSERVE_REGEX}#{LABEL_REGEX}#{COMMENT_REGEX}$/,
+        :unobserve
+      )
+
+      route(
         /^lock\s#{LABEL_REGEX}#{COMMENT_REGEX}$/,
         :lock,
         command: true,
@@ -41,6 +51,20 @@ module Lita
         help: { t('help.steal.syntax') => t('help.steal.desc') }
       )
 
+      route(
+        /^observe\s#{LABEL_REGEX}#{COMMENT_REGEX}$/,
+        :observe,
+        command: true,
+        help: { t('help.observe.syntax') => t('help.observe.desc') }
+      )
+
+      route(
+        /^unobserve\s#{LABEL_REGEX}#{COMMENT_REGEX}$/,
+        :unobserve,
+        command: true,
+        help: { t('help.unobserve.syntax') => t('help.unobserve.desc') }
+      )
+
       def lock(response)
         name = response.match_data['label']
 
@@ -59,6 +83,32 @@ module Lita
         l = Label.new(name)
         return response.reply(unlocked(t('label.is_unlocked', name: name))) unless l.locked?
         response.reply(attempt_unlock(name, response.user))
+
+        return if l.locked?
+        mention_names = l.observers
+                        .map { |observer| observer.mention_name ? "(@#{observer.mention_name})" : '' }
+                        .reject { |mention| mention == '' }
+                        .sort
+                        .join(' ')
+        response.reply(t('label.unlocked_no_queue', name: name, mention: mention_names)) unless mention_names.empty?
+      end
+
+      def observe(response)
+        name = response.match_data['label']
+        return response.reply(failed(t('label.does_not_exist', name: name))) unless Label.exists?(name)
+        l = Label.new(name)
+        return response.reply(t('observe.already_observing', name: name)) if l.observer?(response.user.id)
+        l.add_observer!(response.user.id)
+        response.reply(t('observe.now_observing', name: name))
+      end
+
+      def unobserve(response)
+        name = response.match_data['label']
+        return response.reply(failed(t('label.does_not_exist', name: name))) unless Label.exists?(name)
+        l = Label.new(name)
+        return response.reply(t('observe.were_not_observing', name: name)) unless l.observer?(response.user.id)
+        l.remove_observer!(response.user.id)
+        response.reply(t('observe.stopped_observing', name: name))
       end
 
       def steal(response)

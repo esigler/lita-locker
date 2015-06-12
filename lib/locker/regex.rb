@@ -10,5 +10,7 @@ module Locker
     LOCK_REGEX     = /\(lock\)\s/i
     USER_REGEX     = /(?:@)?(?<username>[\w\s-]+)/
     UNLOCK_REGEX   = /(?:\(unlock\)|\(release\))\s/i
+    OBSERVE_REGEX  = /\(observe\)\s/i
+    UNOBSERVE_REGEX = /\(unobserve\)\s/i
   end
 end

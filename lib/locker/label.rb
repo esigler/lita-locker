@@ -11,6 +11,7 @@ module Locker
       value :taken_at
 
       set :membership
+      set :observer_ids
       list :wait_queue
       list :journal
 
@@ -104,8 +105,26 @@ module Locker
         self.unlock!
       end
 
+      def add_observer!(observer_id)
+        observer_ids.add(observer_id)
+      end
+
+      def remove_observer!(observer_id)
+        observer_ids.delete(observer_id)
+      end
+
+      def observer?(observer_id)
+        observer_ids.member?(observer_id)
+      end
+
       def locked?
         (state == 'locked')
+      end
+
+      def observers
+        observer_ids.map do |observer_id|
+          Lita::User.find_by_id(observer_id)
+        end
       end
 
       def add_resource(resource)
