@@ -1,6 +1,6 @@
 Gem::Specification.new do |spec|
   spec.name          = 'lita-locker'
-  spec.version       = '0.7.0'
+  spec.version       = '1.0.0'
   spec.authors       = ['Eric Sigler']
   spec.email         = ['me@esigler.com']
   spec.description   = '"lock" and "unlock" arbitrary subjects'
@@ -24,4 +24,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rspec', '>= 3.0.0'
   spec.add_development_dependency 'rubocop'
   spec.add_development_dependency 'simplecov'
+
+  spec.post_install_message = 'After upgrading to lita-locker 1.x, you should read: ' \
+                              'https://github.com/esigler/lita-locker/blob/master/UPGRADING.md'
 end
