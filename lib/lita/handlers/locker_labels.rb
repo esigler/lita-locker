@@ -59,8 +59,6 @@ module Lita
       end
 
       def create(response)
-        Redis.current = redis
-
         names = response.match_data['labels'].split(/,\s*/)
         results = []
 
@@ -76,8 +74,6 @@ module Lita
       end
 
       def delete(response)
-        Redis.current = redis
-
         names = response.match_data['labels'].split(/,\s*/)
         results = []
 
