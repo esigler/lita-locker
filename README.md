@@ -43,15 +43,10 @@ unlock <label>       - Remove a reservation.  This can only be done by whomever 
 steal <label>        - Force removal of a reservation.  This can be done by anyone. Can have # comments afterwards.
 ```
 
-### Time-based locking - Not implemented yet!
+### Queueing
 ```
-lock <subject> <time>        - A time-limited reservation.  <time> must be a number with a "s", "m", or "h" postfix.
-```
-
-### Reservations - Not implemented yet!
-```
-reserve <subject> - Add yourself to a FIFO queue of pending reservations for <subject>
-unreserve <subject> - Remove yourself from the queue for <subject>
+lock <label> - If <label> is already locked, adds you to a FIFO queue of pending reservations for <label>
+locker dequeue <label> - Remove yourself from the queue for <label>
 ```
 
 ### Labels
