@@ -44,6 +44,8 @@ module Lita
       )
 
       def list(response)
+        Redis.current = redis
+
         output = ''
         Resource.list.each do |r|
           res = Resource.new(r)
@@ -53,6 +55,8 @@ module Lita
       end
 
       def create(response)
+        Redis.current = redis
+
         names = response.match_data['resources'].split(/,\s*/)
         results = []
 
@@ -69,6 +73,8 @@ module Lita
       end
 
       def delete(response)
+        Redis.current = redis
+
         names = response.match_data['resources'].split(/,\s*/)
         results = []
 
@@ -85,6 +91,8 @@ module Lita
       end
 
       def show(response)
+        Redis.current = redis
+
         name = response.match_data['resource']
         return response.reply(t('resource.does_not_exist', name: name)) unless Resource.exists?(name)
         r = Resource.new(name)

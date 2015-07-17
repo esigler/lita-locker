@@ -3,8 +3,6 @@ module Lita
   module Handlers
     # Top-level class for Locker
     class Locker < Handler
-      Redis::Objects.redis = Lita.redis
-
       include ::Locker::Label
       include ::Locker::Misc
       include ::Locker::Regex
@@ -42,6 +40,8 @@ module Lita
       )
 
       def lock(response)
+        Redis.current = redis
+
         name = response.match_data['label']
 
         return response.reply(failed(t('label.does_not_exist', name: name))) unless Label.exists?(name)
@@ -54,6 +54,8 @@ module Lita
       end
 
       def unlock(response)
+        Redis.current = redis
+
         name = response.match_data['label']
         return response.reply(failed(t('subject.does_not_exist', name: name))) unless Label.exists?(name)
         l = Label.new(name)
@@ -62,6 +64,8 @@ module Lita
       end
 
       def steal(response)
+        Redis.current = redis
+
         name = response.match_data['label']
         return response.reply(failed(t('subject.does_not_exist', name: name))) unless Label.exists?(name)
         l = Label.new(name)
