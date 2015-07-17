@@ -48,7 +48,7 @@ module Lita
         l = Label.new(name)
         return response.reply(failed(t('label.no_resources', name: name))) unless l.membership.count > 0
         return response.reply(t('label.self_lock', name: name)) if l.owner == response.user
-        return response.reply(locked(t('label.lock', name: name))) if l.lock!(response.user.id)
+        return response.reply(success(t('label.lock', name: name))) if l.lock!(response.user.id)
 
         response.reply(label_ownership(name))
       end
@@ -57,7 +57,7 @@ module Lita
         name = response.match_data['label']
         return response.reply(failed(t('subject.does_not_exist', name: name))) unless Label.exists?(name)
         l = Label.new(name)
-        return response.reply(unlocked(t('label.is_unlocked', name: name))) unless l.locked?
+        return response.reply(success(t('label.is_unlocked', name: name))) unless l.locked?
         response.reply(attempt_unlock(name, response.user))
       end
 
@@ -77,7 +77,7 @@ module Lita
         old_owner = label.owner
         label.steal!(user.id)
         mention = old_owner.mention_name ? "(@#{old_owner.mention_name})" : ''
-        locked(t('steal.stolen', label: name, old_owner: old_owner.name, mention: mention))
+        success(t('steal.stolen', label: name, old_owner: old_owner.name, mention: mention))
       end
 
       def attempt_unlock(name, user)
@@ -86,9 +86,9 @@ module Lita
           label.unlock!
           if label.locked?
             mention = label.owner.mention_name ? "(@#{label.owner.mention_name})" : ''
-            locked(t('label.now_locked_by', name: name, owner: label.owner.name, mention: mention))
+            failed(t('label.now_locked_by', name: name, owner: label.owner.name, mention: mention))
           else
-            unlocked(t('label.unlock', name: name))
+            success(t('label.unlock', name: name))
           end
         else
           mention = label.owner.mention_name ? "(@#{label.owner.mention_name})" : ''

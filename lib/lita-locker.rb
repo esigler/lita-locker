@@ -18,3 +18,23 @@ require 'lita/handlers/locker_labels'
 require 'lita/handlers/locker_misc'
 require 'lita/handlers/locker_resources'
 require 'lita/handlers/locker'
+
+Lita::Handlers::Locker.template_root File.expand_path(
+  File.join('..', '..', 'templates'),
+  __FILE__
+)
+
+Lita::Handlers::LockerResources.template_root File.expand_path(
+  File.join('..', '..', 'templates'),
+  __FILE__
+)
+
+Lita::Handlers::LockerLabels.template_root File.expand_path(
+  File.join('..', '..', 'templates'),
+  __FILE__
+)
+
+Lita::Handlers::LockerMisc.template_root File.expand_path(
+  File.join('..', '..', 'templates'),
+  __FILE__
+)
