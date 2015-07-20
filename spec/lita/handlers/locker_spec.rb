@@ -161,7 +161,7 @@ describe Lita::Handlers::Locker, lita_handler: true do
       send_command('locker observe bazbat', as: charlie)
       send_command('unlock bazbat # with a comment', as: bob)
       expect(replies).to include('bazbat is unlocked and no one is next up (@alice) (@charlie)')
-      expect(replies).to include('(unlock) bazbat unlocked')
+      expect(replies).to include('bazbat unlocked')
     end
 
     it 'does not alert observers if there is a queued person' do
@@ -185,7 +185,7 @@ describe Lita::Handlers::Locker, lita_handler: true do
       send_command('locker unobserve bazbat', as: alice)
       send_command('unlock bazbat # with a comment', as: bob)
       expect(replies).to include('bazbat is unlocked and no one is next up (@charlie)')
-      expect(replies).to include('(unlock) bazbat unlocked')
+      expect(replies).to include('bazbat unlocked')
     end
 
     it 'unlocks a label and does not alert anyone if there are no observers' do
@@ -196,7 +196,7 @@ describe Lita::Handlers::Locker, lita_handler: true do
       send_command('lock bazbat', as: bob)
       send_command('locker unobserve bazbat', as: alice)
       send_command('unlock bazbat # with a comment', as: bob)
-      expect(replies.last).to eq('(unlock) bazbat unlocked')
+      expect(replies.last).to eq('bazbat unlocked')
     end
 
     it 'does not unlock a label when someone else locked it' do
