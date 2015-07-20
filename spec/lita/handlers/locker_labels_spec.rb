@@ -36,6 +36,7 @@ describe Lita::Handlers::LockerLabels, lita_handler: true do
       send_command('locker label create foobar')
       send_command('locker label create bazbat')
       send_command('locker label list')
+      sleep 1 # TODO: HAAAACK.  Need after to have a more testable behavior.
       expect(replies.include?('foobar is unlocked')).to eq(true)
       expect(replies.include?('bazbat is unlocked')).to eq(true)
     end

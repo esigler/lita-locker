@@ -31,6 +31,7 @@ describe Lita::Handlers::LockerResources, lita_handler: true do
       send_command('locker resource create foobar')
       send_command('locker resource create bazbat')
       send_command('locker resource list')
+      sleep 1 # TODO: HAAAAACK.  Need after to have a more testable behavior.
       expect(replies).to include('Resource: foobar, state: unlocked')
       expect(replies).to include('Resource: bazbat, state: unlocked')
     end
