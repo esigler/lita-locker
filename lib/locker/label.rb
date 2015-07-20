@@ -74,7 +74,8 @@ module Locker
           self.state = 'locked'
           self.taken_at = Time.now.utc
         end
-        log("Locked by #{owner_id}")
+        u = Lita::User.fuzzy_find(owner_id)
+        log("Locked by #{u.name}")
         true
       end
 

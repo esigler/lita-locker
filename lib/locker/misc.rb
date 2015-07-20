@@ -11,41 +11,20 @@ module Locker
       owned
     end
 
-    def adapter
-      if Lita.respond_to?(:config)
-        Lita.config.robot.adapter
-      elsif robot.respond_to?(:config)
-        robot.config.robot.adapter
-      else
-        :unknown
-      end
+    def success(message)
+      render_template('success', string: message)
     end
 
     def failed(message)
-      case adapter
-      when :hipchat
-        "(failed) #{message}"
-      else
-        message
-      end
+      render_template('failed', string: message)
     end
 
     def locked(message)
-      case adapter
-      when :hipchat
-        "(lock) #{message}"
-      else
-        message
-      end
+      render_template('lock', string: message)
     end
 
     def unlocked(message)
-      case adapter
-      when :hipchat
-        "(unlock) #{message}"
-      else
-        message
-      end
+      render_template('unlock', string: message)
     end
   end
 end

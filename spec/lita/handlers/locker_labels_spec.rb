@@ -36,8 +36,9 @@ describe Lita::Handlers::LockerLabels, lita_handler: true do
       send_command('locker label create foobar')
       send_command('locker label create bazbat')
       send_command('locker label list')
-      expect(replies.include?('(unlock) foobar is unlocked')).to eq(true)
-      expect(replies.include?('(unlock) bazbat is unlocked')).to eq(true)
+      sleep 1 # TODO: HAAAACK.  Need after to have a more testable behavior.
+      expect(replies.include?('foobar is unlocked')).to eq(true)
+      expect(replies.include?('bazbat is unlocked')).to eq(true)
     end
   end
 
@@ -80,7 +81,7 @@ describe Lita::Handlers::LockerLabels, lita_handler: true do
 
     it 'shows a warning when <name> does not exist' do
       send_command('locker label delete foobar')
-      expect(replies.last).to eq('(failed) Label foobar does not exist.  To create it: "!locker label create foobar"')
+      expect(replies.last).to eq('Label foobar does not exist.  To create it: "!locker label create foobar"')
     end
 
     it 'accepts a comma-separated list of labels' do
@@ -107,7 +108,7 @@ describe Lita::Handlers::LockerLabels, lita_handler: true do
 
     it 'shows an error if the label does not exist' do
       send_command('locker label show foobar')
-      expect(replies.last).to eq('(failed) Label foobar does not exist.  To create it: "!locker label create foobar"')
+      expect(replies.last).to eq('Label foobar does not exist.  To create it: "!locker label create foobar"')
     end
   end
 
@@ -143,7 +144,7 @@ describe Lita::Handlers::LockerLabels, lita_handler: true do
 
     it 'shows an error if the label does not exist' do
       send_command('locker label add foo to bar')
-      expect(replies.last).to eq('(failed) Label bar does not exist.  To create it: "!locker label create bar"')
+      expect(replies.last).to eq('Label bar does not exist.  To create it: "!locker label create bar"')
     end
 
     it 'shows an error if the resource does not exist' do
@@ -181,12 +182,12 @@ describe Lita::Handlers::LockerLabels, lita_handler: true do
 
     it 'shows an error if the label does not exist' do
       send_command('locker label add foo to bar')
-      expect(replies.last).to eq('(failed) Label bar does not exist.  To create it: "!locker label create bar"')
+      expect(replies.last).to eq('Label bar does not exist.  To create it: "!locker label create bar"')
     end
 
     it 'shows an error if the label does not exist when given a list of resources' do
       send_command('locker label add foo, baz to bar')
-      expect(replies.last).to eq('(failed) Label bar does not exist.  To create it: "!locker label create bar"')
+      expect(replies.last).to eq('Label bar does not exist.  To create it: "!locker label create bar"')
     end
 
     it 'shows an error if the resource does not exist' do

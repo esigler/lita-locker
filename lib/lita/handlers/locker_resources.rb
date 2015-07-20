@@ -44,12 +44,22 @@ module Lita
       )
 
       def list(response)
-        output = ''
-        Resource.list.each do |r|
-          res = Resource.new(r)
-          output += t('resource.desc', name: r, state: res.state.value)
+        after 0 do
+          should_rate_limit = false
+
+          Resource.list.each_slice(5) do |slice|
+            if should_rate_limit
+              sleep 3
+            else
+              should_rate_limit = true
+            end
+
+            slice.each do |r|
+              res = Resource.new(r)
+              response.reply(t('resource.desc', name: r, state: res.state.value))
+            end
+          end
         end
-        response.reply(output)
       end
 
       def create(response)
