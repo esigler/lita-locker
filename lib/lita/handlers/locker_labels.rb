@@ -52,9 +52,19 @@ module Lita
       )
 
       def list(response)
-        Label.list.each do |n|
-          l = Label.new(n)
-          response.reply(unlocked(t('label.desc', name: n, state: l.state.value)))
+        should_rate_limit = false
+
+        Label.list.each_slice(10) do |slice|
+          if should_rate_limit
+            sleep 1
+          else
+            should_rate_limit = true
+          end
+
+          slice.each do |n|
+            l = Label.new(n)
+            response.reply(unlocked(t('label.desc', name: n, state: l.state.value)))
+          end
         end
       end
 

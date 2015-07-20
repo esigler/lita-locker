@@ -31,8 +31,8 @@ describe Lita::Handlers::LockerResources, lita_handler: true do
       send_command('locker resource create foobar')
       send_command('locker resource create bazbat')
       send_command('locker resource list')
-      expect(replies.last).to match(/Resource: foobar, state: unlocked/)
-      expect(replies.last).to match(/Resource: bazbat, state: unlocked/)
+      expect(replies).to include('Resource: foobar, state: unlocked')
+      expect(replies).to include('Resource: bazbat, state: unlocked')
     end
   end
 
