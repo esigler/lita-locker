@@ -25,10 +25,10 @@ en:
             syntax: unlock <subject>
             desc: Make something available to others. Can have # comments afterwards.
           observe:
-            syntax: observe <subject>
+            syntax: locker observe <subject>
             desc: Get a notification when something becomes available. Can have # comments afterwards
           unobserve:
-            syntax: unobserve <subject>
+            syntax: locker unobserve <subject>
             desc: Stop getting notifications when something becomes available. Can have # comments afterwards
           steal:
             syntax: steal <subject>

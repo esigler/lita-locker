@@ -13,20 +13,14 @@ describe Lita::Handlers::Locker, lita_handler: true do
       is_expected.to route("(lock) #{l}").to(:lock)
       is_expected.to route("(unlock) #{l}").to(:unlock)
       is_expected.to route("(release) #{l}").to(:unlock)
-      is_expected.to route("(observe) #{l}").to(:observe)
-      is_expected.to route("(unobserve) #{l}").to(:unobserve)
 
       is_expected.to route("(Lock) #{l}").to(:lock)
       is_expected.to route("(Unlock) #{l}").to(:unlock)
       is_expected.to route("(Release) #{l}").to(:unlock)
-      is_expected.to route("(Observe) #{l}").to(:observe)
-      is_expected.to route("(Unobserve) #{l}").to(:unobserve)
 
       is_expected.to route("(lock) #{l} #this is a comment").to(:lock)
       is_expected.to route("(unlock) #{l} #this is a comment").to(:unlock)
       is_expected.to route("(release) #{l} #this is a comment").to(:unlock)
-      is_expected.to route("(observe) #{l} #this is a comment").to(:observe)
-      is_expected.to route("(unobserve) #{l} #this is a comment").to(:unobserve)
 
       is_expected.to route_command("lock #{l}").to(:lock)
       is_expected.to route_command("lock #{l} #this is a comment").to(:lock)
@@ -34,10 +28,10 @@ describe Lita::Handlers::Locker, lita_handler: true do
       is_expected.to route_command("unlock #{l} #this is a comment").to(:unlock)
       is_expected.to route_command("steal #{l}").to(:steal)
       is_expected.to route_command("steal #{l} #this is a comment").to(:steal)
-      is_expected.to route_command("observe #{l}").to(:observe)
-      is_expected.to route_command("observe #{l} #this is a comment").to(:observe)
-      is_expected.to route_command("unobserve #{l}").to(:unobserve)
-      is_expected.to route_command("unobserve #{l} #this is a comment").to(:unobserve)
+      is_expected.to route_command("locker observe #{l}").to(:observe)
+      is_expected.to route_command("locker observe #{l} #this is a comment").to(:observe)
+      is_expected.to route_command("locker unobserve #{l}").to(:unobserve)
+      is_expected.to route_command("locker unobserve #{l} #this is a comment").to(:unobserve)
     end
   end
 
@@ -164,9 +158,9 @@ describe Lita::Handlers::Locker, lita_handler: true do
       send_command('locker resource create foobar')
       send_command('locker label create bazbat')
       send_command('locker label add foobar to bazbat')
-      send_command('observe bazbat', as: alice)
+      send_command('locker observe bazbat', as: alice)
       send_command('lock bazbat', as: bob)
-      send_command('observe bazbat', as: charlie)
+      send_command('locker observe bazbat', as: charlie)
       send_command('unlock bazbat # with a comment', as: bob)
       expect(replies).to include('bazbat is unlocked and no one is next up (@alice) (@charlie)')
       expect(replies).to include('(unlock) bazbat unlocked')
@@ -176,7 +170,7 @@ describe Lita::Handlers::Locker, lita_handler: true do
       send_command('locker resource create foobar')
       send_command('locker label create bazbat')
       send_command('locker label add foobar to bazbat')
-      send_command('observe bazbat', as: alice)
+      send_command('locker observe bazbat', as: alice)
       send_command('lock bazbat', as: bob)
       send_command('lock bazbat', as: charlie)
       send_command('unlock bazbat # with a comment', as: bob)
@@ -187,10 +181,10 @@ describe Lita::Handlers::Locker, lita_handler: true do
       send_command('locker resource create foobar')
       send_command('locker label create bazbat')
       send_command('locker label add foobar to bazbat')
-      send_command('observe bazbat', as: alice)
+      send_command('locker observe bazbat', as: alice)
       send_command('lock bazbat', as: bob)
-      send_command('observe bazbat', as: charlie)
-      send_command('unobserve bazbat', as: alice)
+      send_command('locker observe bazbat', as: charlie)
+      send_command('locker unobserve bazbat', as: alice)
       send_command('unlock bazbat # with a comment', as: bob)
       expect(replies).to include('bazbat is unlocked and no one is next up (@charlie)')
       expect(replies).to include('(unlock) bazbat unlocked')
@@ -200,9 +194,9 @@ describe Lita::Handlers::Locker, lita_handler: true do
       send_command('locker resource create foobar')
       send_command('locker label create bazbat')
       send_command('locker label add foobar to bazbat')
-      send_command('observe bazbat', as: alice)
+      send_command('locker observe bazbat', as: alice)
       send_command('lock bazbat', as: bob)
-      send_command('unobserve bazbat', as: alice)
+      send_command('locker unobserve bazbat', as: alice)
       send_command('unlock bazbat # with a comment', as: bob)
       expect(replies.last).to eq('(unlock) bazbat unlocked')
     end
@@ -280,7 +274,7 @@ describe Lita::Handlers::Locker, lita_handler: true do
       send_command('locker resource create foobar')
       send_command('locker label create bazbat')
       send_command('locker label add foobar to bazbat')
-      send_command('observe bazbat', as: alice)
+      send_command('locker observe bazbat', as: alice)
       expect(replies.last).to eq('Now observing bazbat')
     end
 
@@ -288,8 +282,8 @@ describe Lita::Handlers::Locker, lita_handler: true do
       send_command('locker resource create foobar')
       send_command('locker label create bazbat')
       send_command('locker label add foobar to bazbat')
-      send_command('observe bazbat', as: alice)
-      send_command('observe bazbat', as: alice)
+      send_command('locker observe bazbat', as: alice)
+      send_command('locker observe bazbat', as: alice)
       expect(replies.last).to eq('You are already observing bazbat')
     end
   end
@@ -299,8 +293,8 @@ describe Lita::Handlers::Locker, lita_handler: true do
       send_command('locker resource create foobar')
       send_command('locker label create bazbat')
       send_command('locker label add foobar to bazbat')
-      send_command('observe bazbat', as: alice)
-      send_command('unobserve bazbat', as: alice)
+      send_command('locker observe bazbat', as: alice)
+      send_command('locker unobserve bazbat', as: alice)
       expect(replies.last).to eq('You have stopped observing bazbat')
     end
 
@@ -308,9 +302,9 @@ describe Lita::Handlers::Locker, lita_handler: true do
       send_command('locker resource create foobar')
       send_command('locker label create bazbat')
       send_command('locker label add foobar to bazbat')
-      send_command('observe bazbat', as: alice)
-      send_command('unobserve bazbat', as: alice)
-      send_command('unobserve bazbat', as: alice)
+      send_command('locker observe bazbat', as: alice)
+      send_command('locker unobserve bazbat', as: alice)
+      send_command('locker unobserve bazbat', as: alice)
       expect(replies.last).to eq('You were not observing bazbat originally')
     end
   end

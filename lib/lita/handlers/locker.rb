@@ -21,16 +21,6 @@ module Lita
       )
 
       route(
-        /^#{OBSERVE_REGEX}#{LABEL_REGEX}#{COMMENT_REGEX}$/,
-        :observe
-      )
-
-      route(
-        /^#{UNOBSERVE_REGEX}#{LABEL_REGEX}#{COMMENT_REGEX}$/,
-        :unobserve
-      )
-
-      route(
         /^lock\s#{LABEL_REGEX}#{COMMENT_REGEX}$/,
         :lock,
         command: true,
@@ -52,14 +42,14 @@ module Lita
       )
 
       route(
-        /^observe\s#{LABEL_REGEX}#{COMMENT_REGEX}$/,
+        /^locker\sobserve\s#{LABEL_REGEX}#{COMMENT_REGEX}$/,
         :observe,
         command: true,
         help: { t('help.observe.syntax') => t('help.observe.desc') }
       )
 
       route(
-        /^unobserve\s#{LABEL_REGEX}#{COMMENT_REGEX}$/,
+        /^locker\sunobserve\s#{LABEL_REGEX}#{COMMENT_REGEX}$/,
         :unobserve,
         command: true,
         help: { t('help.unobserve.syntax') => t('help.unobserve.desc') }
