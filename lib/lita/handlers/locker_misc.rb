@@ -24,7 +24,7 @@ module Lita
       )
 
       route(
-        /^locker\sdequeue\s#{LABEL_REGEX}$/,
+        /^locker\s(dq|dequeue)\s#{LABEL_REGEX}$/,
         :dequeue,
         command: true,
         help: { t('help.dequeue.syntax') => t('help.dequeue.desc') }

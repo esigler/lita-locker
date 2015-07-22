@@ -26,6 +26,11 @@ describe Lita::Handlers::LockerMisc, lita_handler: true do
     is_expected.to route_command('locker log something').to(:log)
   end
 
+  it do
+    is_expected.to route_command('locker dequeue something something').to(:dequeue)
+    is_expected.to route_command('locker dq something something').to(:dequeue)
+  end
+
   let(:alice) do
     Lita::User.create('9001@hipchat', name: 'Alice', mention_name: 'alice')
   end
