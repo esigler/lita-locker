@@ -22,10 +22,13 @@ describe Lita::Handlers::Locker, lita_handler: true do
       is_expected.to route("(release) #{l} #this is a comment").to(:unlock)
 
       is_expected.to route_command("lock #{l}").to(:lock)
+      is_expected.to route_command("lock #{l} ").to(:lock)
       is_expected.to route_command("lock #{l} #this is a comment").to(:lock)
       is_expected.to route_command("unlock #{l}").to(:unlock)
+      is_expected.to route_command("unlock #{l} ").to(:unlock)
       is_expected.to route_command("unlock #{l} #this is a comment").to(:unlock)
       is_expected.to route_command("steal #{l}").to(:steal)
+      is_expected.to route_command("steal #{l} ").to(:steal)
       is_expected.to route_command("steal #{l} #this is a comment").to(:steal)
     end
   end
@@ -58,7 +61,7 @@ describe Lita::Handlers::Locker, lita_handler: true do
       send_command('locker label create bazbat')
       send_command('locker label add foobar to bazbat')
       send_command('lock bazbat ')
-      expect(replies.last).to eq('bazbat  locked')
+      expect(replies.last).to eq('bazbat locked')
     end
 
     it 'does not enqueue the user that currently has a lock' do
