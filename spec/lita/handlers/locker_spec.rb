@@ -122,7 +122,7 @@ describe Lita::Handlers::Locker, lita_handler: true do
       send_command('lock bazbat', as: alice)
       send_command('lock bazbat', as: bob)
       expect(replies.last).to eq('bazbat is locked by Alice (@alice) (taken 1 second ago), you have been ' \
-                                 'added to the queue, type \'locker dequeue bazbat\' to be removed')
+                                 'added to the queue (currently: Bob), type \'locker dequeue bazbat\' to be removed')
     end
 
     it 'shows an error when a label does not exist' do

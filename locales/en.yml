@@ -78,7 +78,7 @@ en:
           log_entry: "%{entry}"
           self_lock: "You already have the lock on %{name}"
           unlock: "%{name} unlocked"
-          owned_lock: "%{name} is locked by %{owner_name} %{mention} (taken %{time}), you have been added to the queue, type 'locker dequeue %{name}' to be removed"
+          owned_lock: "%{name} is locked by %{owner_name} %{mention} (taken %{time}), you have been added to the queue (currently: %{queue}), type 'locker dequeue %{name}' to be removed"
           owned_unlock: "%{name} is locked by %{owner_name} %{mention} (taken %{time})"
           is_unlocked: "%{name} is unlocked"
           unable_to_lock: "%{name} unable to be locked"

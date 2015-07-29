@@ -153,8 +153,17 @@ module Locker
     def label_ownership(name)
       l = Label.new(name)
       return label_dependencies(name) unless l.locked?
+      queue = []
+      l.wait_queue.each do |u|
+        usr = Lita::User.find_by_id(u)
+        queue.push(usr.name)
+      end
       mention = l.owner.mention_name ? "(@#{l.owner.mention_name})" : ''
-      failed(t('label.owned_lock', name: name, owner_name: l.owner.name, mention: mention, time: l.held_for))
+      failed(t('label.owned_lock', name: name,
+                                   owner_name: l.owner.name,
+                                   mention: mention,
+                                   time: l.held_for,
+                                   queue: queue.join(', ')))
     end
 
     def label_dependencies(name)
