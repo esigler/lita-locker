@@ -30,6 +30,10 @@ describe Lita::Handlers::Locker, lita_handler: true do
       is_expected.to route_command("steal #{l}").to(:steal)
       is_expected.to route_command("steal #{l} ").to(:steal)
       is_expected.to route_command("steal #{l} #this is a comment").to(:steal)
+      is_expected.to route_command("locker observe #{l}").to(:observe)
+      is_expected.to route_command("locker observe #{l} #this is a comment").to(:observe)
+      is_expected.to route_command("locker unobserve #{l}").to(:unobserve)
+      is_expected.to route_command("locker unobserve #{l} #this is a comment").to(:unobserve)
     end
   end
 
@@ -151,6 +155,53 @@ describe Lita::Handlers::Locker, lita_handler: true do
       expect(replies.last).to eq('bazbat now locked by Bob (@bob)')
     end
 
+    it 'unlocks a label and alerts observers' do
+      send_command('locker resource create foobar')
+      send_command('locker label create bazbat')
+      send_command('locker label add foobar to bazbat')
+      send_command('locker observe bazbat', as: alice)
+      send_command('lock bazbat', as: bob)
+      send_command('locker observe bazbat', as: charlie)
+      send_command('unlock bazbat # with a comment', as: bob)
+      expect(replies).to include('bazbat is unlocked and no one is next up (@alice) (@charlie)')
+      expect(replies).to include('bazbat unlocked')
+    end
+
+    it 'does not alert observers if there is a queued person' do
+      send_command('locker resource create foobar')
+      send_command('locker label create bazbat')
+      send_command('locker label add foobar to bazbat')
+      send_command('locker observe bazbat', as: alice)
+      send_command('lock bazbat', as: bob)
+      send_command('lock bazbat', as: charlie)
+      send_command('unlock bazbat # with a comment', as: bob)
+      expect(replies).not_to include('bazbat is unlocked and no one is next up (@alice)')
+    end
+
+    it 'unlocks a label and alerts only observers' do
+      send_command('locker resource create foobar')
+      send_command('locker label create bazbat')
+      send_command('locker label add foobar to bazbat')
+      send_command('locker observe bazbat', as: alice)
+      send_command('lock bazbat', as: bob)
+      send_command('locker observe bazbat', as: charlie)
+      send_command('locker unobserve bazbat', as: alice)
+      send_command('unlock bazbat # with a comment', as: bob)
+      expect(replies).to include('bazbat is unlocked and no one is next up (@charlie)')
+      expect(replies).to include('bazbat unlocked')
+    end
+
+    it 'unlocks a label and does not alert anyone if there are no observers' do
+      send_command('locker resource create foobar')
+      send_command('locker label create bazbat')
+      send_command('locker label add foobar to bazbat')
+      send_command('locker observe bazbat', as: alice)
+      send_command('lock bazbat', as: bob)
+      send_command('locker unobserve bazbat', as: alice)
+      send_command('unlock bazbat # with a comment', as: bob)
+      expect(replies.last).to eq('bazbat unlocked')
+    end
+
     it 'does not unlock a label when someone else locked it' do
       send_command('locker resource create foobar')
       send_command('locker label create bazbat')
@@ -216,6 +267,46 @@ describe Lita::Handlers::Locker, lita_handler: true do
     it 'shows an error when a <subject> does not exist' do
       send_command('steal foobar')
       expect(replies.last).to eq('Sorry, that does not exist')
+    end
+  end
+
+  describe '#observe' do
+    it 'adds a user as observer of a label' do
+      send_command('locker resource create foobar')
+      send_command('locker label create bazbat')
+      send_command('locker label add foobar to bazbat')
+      send_command('locker observe bazbat', as: alice)
+      expect(replies.last).to eq('Now observing bazbat')
+    end
+
+    it 'warns user if already observing label' do
+      send_command('locker resource create foobar')
+      send_command('locker label create bazbat')
+      send_command('locker label add foobar to bazbat')
+      send_command('locker observe bazbat', as: alice)
+      send_command('locker observe bazbat', as: alice)
+      expect(replies.last).to eq('You are already observing bazbat')
+    end
+  end
+
+  describe '#unobserve' do
+    it 'removes user from observer list for a label' do
+      send_command('locker resource create foobar')
+      send_command('locker label create bazbat')
+      send_command('locker label add foobar to bazbat')
+      send_command('locker observe bazbat', as: alice)
+      send_command('locker unobserve bazbat', as: alice)
+      expect(replies.last).to eq('You have stopped observing bazbat')
+    end
+
+    it 'warns user if already not observing label' do
+      send_command('locker resource create foobar')
+      send_command('locker label create bazbat')
+      send_command('locker label add foobar to bazbat')
+      send_command('locker observe bazbat', as: alice)
+      send_command('locker unobserve bazbat', as: alice)
+      send_command('locker unobserve bazbat', as: alice)
+      expect(replies.last).to eq('You were not observing bazbat originally')
     end
   end
 end

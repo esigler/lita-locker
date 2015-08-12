@@ -6,6 +6,11 @@ en:
           stolen: "%{label} stolen from %{old_owner} %{mention}"
           already_unlocked: "%{label} was already unlocked"
           self: Why are you stealing the lock from yourself?
+        observe:
+          now_observing: "Now observing %{name}"
+          already_observing: "You are already observing %{name}"
+          stopped_observing: "You have stopped observing %{name}"
+          were_not_observing: "You were not observing %{name} originally"
         help:
           log:
             syntax: locker log <label>
@@ -19,6 +24,12 @@ en:
           unlock:
             syntax: unlock <subject>
             desc: Make something available to others. Can have # comments afterwards.
+          observe:
+            syntax: locker observe <subject>
+            desc: Get a notification when something becomes available. Can have # comments afterwards
+          unobserve:
+            syntax: locker unobserve <subject>
+            desc: Stop getting notifications when something becomes available. Can have # comments afterwards
           steal:
             syntax: steal <subject>
             desc: Force removal of a reservation. Can have # comments afterwards.
@@ -81,6 +92,7 @@ en:
           owned_lock: "%{name} is locked by %{owner_name} %{mention} (taken %{time}), you have been added to the queue, type 'locker dequeue %{name}' to be removed"
           owned_unlock: "%{name} is locked by %{owner_name} %{mention} (taken %{time})"
           is_unlocked: "%{name} is unlocked"
+          unlocked_no_queue: "%{name} is unlocked and no one is next up %{mention}"
           unable_to_lock: "%{name} unable to be locked"
           lock: "%{name} locked"
           desc: "%{name} is unlocked"
