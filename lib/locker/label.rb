@@ -40,7 +40,7 @@ module Locker
 
       def self.delete(key)
         fail 'Unknown label key' unless Label.exists?(key)
-        %w(state, owner_id, membership, wait_queue, journal).each do |item|
+        %w(state, owner_id, membership, wait_queue, journal, observer_ids).each do |item|
           redis.del("label:#{key}:#{item}")
         end
         redis.srem('label-list', Label.normalize(key))
