@@ -69,6 +69,19 @@ describe Lita::Handlers::LockerMisc, lita_handler: true do
       send_command('locker dequeue foo', as: bob)
       expect(replies.last).to eq('You have been removed from the queue for foo')
     end
+
+    it 'avoids adjacent duplicates in the queue when a sandwiched dequeue occurs' do
+      send_command('locker resource create bar')
+      send_command('locker label create foo')
+      send_command('locker label add bar to foo')
+      send_command('lock foo', as: alice)
+      send_command('lock foo', as: bob)
+      send_command('lock foo', as: doris)
+      send_command('lock foo', as: bob)
+      send_command('locker dequeue foo', as: doris)
+      send_command('locker status foo')
+      expect(replies.last).to eq('foo is locked by Alice (taken 1 second ago). Next up: Bob')
+    end
   end
 
   describe '#status' do
