@@ -80,7 +80,7 @@ describe Lita::Handlers::LockerMisc, lita_handler: true do
       send_command('lock foo', as: bob)
       send_command('locker dequeue foo', as: doris)
       send_command('locker status foo')
-      expect(replies.last).to eq('foo is locked by Alice (taken 1 second ago). Next up: Bob')
+      expect(replies.last).to match(/^foo is locked by Alice \(taken \d seconds? ago\)\. Next up: Bob$/)
     end
   end
 
@@ -93,13 +93,13 @@ describe Lita::Handlers::LockerMisc, lita_handler: true do
       expect(replies.last).to eq('foo is unlocked')
       send_command('lock foo')
       send_command('locker status foo')
-      expect(replies.last).to eq('foo is locked by Test User (taken 1 second ago)')
+      expect(replies.last).to match(/^foo is locked by Test User \(taken \d seconds? ago\)$/)
       send_command('lock foo', as: alice)
       send_command('locker status foo')
-      expect(replies.last).to eq('foo is locked by Test User (taken 1 second ago). Next up: Alice')
+      expect(replies.last).to match(/^foo is locked by Test User \(taken \d seconds? ago\)\. Next up: Alice$/)
       send_command('lock foo', as: bob)
       send_command('locker status foo')
-      expect(replies.last).to eq('foo is locked by Test User (taken 1 second ago). Next up: Alice, Bob')
+      expect(replies.last).to match(/^foo is locked by Test User \(taken \d seconds? ago\)\. Next up: Alice, Bob$/)
     end
 
     it 'shows the status of a resource' do

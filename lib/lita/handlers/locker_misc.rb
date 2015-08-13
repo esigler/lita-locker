@@ -58,11 +58,7 @@ module Lita
         return response.reply(t('subject.does_not_exist', name: name)) unless Label.exists?(name)
         l = Label.new(name)
         l.wait_queue.delete(response.user.id)
-        queued = l.wait_queue.to_a
-        l.wait_queue.clear
-        queued.chunk { |x| x }.map(&:first).each do |user|
-          l.wait_queue << user
-        end
+        l.dedupe!
         response.reply(t('label.removed_from_queue', name: name))
       end
 

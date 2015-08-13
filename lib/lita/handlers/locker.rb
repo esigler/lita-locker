@@ -42,6 +42,13 @@ module Lita
       )
 
       route(
+        /^give\s#{LABEL_REGEX}\sto\s#{USER_REGEX}#{COMMENT_REGEX}$/,
+        :give,
+        command: true,
+        help: { t('help.give.syntax') => t('help.give.desc') }
+      )
+
+      route(
         /^locker\sobserve\s#{LABEL_REGEX}#{COMMENT_REGEX}$/,
         :observe,
         command: true,
@@ -118,7 +125,32 @@ module Lita
         response.reply(attempt_steal(name, response.user))
       end
 
+      def give(response)
+        name = response.match_data['label'].rstrip
+
+        return response.reply(failed(t('subject.does_not_exist', name: name))) unless Label.exists?(name)
+        l = Label.new(name)
+        owner_mention = l.owner.mention_name ? "(@#{l.owner.mention_name})" : ''
+        return response.reply(t('give.not_owner',
+                                label: name,
+                                owner: l.owner.name,
+                                mention: owner_mention)) unless l.owner == response.user
+        recipient = Lita::User.fuzzy_find(response.match_data['username'].rstrip)
+        return response.reply(t('user.unknown')) unless recipient
+
+        response.reply(attempt_give(name, response.user, recipient))
+      end
+
       private
+
+      def attempt_give(name, giver, recipient)
+        label = Label.new(name)
+        return t('give.self') if recipient == giver
+        old_owner = label.owner
+        label.give!(recipient.id)
+        mention = recipient.mention_name ? "(@#{recipient.mention_name})" : ''
+        success(t('give.given', label: name, giver: old_owner.name, recipient: recipient.name, mention: mention))
+      end
 
       def attempt_steal(name, user)
         label = Label.new(name)

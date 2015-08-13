@@ -37,15 +37,15 @@ describe Lita::Handlers::Locker, lita_handler: true do
     end
   end
 
-  let(:alice) do
+  let!(:alice) do
     Lita::User.create('9001@hipchat', name: 'Alice', mention_name: 'alice')
   end
 
-  let(:bob) do
+  let!(:bob) do
     Lita::User.create('9002@hipchat', name: 'Bob', mention_name: 'bob')
   end
 
-  let(:charlie) do
+  let!(:charlie) do
     Lita::User.create('9003@hipchat', name: 'Charlie', mention_name: 'charlie')
   end
 
@@ -85,7 +85,7 @@ describe Lita::Handlers::Locker, lita_handler: true do
       send_command('lock bazbat', as: bob)
       send_command('lock bazbat', as: bob)
       send_command('locker status bazbat')
-      expect(replies.last).to eq('bazbat is locked by Alice (taken 1 second ago). Next up: Bob')
+      expect(replies.last).to match(/^bazbat is locked by Alice \(taken \d seconds? ago\)\. Next up: Bob$/)
     end
 
     it 'shows a warning when a label has no resources' do
@@ -125,8 +125,9 @@ describe Lita::Handlers::Locker, lita_handler: true do
       send_command('locker label add foobar to bazbat')
       send_command('lock bazbat', as: alice)
       send_command('lock bazbat', as: bob)
-      expect(replies.last).to eq('bazbat is locked by Alice (@alice) (taken 1 second ago), you have been ' \
-                                 'added to the queue (currently: Bob), type \'locker dequeue bazbat\' to be removed')
+      # rubocop:disable Metrics/LineLength
+      expect(replies.last).to match(/^bazbat is locked by Alice \(@alice\) \(taken \d seconds? ago\), you have been added to the queue \(currently: Bob\), type 'locker dequeue bazbat' to be removed$/)
+      # rubocop:enable Metrics/LineLength
     end
 
     it 'shows an error when a label does not exist' do
@@ -208,7 +209,7 @@ describe Lita::Handlers::Locker, lita_handler: true do
       send_command('locker label add foobar to bazbat')
       send_command('lock bazbat', as: alice)
       send_command('unlock bazbat', as: bob)
-      expect(replies.last).to eq('bazbat is locked by Alice (@alice) (taken 1 second ago)')
+      expect(replies.last).to match(/^bazbat is locked by Alice \(@alice\) \(taken \d seconds? ago\)$/)
     end
 
     it 'shows a warning when a label is already unlocked' do
@@ -244,7 +245,7 @@ describe Lita::Handlers::Locker, lita_handler: true do
       send_command('lock bazbat', as: bob)
       send_command('steal bazbat', as: charlie)
       send_command('locker status bazbat')
-      expect(replies.last).to eq('bazbat is locked by Charlie (taken 1 second ago). Next up: Bob')
+      expect(replies.last).to match(/^bazbat is locked by Charlie \(taken \d seconds? ago\)\. Next up: Bob$/)
     end
 
     it 'shows a warning when the label is already unlocked' do
@@ -267,6 +268,61 @@ describe Lita::Handlers::Locker, lita_handler: true do
     it 'shows an error when a <subject> does not exist' do
       send_command('steal foobar')
       expect(replies.last).to eq('Sorry, that does not exist')
+    end
+  end
+
+  describe '#give' do
+    it 'transfers a lock from the owner to a recipient' do
+      send_command('locker resource create foobar')
+      send_command('locker label create bazbat')
+      send_command('locker label add foobar to bazbat')
+      send_command('lock bazbat', as: alice)
+      send_command('give bazbat to @bob # with a comment', as: alice)
+      expect(replies.last).to eq('Alice gave bazbat to Bob (@bob)')
+    end
+
+    it 'preserves the state of the queue when there is one' do
+      send_command('locker resource create foobar')
+      send_command('locker label create bazbat')
+      send_command('locker label add foobar to bazbat')
+      send_command('lock bazbat', as: alice)
+      send_command('lock bazbat', as: bob)
+      send_command('lock bazbat', as: charlie)
+      send_command('give bazbat to @charlie # with a comment', as: alice)
+      send_command('locker status bazbat')
+      expect(replies.last).to match(/^bazbat is locked by Charlie \(taken \d seconds? ago\)\. Next up: Bob, Charlie$/)
+    end
+
+    it 'shows a warning when the owner attempts to give the label to herself' do
+      send_command('locker resource create foobar')
+      send_command('locker label create bazbat')
+      send_command('locker label add foobar to bazbat')
+      send_command('lock bazbat', as: alice)
+      send_command('give bazbat to @alice # with a comment', as: alice)
+      expect(replies.last).to eq('Why are you giving the lock to yourself?')
+    end
+
+    it 'shows an error when the attempted giver is not the owner' do
+      send_command('locker resource create foobar')
+      send_command('locker label create bazbat')
+      send_command('locker label add foobar to bazbat')
+      send_command('lock bazbat', as: alice)
+      send_command('give bazbat to @charlie # with a comment', as: bob)
+      expect(replies.last).to eq('The lock on bazbat can only be given by its current owner: Alice (@alice)')
+    end
+
+    it 'shows an error when the label does not exist' do
+      send_command('give foobar to @bob', as: alice)
+      expect(replies.last).to eq('Sorry, that does not exist')
+    end
+
+    it 'shows an error when the recipient does not exist' do
+      send_command('locker resource create foobar')
+      send_command('locker label create bazbat')
+      send_command('locker label add foobar to bazbat')
+      send_command('lock bazbat', as: alice)
+      send_command('give bazbat to @doris', as: alice)
+      expect(replies.last).to eq('Unknown user')
     end
   end
 
