@@ -42,7 +42,7 @@ module Lita
       )
 
       route(
-        /^give\s#{LABEL_REGEX}\sto\s#{USER_REGEX}#{COMMENT_REGEX}$/,
+        /^locker\sgive\s#{LABEL_REGEX}\sto\s#{USER_REGEX}#{COMMENT_REGEX}$/,
         :give,
         command: true,
         help: { t('help.give.syntax') => t('help.give.desc') }

@@ -30,6 +30,8 @@ describe Lita::Handlers::Locker, lita_handler: true do
       is_expected.to route_command("steal #{l}").to(:steal)
       is_expected.to route_command("steal #{l} ").to(:steal)
       is_expected.to route_command("steal #{l} #this is a comment").to(:steal)
+      is_expected.to route_command("locker give #{l} to alice").to(:give)
+      is_expected.to route_command("locker give #{l} to alice #this is a comment").to(:give)
       is_expected.to route_command("locker observe #{l}").to(:observe)
       is_expected.to route_command("locker observe #{l} #this is a comment").to(:observe)
       is_expected.to route_command("locker unobserve #{l}").to(:unobserve)
@@ -277,7 +279,7 @@ describe Lita::Handlers::Locker, lita_handler: true do
       send_command('locker label create bazbat')
       send_command('locker label add foobar to bazbat')
       send_command('lock bazbat', as: alice)
-      send_command('give bazbat to @bob # with a comment', as: alice)
+      send_command('locker give bazbat to @bob # with a comment', as: alice)
       expect(replies.last).to eq('Alice gave bazbat to Bob (@bob)')
     end
 
@@ -288,7 +290,7 @@ describe Lita::Handlers::Locker, lita_handler: true do
       send_command('lock bazbat', as: alice)
       send_command('lock bazbat', as: bob)
       send_command('lock bazbat', as: charlie)
-      send_command('give bazbat to @charlie # with a comment', as: alice)
+      send_command('locker give bazbat to @charlie # with a comment', as: alice)
       send_command('locker status bazbat')
       expect(replies.last).to match(/^bazbat is locked by Charlie \(taken \d seconds? ago\)\. Next up: Bob, Charlie$/)
     end
@@ -298,7 +300,7 @@ describe Lita::Handlers::Locker, lita_handler: true do
       send_command('locker label create bazbat')
       send_command('locker label add foobar to bazbat')
       send_command('lock bazbat', as: alice)
-      send_command('give bazbat to @alice # with a comment', as: alice)
+      send_command('locker give bazbat to @alice # with a comment', as: alice)
       expect(replies.last).to eq('Why are you giving the lock to yourself?')
     end
 
@@ -307,12 +309,12 @@ describe Lita::Handlers::Locker, lita_handler: true do
       send_command('locker label create bazbat')
       send_command('locker label add foobar to bazbat')
       send_command('lock bazbat', as: alice)
-      send_command('give bazbat to @charlie # with a comment', as: bob)
+      send_command('locker give bazbat to @charlie # with a comment', as: bob)
       expect(replies.last).to eq('The lock on bazbat can only be given by its current owner: Alice (@alice)')
     end
 
     it 'shows an error when the label does not exist' do
-      send_command('give foobar to @bob', as: alice)
+      send_command('locker give foobar to @bob', as: alice)
       expect(replies.last).to eq('Sorry, that does not exist')
     end
 
@@ -321,7 +323,7 @@ describe Lita::Handlers::Locker, lita_handler: true do
       send_command('locker label create bazbat')
       send_command('locker label add foobar to bazbat')
       send_command('lock bazbat', as: alice)
-      send_command('give bazbat to @doris', as: alice)
+      send_command('locker give bazbat to @doris', as: alice)
       expect(replies.last).to eq('Unknown user')
     end
   end
