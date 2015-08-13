@@ -103,7 +103,23 @@ module Locker
       def steal!(owner_id)
         log("Stolen from #{owner.id} to #{owner_id}")
         wait_queue.unshift(owner_id)
+        self.dedupe!
         self.unlock!
+      end
+
+      def give!(recipient_id)
+        log("Given from #{owner.id} to #{recipient_id}")
+        wait_queue.unshift(recipient_id)
+        self.dedupe!
+        self.unlock!
+      end
+
+      def dedupe!
+        queued = wait_queue.to_a
+        wait_queue.clear
+        queued.chunk { |x| x }.map(&:first).each do |user|
+          wait_queue << user
+        end
       end
 
       def add_observer!(observer_id)

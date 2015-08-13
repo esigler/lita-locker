@@ -6,6 +6,10 @@ en:
           stolen: "%{label} stolen from %{old_owner} %{mention}"
           already_unlocked: "%{label} was already unlocked"
           self: Why are you stealing the lock from yourself?
+        give:
+          not_owner: "The lock on %{label} can only be given by its current owner: %{owner} %{mention}"
+          given: "%{giver} gave %{label} to %{recipient} %{mention}"
+          self: Why are you giving the lock to yourself?
         observe:
           now_observing: "Now observing %{name}"
           already_observing: "You are already observing %{name}"
@@ -33,6 +37,9 @@ en:
           steal:
             syntax: steal <subject>
             desc: Force removal of a reservation. Can have # comments afterwards.
+          give:
+            syntax: give <subject> to <username>
+            desc: Transfer ownership of a lock to another user. Can have # comments afterwards.
           status:
             syntax: locker status <label or resource>
             desc: Show the current state of <label or resource>
