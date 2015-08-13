@@ -38,9 +38,9 @@ locker status web       - Show the current state of web
 
 ### Locking, Unlocking, State
 ```
-lock <label>           - A basic reservation, with no time limit. Can have # comments afterwards.
-unlock <label>         - Remove a reservation.  This can only be done by whomever made the request. Can have # comments afterwards.
-steal <label>          - Force removal of a reservation.  This can be done by anyone. Can have # comments afterwards.
+lock <label>                  - A basic reservation, with no time limit. Can have # comments afterwards.
+unlock <label>                - Remove a reservation.  This can only be done by whomever made the request. Can have # comments afterwards.
+steal <label>                 - Force removal of a reservation.  This can be done by anyone. Can have # comments afterwards.
 locker give <label> to <user> - Transfer ownership of a lock to another user.  This can only be done by the lock's current owner. Can have # comments afterwards.
 ```
 
