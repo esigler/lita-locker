@@ -24,22 +24,22 @@ en:
             desc: Remove yourself from the queue for a label
           lock:
             syntax: lock <subject>
-            desc: Make something unavailable to others. Can have # comments afterwards.
+            desc: "Make something unavailable to others. Can have # comments afterwards."
           unlock:
             syntax: unlock <subject>
-            desc: Make something available to others. Can have # comments afterwards.
+            desc: "Make something available to others. Can have # comments afterwards."
           observe:
             syntax: locker observe <subject>
-            desc: Get a notification when something becomes available. Can have # comments afterwards
+            desc: "Get a notification when something becomes available. Can have # comments afterwards."
           unobserve:
             syntax: locker unobserve <subject>
-            desc: Stop getting notifications when something becomes available. Can have # comments afterwards
+            desc: "Stop getting notifications when something becomes available. Can have # comments afterwards."
           steal:
             syntax: steal <subject>
-            desc: Force removal of a reservation. Can have # comments afterwards.
+            desc: "Force removal of a reservation. Can have # comments afterwards."
           give:
-            syntax: give <subject> to <username>
-            desc: Transfer ownership of a lock to another user. Can have # comments afterwards.
+            syntax: locker give <subject> to <username>
+            desc: "Transfer ownership of a lock to another user. Can have # comments afterwards."
           status:
             syntax: locker status <label or resource>
             desc: Show the current state of <label or resource>
