@@ -10,7 +10,7 @@ module Lita
       include ::Locker::Resource
 
       route(
-        /^locker\sstatus\s#{LABEL_REGEX}$/,
+        /^locker\sstatus\s#{LABEL_WILDCARD_REGEX}$/,
         :status,
         command: true,
         help: { t('help.status.syntax') => t('help.status.desc') }
@@ -48,9 +48,18 @@ module Lita
 
       def status(response)
         name = response.match_data['label']
-        return response.reply(status_label(name)) if Label.exists?(name)
-        return response.reply(status_resource(name)) if Resource.exists?(name)
-        response.reply(failed(t('subject.does_not_exist', name: name)))
+        unless name =~ /\*/
+          # Literal query
+          return response.reply(status_label(name)) if Label.exists?(name)
+          return response.reply(status_resource(name)) if Resource.exists?(name)
+        end
+        # Wildcard query
+        matcher = Regexp.new(name.gsub(/\*/, '.*'))
+        labels = Label.list.select { |label| label =~ matcher }
+        return response.reply(failed(t('subject.does_not_exist', name: name))) if labels.empty?
+        labels.each do |n|
+          response.reply(status_label(n))
+        end
       end
 
       def dequeue(response)

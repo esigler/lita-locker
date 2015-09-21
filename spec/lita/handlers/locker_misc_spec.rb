@@ -17,6 +17,8 @@ describe Lita::Handlers::LockerMisc, lita_handler: true do
     it { is_expected.to route_command("locker status #{r}").to(:status) }
   end
 
+  it { is_expected.to route_command('locker status foo*').to(:status) }
+
   it do
     is_expected.to route_command('locker list @alice').to(:list)
     is_expected.to route_command('locker list Alice').to(:list)
@@ -111,6 +113,22 @@ describe Lita::Handlers::LockerMisc, lita_handler: true do
       send_command('lock foo')
       send_command('locker status bar')
       expect(replies.last).to eq('Resource: bar, state: locked')
+    end
+
+    it 'allows label wildcard search with an asterisk' do
+      send_command('locker resource create foobarbaz')
+      send_command('locker label create foobar')
+      send_command('locker label add foobarbaz to foobar')
+      send_command('locker resource create foobazbar')
+      send_command('locker label create foobaz')
+      send_command('locker label add foobazbar to foobaz')
+      send_command('locker resource create bazbarluhrmann')
+      send_command('locker label create bazbar')
+      send_command('locker label add bazbarluhrmann to bazbar')
+      send_command('lock foobar')
+      send_command('locker status foo*')
+      expect(replies[-2]).to match(/^foobar is locked by Test User \(taken \d seconds? ago\)$/)
+      expect(replies.last).to match(/^foobaz is unlocked$/)
     end
 
     it 'shows an error if nothing exists with that name' do

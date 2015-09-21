@@ -44,6 +44,15 @@ steal <label>                 - Force removal of a reservation.  This can be don
 locker give <label> to <user> - Transfer ownership of a lock to another user.  This can only be done by the lock's current owner. Can have # comments afterwards.
 ```
 
+### Status
+```
+locker status <label or resource>  - Show the current state of <label or resource>
+locker list <username>             - Show what locks a user currently holds
+locker log <label>                 - Show up to the last 10 activity log entries for <label>
+locker observe <label>             - Get a notification when <label> becomes available
+locker unobserve <label>           - Stop getting notifications when <label> becomes available
+```
+
 ### Queueing
 ```
 lock <label>           - If <label> is already locked, adds you to a FIFO queue of pending reservations for <label>
