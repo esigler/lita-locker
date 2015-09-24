@@ -52,11 +52,12 @@ module Lita
           # Literal query
           return response.reply(status_label(name)) if Label.exists?(name)
           return response.reply(status_resource(name)) if Resource.exists?(name)
+          return response.reply(failed(t('status.does_not_exist', name: name)))
         end
         # Wildcard query
         matcher = Regexp.new(name.gsub(/\*/, '.*'))
         labels = Label.list.select { |label| label =~ matcher }
-        return response.reply(failed(t('subject.does_not_exist', name: name))) if labels.empty?
+        return response.reply(failed(t('status.does_not_exist', name: name))) if labels.empty?
         labels.each do |n|
           response.reply(status_label(n))
         end
