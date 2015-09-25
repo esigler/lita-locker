@@ -132,8 +132,17 @@ describe Lita::Handlers::LockerMisc, lita_handler: true do
     end
 
     it 'shows an error if nothing exists with that name' do
+      send_command('locker resource create foobarbaz')
+      send_command('locker label create foobar')
+      send_command('locker label add foobarbaz to foobar')
+      send_command('locker resource create foobazbar')
+      send_command('locker label create foobaz')
+      send_command('locker label add foobazbar to foobaz')
+      send_command('locker resource create bazbarluhrmann')
+      send_command('locker label create bazbar')
+      send_command('locker label add bazbarluhrmann to bazbar')
       send_command('locker status foo')
-      expect(replies.last).to eq('Sorry, that does not exist')
+      expect(replies.last).to eq('Sorry, that does not exist. Use * for wildcard search')
     end
   end
 

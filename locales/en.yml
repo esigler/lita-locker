@@ -42,7 +42,7 @@ en:
             desc: "Transfer ownership of a lock to another user. Can have # comments afterwards."
           status:
             syntax: locker status <label or resource>
-            desc: Show the current state of <label or resource>
+            desc: "Show the current state of <label or resource>. Supports wildcard search with *"
           list:
             syntax: locker list <username>
             desc: Show what locks a user currently holds
@@ -90,6 +90,8 @@ en:
           is_unlocked: "%{name} is unlocked"
           owned: "%{name} is locked by %{owner_name}"
           owned_mention: "%{name} is locked by %{owner_name} (@%{owner_mention})"
+        status:
+          does_not_exist: "Sorry, that does not exist. Use * for wildcard search"
         subject:
           does_not_exist: "Sorry, that does not exist"
         label:
