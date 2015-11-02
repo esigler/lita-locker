@@ -193,7 +193,7 @@ module Locker
         usr = Lita::User.find_by_id(u)
         queue.push(usr.name)
       end
-      mention = l.owner.mention_name ? "(@#{l.owner.mention_name})" : ''
+      mention = render_template('mention', name: l.owner.mention_name, id: l.owner.id)
       failed(t('label.owned_lock', name: name,
                                    owner_name: l.owner.name,
                                    mention: mention,

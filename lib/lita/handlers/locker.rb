@@ -90,7 +90,7 @@ module Lita
 
         return if l.locked?
         mention_names = l.observers
-                        .map { |observer| observer.mention_name ? "(@#{observer.mention_name})" : '' }
+                        .map { |observer| render_template('mention', name: observer.mention_name, id: observer.id) }
                         .reject { |mention| mention == '' }
                         .sort
                         .join(' ')
@@ -130,7 +130,7 @@ module Lita
 
         return response.reply(failed(t('subject.does_not_exist', name: name))) unless Label.exists?(name)
         l = Label.new(name)
-        owner_mention = l.owner.mention_name ? "(@#{l.owner.mention_name})" : ''
+        owner_mention = render_template('mention', name: l.owner.mention_name, id: l.owner.id)
         return response.reply(t('give.not_owner',
                                 label: name,
                                 owner: l.owner.name,
@@ -148,7 +148,7 @@ module Lita
         return t('give.self') if recipient == giver
         old_owner = label.owner
         label.give!(recipient.id)
-        mention = recipient.mention_name ? "(@#{recipient.mention_name})" : ''
+        mention = render_template('mention', name: recipient.mention_name, id: recipient.id)
         success(t('give.given', label: name, giver: old_owner.name, recipient: recipient.name, mention: mention))
       end
 
@@ -157,7 +157,7 @@ module Lita
         return t('steal.self') if label.owner == user
         old_owner = label.owner
         label.steal!(user.id)
-        mention = old_owner.mention_name ? "(@#{old_owner.mention_name})" : ''
+        mention = render_template('mention', name: old_owner.mention_name, id: old_owner.id)
         success(t('steal.stolen', label: name, old_owner: old_owner.name, mention: mention))
       end
 
@@ -166,13 +166,13 @@ module Lita
         if label.owner == user
           label.unlock!
           if label.locked?
-            mention = label.owner.mention_name ? "(@#{label.owner.mention_name})" : ''
+            mention = render_template('mention', name: label.owner.mention_name, id: label.owner.id)
             failed(t('label.now_locked_by', name: name, owner: label.owner.name, mention: mention))
           else
             success(t('label.unlock', name: name))
           end
         else
-          mention = label.owner.mention_name ? "(@#{label.owner.mention_name})" : ''
+          mention = render_template('mention', name: label.owner.mention_name, id: label.owner.id)
           failed(t('label.owned_unlock', name: name, owner_name: label.owner.name, mention: mention, time: label.held_for))
         end
       end

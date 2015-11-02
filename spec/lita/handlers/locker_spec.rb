@@ -136,6 +136,36 @@ describe Lita::Handlers::Locker, lita_handler: true do
       send_command('lock foobar')
       expect(replies.last).to eq('Label foobar does not exist.  To create it: "!locker label create foobar"')
     end
+
+    context 'when mentioning a user' do
+      before(:each) do
+        send_command('locker resource create foobar')
+        send_command('locker label create bazbat')
+        send_command('locker label add foobar to bazbat')
+      end
+
+      it 'only uses a full name when the user has no mention name' do
+        david = Lita::User.create('123', name: 'David', mention_name: nil)
+        send_command('lock bazbat', as: david)
+        send_command('lock bazbat', as: bob)
+        expect(replies.last).to match(/^bazbat is locked by David  \(taken/)
+      end
+
+      it "includes the user's mention name in Hipchat" do
+        allow(robot.config.robot).to receive(:adapter).and_return('hipchat')
+        send_command('lock bazbat', as: alice)
+        send_command('lock bazbat', as: bob)
+        expect(replies.last).to match(/^\(failed\) bazbat is locked by Alice \(@alice\) \(taken/)
+      end
+
+      it 'uses the correct mention formatting in Slack' do
+        allow(robot.config.robot).to receive(:adapter).and_return('slack')
+        emily = Lita::User.create('U12345678', name: 'Emily', mention_name: 'emily')
+        send_command('lock bazbat', as: emily)
+        send_command('lock bazbat', as: bob)
+        expect(replies.last).to match(/^:failed: bazbat is locked by Emily \(<@U12345678\|emily>\) \(taken/)
+      end
+    end
   end
 
   describe '#unlock' do
