@@ -73,7 +73,7 @@ module Lita
         return response.reply(failed(t('label.does_not_exist', name: name))) unless Label.exists?(name)
         l = Label.new(name)
         return response.reply(failed(t('label.no_resources', name: name))) unless l.membership.count > 0
-        return response.reply(t('label.self_lock', name: name)) if l.owner == response.user
+        return response.reply(t('label.self_lock', name: name, user: response.user.name)) if l.owner == response.user
         return response.reply(success(t('label.lock', name: name))) if l.lock!(response.user.id)
 
         response.reply(label_ownership(name))
@@ -99,20 +99,22 @@ module Lita
 
       def observe(response)
         name = response.match_data['label']
+        user = response.user
         return response.reply(failed(t('label.does_not_exist', name: name))) unless Label.exists?(name)
         l = Label.new(name)
-        return response.reply(t('observe.already_observing', name: name)) if l.observer?(response.user.id)
-        l.add_observer!(response.user.id)
-        response.reply(t('observe.now_observing', name: name))
+        return response.reply(t('observe.already_observing', name: name, user: user.name)) if l.observer?(user.id)
+        l.add_observer!(user.id)
+        response.reply(t('observe.now_observing', name: name, user: user.name))
       end
 
       def unobserve(response)
         name = response.match_data['label']
+        user = response.user
         return response.reply(failed(t('label.does_not_exist', name: name))) unless Label.exists?(name)
         l = Label.new(name)
-        return response.reply(t('observe.were_not_observing', name: name)) unless l.observer?(response.user.id)
-        l.remove_observer!(response.user.id)
-        response.reply(t('observe.stopped_observing', name: name))
+        return response.reply(t('observe.were_not_observing', name: name, user: user.name)) unless l.observer?(user.id)
+        l.remove_observer!(user.id)
+        response.reply(t('observe.stopped_observing', name: name, user: user.name))
       end
 
       def steal(response)
@@ -135,8 +137,9 @@ module Lita
                                 label: name,
                                 owner: l.owner.name,
                                 mention: owner_mention)) unless l.owner == response.user
-        recipient = Lita::User.fuzzy_find(response.match_data['username'].rstrip)
-        return response.reply(t('user.unknown')) unless recipient
+        recipient_name = response.match_data['username'].rstrip
+        recipient = Lita::User.fuzzy_find(recipient_name)
+        return response.reply(t('user.unknown', user: recipient_name)) unless recipient
 
         response.reply(attempt_give(name, response.user, recipient))
       end
@@ -145,7 +148,7 @@ module Lita
 
       def attempt_give(name, giver, recipient)
         label = Label.new(name)
-        return t('give.self') if recipient == giver
+        return t('give.self', user: giver.name) if recipient == giver
         old_owner = label.owner
         label.give!(recipient.id)
         mention = render_template('mention', name: recipient.mention_name, id: recipient.id)
@@ -154,11 +157,11 @@ module Lita
 
       def attempt_steal(name, user)
         label = Label.new(name)
-        return t('steal.self') if label.owner == user
+        return t('steal.self', user: user.name) if label.owner == user
         old_owner = label.owner
         label.steal!(user.id)
         mention = render_template('mention', name: old_owner.mention_name, id: old_owner.id)
-        success(t('steal.stolen', label: name, old_owner: old_owner.name, mention: mention))
+        success(t('steal.stolen', label: name, thief: user.name, victim: old_owner.name, mention: mention))
       end
 
       def attempt_unlock(name, user)

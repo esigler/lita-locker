@@ -74,9 +74,9 @@ describe Lita::Handlers::Locker, lita_handler: true do
       send_command('locker resource create foobar')
       send_command('locker label create bazbat')
       send_command('locker label add foobar to bazbat')
-      send_command('lock bazbat')
-      send_command('lock bazbat')
-      expect(replies.last).to eq('You already have the lock on bazbat')
+      send_command('lock bazbat', as: alice)
+      send_command('lock bazbat', as: alice)
+      expect(replies.last).to eq('Alice, you already have the lock on bazbat')
     end
 
     it 'does not add a user multiple times to the end of a queue' do
@@ -134,7 +134,7 @@ describe Lita::Handlers::Locker, lita_handler: true do
 
     it 'shows an error when a label does not exist' do
       send_command('lock foobar')
-      expect(replies.last).to eq('Label foobar does not exist.  To create it: "!locker label create foobar"')
+      expect(replies.last).to eq('Label foobar does not exist. To create it: "!locker label create foobar"')
     end
 
     context 'when mentioning a user' do
@@ -255,7 +255,7 @@ describe Lita::Handlers::Locker, lita_handler: true do
 
     it 'shows an error when a <subject> does not exist' do
       send_command('unlock foobar')
-      expect(replies.last).to eq('Sorry, that does not exist')
+      expect(replies.last).to eq('foobar does not exist')
     end
   end
 
@@ -266,7 +266,7 @@ describe Lita::Handlers::Locker, lita_handler: true do
       send_command('locker label add foobar to bazbat')
       send_command('lock bazbat', as: alice)
       send_command('steal bazbat # with a comment', as: bob)
-      expect(replies.last).to eq('bazbat stolen from Alice (@alice)')
+      expect(replies.last).to eq('Bob stole bazbat from Alice (@alice)')
     end
 
     it 'preserves the state of the queue when there is one' do
@@ -294,12 +294,12 @@ describe Lita::Handlers::Locker, lita_handler: true do
       send_command('locker label add foobar to bazbat')
       send_command('lock bazbat', as: alice)
       send_command('steal bazbat # with a comment', as: alice)
-      expect(replies.last).to eq('Why are you stealing the lock from yourself?')
+      expect(replies.last).to eq('Alice, why are you stealing the lock from yourself?')
     end
 
     it 'shows an error when a <subject> does not exist' do
       send_command('steal foobar')
-      expect(replies.last).to eq('Sorry, that does not exist')
+      expect(replies.last).to eq('foobar does not exist')
     end
   end
 
@@ -331,7 +331,7 @@ describe Lita::Handlers::Locker, lita_handler: true do
       send_command('locker label add foobar to bazbat')
       send_command('lock bazbat', as: alice)
       send_command('locker give bazbat to @alice # with a comment', as: alice)
-      expect(replies.last).to eq('Why are you giving the lock to yourself?')
+      expect(replies.last).to eq('Alice, why are you giving the lock to yourself?')
     end
 
     it 'shows an error when the attempted giver is not the owner' do
@@ -345,7 +345,7 @@ describe Lita::Handlers::Locker, lita_handler: true do
 
     it 'shows an error when the label does not exist' do
       send_command('locker give foobar to @bob', as: alice)
-      expect(replies.last).to eq('Sorry, that does not exist')
+      expect(replies.last).to eq('foobar does not exist')
     end
 
     it 'shows an error when the recipient does not exist' do
@@ -354,7 +354,7 @@ describe Lita::Handlers::Locker, lita_handler: true do
       send_command('locker label add foobar to bazbat')
       send_command('lock bazbat', as: alice)
       send_command('locker give bazbat to @doris', as: alice)
-      expect(replies.last).to eq('Unknown user')
+      expect(replies.last).to eq("Unknown user 'doris'")
     end
   end
 
@@ -364,7 +364,7 @@ describe Lita::Handlers::Locker, lita_handler: true do
       send_command('locker label create bazbat')
       send_command('locker label add foobar to bazbat')
       send_command('locker observe bazbat', as: alice)
-      expect(replies.last).to eq('Now observing bazbat')
+      expect(replies.last).to eq('Alice is now observing bazbat')
     end
 
     it 'warns user if already observing label' do
@@ -373,7 +373,7 @@ describe Lita::Handlers::Locker, lita_handler: true do
       send_command('locker label add foobar to bazbat')
       send_command('locker observe bazbat', as: alice)
       send_command('locker observe bazbat', as: alice)
-      expect(replies.last).to eq('You are already observing bazbat')
+      expect(replies.last).to eq('Alice, you are already observing bazbat')
     end
   end
 
@@ -384,7 +384,7 @@ describe Lita::Handlers::Locker, lita_handler: true do
       send_command('locker label add foobar to bazbat')
       send_command('locker observe bazbat', as: alice)
       send_command('locker unobserve bazbat', as: alice)
-      expect(replies.last).to eq('You have stopped observing bazbat')
+      expect(replies.last).to eq('Alice, you have stopped observing bazbat')
     end
 
     it 'warns user if already not observing label' do
@@ -394,7 +394,7 @@ describe Lita::Handlers::Locker, lita_handler: true do
       send_command('locker observe bazbat', as: alice)
       send_command('locker unobserve bazbat', as: alice)
       send_command('locker unobserve bazbat', as: alice)
-      expect(replies.last).to eq('You were not observing bazbat originally')
+      expect(replies.last).to eq('Alice, you were not observing bazbat')
     end
   end
 end

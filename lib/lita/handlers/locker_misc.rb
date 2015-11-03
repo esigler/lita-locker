@@ -69,15 +69,15 @@ module Lita
         l = Label.new(name)
         l.wait_queue.delete(response.user.id)
         l.dedupe!
-        response.reply(t('label.removed_from_queue', name: name))
+        response.reply(t('label.removed_from_queue', name: name, user: response.user.name))
       end
 
       def list(response)
         username = response.match_data['username']
         user = Lita::User.fuzzy_find(username)
-        return response.reply(t('user.unknown')) unless user
+        return response.reply(t('user.unknown', user: username)) unless user
         l = user_locks(user)
-        return response.reply(t('user.no_active_locks')) unless l.size > 0
+        return response.reply(t('user.no_active_locks', user: user.name)) unless l.size > 0
         composed = ''
         l.each do |label_name|
           composed += "Label: #{label_name}\n"

@@ -57,7 +57,7 @@ describe Lita::Handlers::LockerMisc, lita_handler: true do
 
     it 'shows a warning if the label does not exist' do
       send_command('locker log something')
-      expect(replies.last).to eq('Sorry, that does not exist')
+      expect(replies.last).to eq('something does not exist')
     end
   end
 
@@ -69,7 +69,7 @@ describe Lita::Handlers::LockerMisc, lita_handler: true do
       send_command('lock foo', as: alice)
       send_command('lock foo', as: bob)
       send_command('locker dequeue foo', as: bob)
-      expect(replies.last).to eq('You have been removed from the queue for foo')
+      expect(replies.last).to eq('Bob has been removed from the queue for foo')
     end
 
     it 'avoids adjacent duplicates in the queue when a sandwiched dequeue occurs' do
@@ -142,7 +142,7 @@ describe Lita::Handlers::LockerMisc, lita_handler: true do
       send_command('locker label create bazbar')
       send_command('locker label add bazbarluhrmann to bazbar')
       send_command('locker status foo')
-      expect(replies.last).to eq('Sorry, that does not exist. Use * for wildcard search')
+      expect(replies.last).to eq('foo does not exist. Use * for wildcard search')
     end
   end
 
@@ -179,16 +179,16 @@ describe Lita::Handlers::LockerMisc, lita_handler: true do
       send_command('locker label create bazbat')
       send_command('locker label add foobar to bazbat')
       send_command('locker list Alice', as: alice)
-      expect(replies.last).to eq('That user has no active locks')
+      expect(replies.last).to eq('Alice has no active locks')
       send_command('lock bazbat', as: alice)
       send_command('unlock bazbat', as: alice)
       send_command('locker list Alice', as: alice)
-      expect(replies.last).to eq('That user has no active locks')
+      expect(replies.last).to eq('Alice has no active locks')
     end
 
     it 'shows a warning when the user does not exist' do
       send_command('locker list foobar')
-      expect(replies.last).to eq('Unknown user')
+      expect(replies.last).to eq("Unknown user 'foobar'")
     end
   end
 end
