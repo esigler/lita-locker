@@ -3,18 +3,18 @@ en:
     handlers:
       locker:
         steal:
-          stolen: "%{label} stolen from %{old_owner} %{mention}"
+          stolen: "%{thief} stole %{label} from %{victim} %{mention}"
           already_unlocked: "%{label} was already unlocked"
-          self: Why are you stealing the lock from yourself?
+          self: "%{user}, why are you stealing the lock from yourself?"
         give:
           not_owner: "The lock on %{label} can only be given by its current owner: %{owner} %{mention}"
           given: "%{giver} gave %{label} to %{recipient} %{mention}"
-          self: Why are you giving the lock to yourself?
+          self: "%{user}, why are you giving the lock to yourself?"
         observe:
-          now_observing: "Now observing %{name}"
-          already_observing: "You are already observing %{name}"
-          stopped_observing: "You have stopped observing %{name}"
-          were_not_observing: "You were not observing %{name} originally"
+          now_observing: "%{user} is now observing %{name}"
+          already_observing: "%{user}, you are already observing %{name}"
+          stopped_observing: "%{user}, you have stopped observing %{name}"
+          were_not_observing: "%{user}, you were not observing %{name}"
         help:
           log:
             syntax: locker log <label>
@@ -91,12 +91,12 @@ en:
           owned: "%{name} is locked by %{owner_name}"
           owned_mention: "%{name} is locked by %{owner_name} (@%{owner_mention})"
         status:
-          does_not_exist: "Sorry, that does not exist. Use * for wildcard search"
+          does_not_exist: "%{name} does not exist. Use * for wildcard search"
         subject:
-          does_not_exist: "Sorry, that does not exist"
+          does_not_exist: "%{name} does not exist"
         label:
           log_entry: "%{entry}"
-          self_lock: "You already have the lock on %{name}"
+          self_lock: "%{user}, you already have the lock on %{name}"
           unlock: "%{name} unlocked"
           owned_lock: "%{name} is locked by %{owner_name} %{mention} (taken %{time}), you have been added to the queue (currently: %{queue}), type 'locker dequeue %{name}' to be removed"
           owned_unlock: "%{name} is locked by %{owner_name} %{mention} (taken %{time})"
@@ -110,7 +110,7 @@ en:
           created: "Label %{name} created"
           exists: "%{name} already exists"
           deleted: "Label %{name} deleted"
-          does_not_exist: "Label %{name} does not exist.  To create it: \"!locker label create %{name}\""
+          does_not_exist: "Label %{name} does not exist. To create it: \"!locker label create %{name}\""
           has_no_resources: "Label %{name} has no resources"
           resource_added: "Resource %{resource} has been added to %{label}"
           resource_removed: "Resource %{resource} has been removed from %{label}"
@@ -119,8 +119,8 @@ en:
           no_resources: "%{name} has no resources, so it cannot be locked"
           dependency: 'Label unable to be locked, blocked on:'
           now_locked_by: "%{name} now locked by %{owner} %{mention}"
-          removed_from_queue: "You have been removed from the queue for %{name}"
-          unknown_in_queue: "You weren't in the queue for %{name}"
+          removed_from_queue: "%{user} has been removed from the queue for %{name}"
+          unknown_in_queue: "%{user}, you weren't in the queue for %{name}"
         user:
-          unknown: Unknown user
-          no_active_locks: That user has no active locks
+          unknown: "Unknown user '%{user}'"
+          no_active_locks: "%{user} has no active locks"
