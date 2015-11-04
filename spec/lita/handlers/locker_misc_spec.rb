@@ -62,10 +62,13 @@ describe Lita::Handlers::LockerMisc, lita_handler: true do
   end
 
   describe '#dequeue' do
-    it 'shows a successful dequeue' do
+    before(:each) do
       send_command('locker resource create bar')
       send_command('locker label create foo')
       send_command('locker label add bar to foo')
+    end
+
+    it 'shows a successful dequeue' do
       send_command('lock foo', as: alice)
       send_command('lock foo', as: bob)
       send_command('locker dequeue foo', as: bob)
@@ -73,9 +76,6 @@ describe Lita::Handlers::LockerMisc, lita_handler: true do
     end
 
     it 'avoids adjacent duplicates in the queue when a sandwiched dequeue occurs' do
-      send_command('locker resource create bar')
-      send_command('locker label create foo')
-      send_command('locker label add bar to foo')
       send_command('lock foo', as: alice)
       send_command('lock foo', as: bob)
       send_command('lock foo', as: doris)
@@ -83,6 +83,14 @@ describe Lita::Handlers::LockerMisc, lita_handler: true do
       send_command('locker dequeue foo', as: doris)
       send_command('locker status foo')
       expect(replies.last).to match(/^foo is locked by Alice \(taken \d seconds? ago\)\. Next up: Bob$/)
+    end
+
+    it 'does not allow a user who is not in the queue to dequeue' do
+      send_command('lock foo', as: alice)
+      send_command('lock foo', as: bob)
+      send_command('unlock foo', as: alice)
+      send_command('locker dq foo', as: bob)
+      expect(replies.last).to match(/^Bob, you weren't in the queue for foo$/)
     end
   end
 

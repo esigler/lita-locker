@@ -65,11 +65,13 @@ module Lita
 
       def dequeue(response)
         name = response.match_data['label']
+        user = response.user
         return response.reply(t('subject.does_not_exist', name: name)) unless Label.exists?(name)
         l = Label.new(name)
-        l.wait_queue.delete(response.user.id)
+        return response.reply(t('label.unknown_in_queue', name: name, user: user.name)) unless l.wait_queue.include?(user.id)
+        l.wait_queue.delete(user.id)
         l.dedupe!
-        response.reply(t('label.removed_from_queue', name: name, user: response.user.name))
+        response.reply(t('label.removed_from_queue', name: name, user: user.name))
       end
 
       def list(response)
