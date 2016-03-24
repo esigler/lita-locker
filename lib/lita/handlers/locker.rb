@@ -132,6 +132,7 @@ module Lita
 
         return response.reply(failed(t('subject.does_not_exist', name: name))) unless Label.exists?(name)
         l = Label.new(name)
+        return response.reply(failed(t('give.not_owned', label: name))) unless l.locked?
         owner_mention = render_template('mention', name: l.owner.mention_name, id: l.owner.id)
         return response.reply(t('give.not_owner',
                                 label: name,

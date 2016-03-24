@@ -7,6 +7,7 @@ en:
           already_unlocked: "%{label} was already unlocked"
           self: "%{user}, why are you stealing the lock from yourself?"
         give:
+          not_owned: "%{label} is not currently locked, so it cannot be given"
           not_owner: "The lock on %{label} can only be given by its current owner: %{owner} %{mention}"
           given: "%{giver} gave %{label} to %{recipient} %{mention}"
           self: "%{user}, why are you giving the lock to yourself?"

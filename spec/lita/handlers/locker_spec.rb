@@ -325,6 +325,14 @@ describe Lita::Handlers::Locker, lita_handler: true do
       expect(replies.last).to match(/^bazbat is locked by Charlie \(taken \d seconds? ago\)\. Next up: Bob, Charlie$/)
     end
 
+    it 'shows a warning when a give is attempted on an unlocked resource' do
+      send_command('locker resource create foobar')
+      send_command('locker label create bazbat')
+      send_command('locker label add foobar to bazbat')
+      send_command('locker give bazbat to @alice # with a comment', as: bob)
+      expect(replies.last).to eq('bazbat is not currently locked, so it cannot be given')
+    end
+
     it 'shows a warning when the owner attempts to give the label to herself' do
       send_command('locker resource create foobar')
       send_command('locker label create bazbat')
