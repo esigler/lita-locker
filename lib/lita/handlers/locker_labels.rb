@@ -75,11 +75,11 @@ module Lita
         results = []
 
         names.each do |name|
-          if !Label.exists?(name) && Label.create(name)
-            results <<= t('label.created', name: name)
-          else
-            results <<= t('label.exists', name: name)
-          end
+          results <<= if !Label.exists?(name) && Label.create(name)
+                        t('label.created', name: name)
+                      else
+                        t('label.exists', name: name)
+                      end
         end
 
         response.reply(results.join(', '))
@@ -90,11 +90,11 @@ module Lita
         results = []
 
         names.each do |name|
-          if Label.exists?(name) && Label.delete(name)
-            results <<= t('label.deleted', name: name)
-          else
-            results <<= failed(t('label.does_not_exist', name: name))
-          end
+          results <<= if Label.exists?(name) && Label.delete(name)
+                        t('label.deleted', name: name)
+                      else
+                        failed(t('label.does_not_exist', name: name))
+                      end
         end
 
         response.reply(results.join(', '))

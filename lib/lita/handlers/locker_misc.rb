@@ -79,7 +79,7 @@ module Lita
         user = Lita::User.fuzzy_find(username)
         return response.reply(t('user.unknown', user: username)) unless user
         l = user_locks(user)
-        return response.reply(t('user.no_active_locks', user: user.name)) unless l.size > 0
+        return response.reply(t('user.no_active_locks', user: user.name)) if l.empty?
         composed = ''
         l.each do |label_name|
           composed += "Label: #{label_name}\n"
