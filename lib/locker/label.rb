@@ -20,7 +20,7 @@ module Locker
       attr_reader :id
 
       def initialize(key)
-        fail 'Unknown label key' unless Label.exists?(key)
+        raise 'Unknown label key' unless Label.exists?(key)
         @id = Label.normalize(key)
       end
 
@@ -29,7 +29,7 @@ module Locker
       end
 
       def self.create(key)
-        fail 'Label key already exists' if Label.exists?(key)
+        raise 'Label key already exists' if Label.exists?(key)
         redis.sadd('label-list', Label.normalize(key))
         l = Label.new(key)
         l.state    = 'unlocked'
@@ -39,7 +39,7 @@ module Locker
       end
 
       def self.delete(key)
-        fail 'Unknown label key' unless Label.exists?(key)
+        raise 'Unknown label key' unless Label.exists?(key)
         %w(state, owner_id, membership, wait_queue, journal, observer_ids).each do |item|
           redis.del("label:#{key}:#{item}")
         end
@@ -95,7 +95,7 @@ module Locker
         # FIXME: Possible race condition where resources become unavailable between unlock and relock
         if wait_queue.count > 0
           next_user = wait_queue.shift
-          self.lock!(next_user)
+          lock!(next_user)
         end
         true
       end
@@ -103,15 +103,15 @@ module Locker
       def steal!(owner_id)
         log("Stolen from #{owner.id} to #{owner_id}")
         wait_queue.unshift(owner_id)
-        self.dedupe!
-        self.unlock!
+        dedupe!
+        unlock!
       end
 
       def give!(recipient_id)
         log("Given from #{owner.id} to #{recipient_id}")
         wait_queue.unshift(recipient_id)
-        self.dedupe!
-        self.unlock!
+        dedupe!
+        unlock!
       end
 
       def dedupe!

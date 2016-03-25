@@ -15,7 +15,7 @@ module Locker
       attr_reader :id
 
       def initialize(key)
-        fail 'Unknown resource key' unless Resource.exists?(key)
+        raise 'Unknown resource key' unless Resource.exists?(key)
         @id = key
       end
 
@@ -24,7 +24,7 @@ module Locker
       end
 
       def self.create(key)
-        fail 'Resource key already exists' if Resource.exists?(key)
+        raise 'Resource key already exists' if Resource.exists?(key)
         redis.sadd('resource-list', key)
         r = Resource.new(key)
         r.state    = 'unlocked'
@@ -33,7 +33,7 @@ module Locker
       end
 
       def self.delete(key)
-        fail 'Unknown resource key' unless Resource.exists?(key)
+        raise 'Unknown resource key' unless Resource.exists?(key)
         %w(state, owner_id).each do |item|
           redis.del("resource:#{key}:#{item}")
         end

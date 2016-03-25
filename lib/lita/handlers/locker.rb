@@ -90,10 +90,10 @@ module Lita
 
         return if l.locked?
         mention_names = l.observers
-                        .map { |observer| render_template('mention', name: observer.mention_name, id: observer.id) }
-                        .reject { |mention| mention == '' }
-                        .sort
-                        .join(' ')
+                         .map { |observer| render_template('mention', name: observer.mention_name, id: observer.id) }
+                         .reject { |mention| mention == '' }
+                         .sort
+                         .join(' ')
         response.reply(t('label.unlocked_no_queue', name: name, mention: mention_names)) unless mention_names.empty?
       end
 
@@ -132,6 +132,7 @@ module Lita
 
         return response.reply(failed(t('subject.does_not_exist', name: name))) unless Label.exists?(name)
         l = Label.new(name)
+        return response.reply(failed(t('give.not_owned', label: name))) unless l.locked?
         owner_mention = render_template('mention', name: l.owner.mention_name, id: l.owner.id)
         return response.reply(t('give.not_owner',
                                 label: name,
