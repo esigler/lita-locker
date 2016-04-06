@@ -135,8 +135,7 @@ describe Lita::Handlers::LockerMisc, lita_handler: true do
       send_command('locker label add bazbarluhrmann to bazbar')
       send_command('lock foobar')
       send_command('locker status foo*')
-      expect(replies[-2]).to match(/^foobar is locked by Test User \(taken \d seconds? ago\)$/)
-      expect(replies.last).to match(/^foobaz is unlocked$/)
+      expect(replies.last).to match(/^foobar is locked by Test User \(taken \d seconds? ago\)\nfoobaz is unlocked$/)
     end
 
     it 'shows an error if nothing exists with that name' do
