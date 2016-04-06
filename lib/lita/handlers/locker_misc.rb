@@ -58,9 +58,7 @@ module Lita
         matcher = Regexp.new(name.gsub(/\*/, '.*'))
         labels = Label.list.select { |label| label =~ matcher }
         return response.reply(failed(t('status.does_not_exist', name: name))) if labels.empty?
-        labels.each do |n|
-          response.reply(status_label(n))
-        end
+        response.reply(labels.map { |l| status_label(l) }.join("\n"))
       end
 
       def dequeue(response)
