@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Lita
   module Handlers
     # Misc Locker handlers
@@ -48,7 +50,7 @@ module Lita
 
       def status(response)
         name = response.match_data['label']
-        unless name =~ /\*/
+        unless name.match?(/\*/)
           # Literal query
           return response.reply(status_label(name)) if Label.exists?(name)
           return response.reply(status_resource(name)) if Resource.exists?(name)
@@ -90,7 +92,7 @@ module Lita
       def status_label(name)
         l = Label.new(name)
         return unlocked(t('label.desc', name: name, state: l.state.value)) unless l.locked?
-        if l.wait_queue.count > 0
+        if l.wait_queue.count.positive?
           queue = []
           l.wait_queue.each do |u|
             usr = Lita::User.find_by_id(u)

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Locker subsystem
 module Locker
   # Misc helpers

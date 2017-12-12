@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Lita
   module Handlers
     # Label-related handlers
@@ -104,7 +106,7 @@ module Lita
         name = response.match_data['label']
         return response.reply(failed(t('label.does_not_exist', name: name))) unless Label.exists?(name)
         l = Label.new(name)
-        return response.reply(t('label.has_no_resources', name: name)) unless l.membership.count > 0
+        return response.reply(t('label.has_no_resources', name: name)) unless l.membership.count.positive?
         res = []
         l.membership.each do |member|
           res.push(member)

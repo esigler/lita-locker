@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Lita
   module Handlers
     # Resource-related handlers
@@ -99,7 +101,7 @@ module Lita
         return response.reply(t('resource.does_not_exist', name: name)) unless Resource.exists?(name)
         r = Resource.new(name)
         resp = t('resource.desc', name: name, state: r.state.value)
-        if r.labels.count > 0
+        if r.labels.count.positive?
           resp += ', used by: '
           r.labels.each do |label|
             resp += Label.new(label).id

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Locker subsystem
 module Locker
   # Label helpers
@@ -40,7 +42,7 @@ module Locker
 
       def self.delete(key)
         raise 'Unknown label key' unless Label.exists?(key)
-        %w(state, owner_id, membership, wait_queue, journal, observer_ids).each do |item|
+        %w[state owner_id membership wait_queue journal observer_ids].each do |item|
           redis.del("label:#{key}:#{item}")
         end
         redis.srem('label-list', Label.normalize(key))
@@ -93,7 +95,7 @@ module Locker
         log('Unlocked')
 
         # FIXME: Possible race condition where resources become unavailable between unlock and relock
-        if wait_queue.count > 0
+        if wait_queue.count.positive?
           next_user = wait_queue.shift
           lock!(next_user)
         end
@@ -207,9 +209,7 @@ module Locker
       l = Label.new(name)
       l.membership.each do |resource_name|
         resource = Locker::Resource::Resource.new(resource_name)
-        if resource.state.value == 'locked'
-          deps.push "#{resource_name} - #{resource.owner.name}"
-        end
+        deps.push "#{resource_name} - #{resource.owner.name}" if resource.state.value == 'locked'
       end
       msg += deps.join("\n")
       msg

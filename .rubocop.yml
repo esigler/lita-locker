@@ -3,7 +3,7 @@ FileName:
     - lib/lita-locker.rb
 
 LineLength:
-  Max: 130
+  Max: 150
 
 AbcSize:
   Max: 34
@@ -13,3 +13,6 @@ MethodLength:
 
 ClassLength:
   Max: 150
+
+Metrics/BlockLength:
+  Enabled: false

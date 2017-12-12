@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Locker subsystem
 module Locker
   # Resource helpers
@@ -34,7 +36,7 @@ module Locker
 
       def self.delete(key)
         raise 'Unknown resource key' unless Resource.exists?(key)
-        %w(state, owner_id).each do |item|
+        %w[state owner_id].each do |item|
           redis.del("resource:#{key}:#{item}")
         end
         redis.srem('resource-list', key)
