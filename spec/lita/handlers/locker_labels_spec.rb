@@ -17,6 +17,12 @@ describe Lita::Handlers::LockerLabels, lita_handler: true do
       is_expected.to route_command("locker label add foo, bar to #{l}").to(:add)
       is_expected.to route_command("locker label remove resource from #{l}").to(:remove)
       is_expected.to route_command("locker label remove foo, bar from #{l}").to(:remove)
+
+      is_expected.to route_command("locker label create #{l} # comment").to(:create)
+      is_expected.to route_command("locker label delete #{l} # comment").to(:delete)
+      is_expected.to route_command("locker label show #{l} # comment").to(:show)
+      is_expected.to route_command("locker label add resource to #{l} # comment").to(:add)
+      is_expected.to route_command("locker label remove resource from #{l} # comment").to(:remove)
     end
   end
 

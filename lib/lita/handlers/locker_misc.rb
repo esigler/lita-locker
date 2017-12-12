@@ -10,28 +10,28 @@ module Lita
       include ::Locker::Resource
 
       route(
-        /^locker\sstatus\s#{LABEL_WILDCARD_REGEX}$/,
+        /^locker\sstatus\s#{LABEL_WILDCARD_REGEX}#{COMMENT_REGEX}$/,
         :status,
         command: true,
         help: { t('help.status.syntax') => t('help.status.desc') }
       )
 
       route(
-        /^locker\slist\s#{USER_REGEX}$/,
+        /^locker\slist\s#{USER_REGEX}#{COMMENT_REGEX}$/,
         :list,
         command: true,
         help: { t('help.list.syntax') => t('help.list.desc') }
       )
 
       route(
-        /^locker\s(dq|dequeue)\s#{LABEL_REGEX}$/,
+        /^locker\s(dq|dequeue)\s#{LABEL_REGEX}#{COMMENT_REGEX}$/,
         :dequeue,
         command: true,
         help: { t('help.dequeue.syntax') => t('help.dequeue.desc') }
       )
 
       route(
-        /^locker\slog\s#{LABEL_REGEX}$/,
+        /^locker\slog\s#{LABEL_REGEX}#{COMMENT_REGEX}$/,
         :log,
         command: true,
         help: { t('help.log.syntax.') => t('help.log.desc') }

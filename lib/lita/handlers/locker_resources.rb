@@ -10,14 +10,14 @@ module Lita
       include ::Locker::Resource
 
       route(
-        /^locker\sresource\slist$/,
+        /^locker\sresource\slist#{COMMENT_REGEX}$/,
         :list,
         command: true,
         help: { t('help.resource.list.syntax') => t('help.resource.list.desc') }
       )
 
       route(
-        /^locker\sresource\screate\s#{RESOURCES_REGEX}$/,
+        /^locker\sresource\screate\s#{RESOURCES_REGEX}#{COMMENT_REGEX}$/,
         :create,
         command: true,
         restrict_to: [:locker_admins],
@@ -27,7 +27,7 @@ module Lita
       )
 
       route(
-        /^locker\sresource\sdelete\s#{RESOURCES_REGEX}$/,
+        /^locker\sresource\sdelete\s#{RESOURCES_REGEX}#{COMMENT_REGEX}$/,
         :delete,
         command: true,
         restrict_to: [:locker_admins],
@@ -37,7 +37,7 @@ module Lita
       )
 
       route(
-        /^locker\sresource\sshow\s#{RESOURCE_REGEX}$/,
+        /^locker\sresource\sshow\s#{RESOURCE_REGEX}#{COMMENT_REGEX}$/,
         :show,
         command: true,
         help: { t('help.resource.show.syntax') => t('help.resource.show.desc') }

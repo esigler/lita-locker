@@ -18,19 +18,23 @@ describe Lita::Handlers::LockerMisc, lita_handler: true do
   end
 
   it { is_expected.to route_command('locker status foo*').to(:status) }
+  it { is_expected.to route_command('locker status foo* # comment').to(:status) }
 
   it do
     is_expected.to route_command('locker list @alice').to(:list)
     is_expected.to route_command('locker list Alice').to(:list)
+    is_expected.to route_command('locker list Alice # comment').to(:list)
   end
 
   it do
     is_expected.to route_command('locker log something').to(:log)
+    is_expected.to route_command('locker log something # comment').to(:log)
   end
 
   it do
     is_expected.to route_command('locker dequeue something something').to(:dequeue)
     is_expected.to route_command('locker dq something something').to(:dequeue)
+    is_expected.to route_command('locker dq something something # comment').to(:dequeue)
   end
 
   let(:alice) do

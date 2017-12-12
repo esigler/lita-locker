@@ -10,42 +10,42 @@ module Lita
       include ::Locker::Resource
 
       route(
-        /^locker\slabel\slist$/,
+        /^locker\slabel\slist#{COMMENT_REGEX}$/,
         :list,
         command: true,
         help: { t('help.label.list.syntax') => t('help.label.list.desc') }
       )
 
       route(
-        /^locker\slabel\screate\s#{LABELS_REGEX}$/,
+        /^locker\slabel\screate\s#{LABELS_REGEX}#{COMMENT_REGEX}$/,
         :create,
         command: true,
         help: { t('help.label.create.syntax') => t('help.label.create.desc') }
       )
 
       route(
-        /^locker\slabel\sdelete\s#{LABELS_REGEX}$/,
+        /^locker\slabel\sdelete\s#{LABELS_REGEX}#{COMMENT_REGEX}$/,
         :delete,
         command: true,
         help: { t('help.label.delete.syntax') => t('help.label.delete.desc') }
       )
 
       route(
-        /^locker\slabel\sshow\s#{LABEL_REGEX}$/,
+        /^locker\slabel\sshow\s#{LABEL_REGEX}#{COMMENT_REGEX}$/,
         :show,
         command: true,
         help: { t('help.label.show.syntax') => t('help.label.show.desc') }
       )
 
       route(
-        /^locker\slabel\sadd\s#{RESOURCES_REGEX}\sto\s#{LABEL_REGEX}$/,
+        /^locker\slabel\sadd\s#{RESOURCES_REGEX}\sto\s#{LABEL_REGEX}#{COMMENT_REGEX}$/,
         :add,
         command: true,
         help: { t('help.label.add.syntax') => t('help.label.add.desc') }
       )
 
       route(
-        /^locker\slabel\sremove\s#{RESOURCES_REGEX}\sfrom\s#{LABEL_REGEX}$/,
+        /^locker\slabel\sremove\s#{RESOURCES_REGEX}\sfrom\s#{LABEL_REGEX}#{COMMENT_REGEX}$/,
         :remove,
         command: true,
         help: { t('help.label.remove.syntax') => t('help.label.remove.desc') }
