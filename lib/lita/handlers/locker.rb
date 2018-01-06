@@ -5,6 +5,8 @@ module Lita
   module Handlers
     # Top-level class for Locker
     class Locker < Handler
+      config :per_page, type: Integer, default: 10
+
       on :loaded, :setup_redis
 
       include ::Locker::Label

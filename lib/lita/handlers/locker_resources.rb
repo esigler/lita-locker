@@ -12,9 +12,10 @@ module Lita
       include ::Locker::Resource
 
       route(
-        /^locker\sresource\slist#{COMMENT_REGEX}$/,
+        /^locker\sresource\slist#{COMMENT_REGEX}/,
         :list,
         command: true,
+        kwargs: { page: { default: 1 } },
         help: { t('help.resource.list.syntax') => t('help.resource.list.desc') }
       )
 
@@ -46,22 +47,49 @@ module Lita
       )
 
       def list(response)
-        after 0 do
-          should_rate_limit = false
+        list = Resource.list
+        count = list.count
 
-          Resource.list.each_slice(5) do |slice|
-            if should_rate_limit
-              sleep 3
-            else
-              should_rate_limit = true
-            end
+        begin
+          page = Integer(response.extensions[:kwargs][:page].to_s, 10)
+        rescue ArgumentError
+          response.reply t("list.invalid_page_type")
 
-            slice.each do |r|
-              res = Resource.new(r)
-              response.reply(t('resource.desc', name: r, state: res.state.value))
-            end
-          end
+          return
         end
+
+        pages = (count / config.per_page).ceil + 1
+
+        if page < 1 || page > pages
+          response.reply t("list.page_outside_range", pages: pages)
+
+          return
+        end
+
+        offset = config.per_page * (page - 1)
+
+        message = list[offset, config.per_page].map do |key|
+          resource = Resource.new(key)
+
+          state = resource.state.value
+
+          case state
+          when 'unlocked'
+            unlocked(t('resource.desc', name: key, state: state))
+          when 'locked'
+            locked(t('resource.desc', name: key, state: state))
+          else
+            # This case shouldn't happen, but it will if someone a label
+            # gets saved with some other value for `state`.
+            t('resource.desc', name: key, state: state)
+          end
+        end.join("\n")
+
+        if count > config.per_page
+          message += "\n#{t('list.paginate', page: page, pages: pages)}"
+        end
+
+        response.reply(message)
       end
 
       def create(response)

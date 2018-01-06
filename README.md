@@ -19,7 +19,16 @@ gem "lita-locker"
 
 ## Configuration
 
-None
+### Optional attributes
+
+* `per_page` - The number of items to show at once when listing labels or resources. Default: 10
+
+### Example
+
+``` ruby
+Lita.configure do |config|
+  config.handlers.locker.per_page = 3
+```
 
 ## Usage
 
@@ -61,7 +70,7 @@ locker dequeue <label> - Remove yourself from the queue for <label>
 
 ### Labels
 ```
-locker label list                          - List all labels
+locker label list [--page N]               - List all labels
 locker label create <name>                 - Create a label with <name>.
 locker label delete <name>                 - Delete the label with <name>.  Clears all locks associated.
 locker label add <resource> to <name>      - Adds <resource> to the list of things to lock/unlock for <name>
@@ -71,10 +80,10 @@ locker label show <name>                   - Show all resources for <name>
 
 ### Resources
 ```
-locker resource list          - List all resources
-locker resource create <name> - Create a resource with <name>.  (Restricted to locker_admins group)
-locker resource delete <name> - Delete the resource with <name>.  Clears all locks associated.  (Restricted to locker_admins group)
-locker resource show <name>   - Show the state of <name>
+locker resource list [--page N]   - List all resources
+locker resource create <name>     - Create a resource with <name>.  (Restricted to locker_admins group)
+locker resource delete <name>     - Delete the resource with <name>.  Clears all locks associated.  (Restricted to locker_admins group)
+locker resource show <name>       - Show the state of <name>
 ```
 
 ### HTTP access

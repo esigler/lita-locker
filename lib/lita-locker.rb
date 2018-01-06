@@ -8,6 +8,7 @@ Lita.load_locales Dir[File.expand_path(
 
 require 'redis-objects'
 require 'time-lord'
+require 'lita-keyword-arguments'
 
 require 'locker/label'
 require 'locker/misc'
