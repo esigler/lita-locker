@@ -87,7 +87,7 @@ module Lita
           when 'locked'
             locked(t('label.desc', name: key, state: state))
           else
-            # This case shouldn't happen, but it will if someone a label
+            # This case shouldn't happen, but it will if a label
             # gets saved with some other value for `state`.
             t('label.desc', name: key, state: state)
           end
