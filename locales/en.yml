@@ -53,7 +53,7 @@ en:
             desc: Show what locks a user currently holds
           resource:
             list:
-              syntax: locker resource list
+              syntax: locker resource list [--page N]
               desc: List all resources
             create:
               syntax: "locker resource create <name>[, <name> ...]"
@@ -66,7 +66,7 @@ en:
               desc: Show the state of <name>
           label:
             list:
-              syntax: locker label list
+              syntax: locker label list [--page N]
               desc: List all labels
             create:
               syntax: "locker label create <name>[, <name> ...]"
