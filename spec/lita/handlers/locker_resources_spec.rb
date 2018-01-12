@@ -56,29 +56,29 @@ describe Lita::Handlers::LockerResources, lita_handler: true do
 
         it 'includes details about what page was shown' do
           send_command('locker resource list')
-          expect(replies.last).to include("Page 1 of 2 shown. Use --page to specify additional pages.")
+          expect(replies.last).to include('Page 1 of 2 shown. Use --page to specify additional pages.')
         end
 
         it 'displays the page specified' do
           send_command('locker resource list --page 2')
-          expect(replies.last).to include("Resource: 4, state: unlocked")
-          expect(replies.last).to include("Page 2 of 2 shown. Use --page to specify additional pages.")
+          expect(replies.last).to include('Resource: 4, state: unlocked')
+          expect(replies.last).to include('Page 2 of 2 shown. Use --page to specify additional pages.')
         end
 
         it 'rejects pages lower than 1' do
           send_command('locker resource list --page 0')
-          expect(replies.last).to eq("Page specified must be between 1 and 2.")
+          expect(replies.last).to eq('Page specified must be between 1 and 2.')
         end
 
         it 'rejects pages higher than the number there are' do
           send_command('locker resource list --page 3')
-          expect(replies.last).to eq("Page specified must be between 1 and 2.")
+          expect(replies.last).to eq('Page specified must be between 1 and 2.')
         end
       end
 
       it 'rejects non-integer values for pages' do
         send_command('locker resource list --page x')
-        expect(replies.last).to eq("Page specified must be an integer.")
+        expect(replies.last).to eq('Page specified must be an integer.')
       end
     end
   end

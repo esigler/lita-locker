@@ -1,15 +1,17 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 describe Locker::List do
-  let(:item_class) { double("item class", list: [one, two, three, four]) }
+  let(:item_class) { double('item class', list: [one, two, three, four]) }
 
-  let(:one) { double("one") }
-  let(:two) { double("two") }
-  let(:three) { double("three") }
-  let(:four) { double("four") }
+  let(:one) { double('one') }
+  let(:two) { double('two') }
+  let(:three) { double('three') }
+  let(:four) { double('four') }
 
   it 'raises an argument error if a non-integer page is requested' do
-    expect { described_class.new(item_class, 3, "z") }.to raise_error(ArgumentError)
+    expect { described_class.new(item_class, 3, 'z') }.to raise_error(ArgumentError)
   end
 
   describe '#multiple_pages' do
@@ -28,7 +30,7 @@ describe Locker::List do
 
   describe '#requested_page' do
     context 'with an empty list' do
-      let(:item_class) { double("item class", list: []) }
+      let(:item_class) { double('item class', list: []) }
 
       it 'returns an empty list' do
         subject = described_class.new(item_class, 3, 1)
@@ -38,7 +40,7 @@ describe Locker::List do
     end
 
     context 'with a single item list' do
-      let(:item_class) { double("item class", list: [one]) }
+      let(:item_class) { double('item class', list: [one]) }
 
       it 'returns a list with one item' do
         subject = described_class.new(item_class, 3, 1)

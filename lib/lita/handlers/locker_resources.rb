@@ -52,16 +52,10 @@ module Lita
         begin
           list = ::Locker::List.new(Resource, config.per_page, response.extensions[:kwargs][:page])
         rescue ArgumentError
-          response.reply t("list.invalid_page_type")
-
-          return
+          return response.reply(t('list.invalid_page_type'))
         end
 
-        unless list.valid_page?
-          response.reply t("list.page_outside_range", pages: list.pages)
-
-          return
-        end
+        return response.reply(t('list.page_outside_range', pages: list.pages)) unless list.valid_page?
 
         message = list.requested_page.map do |key|
           resource = Resource.new(key)
@@ -80,9 +74,7 @@ module Lita
           end
         end.join("\n")
 
-        if list.multiple_pages?
-          message += "\n#{t('list.paginate', page: list.page, pages: list.pages)}"
-        end
+        message += "\n#{t('list.paginate', page: list.page, pages: list.pages)}" if list.multiple_pages?
 
         response.reply(message)
       end
