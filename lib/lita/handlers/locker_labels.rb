@@ -12,7 +12,7 @@ module Lita
       include ::Locker::Resource
 
       route(
-        /^locker\slabel\slist#{COMMENT_REGEX}/,
+        /^locker\slabel\slist/,
         :list,
         command: true,
         kwargs: { page: { default: 1 } },
