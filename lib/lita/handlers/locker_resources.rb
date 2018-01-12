@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'locker/list'
+
 module Lita
   module Handlers
     # Resource-related handlers
@@ -47,28 +49,21 @@ module Lita
       )
 
       def list(response)
-        list = Resource.list
-        count = list.count
-
         begin
-          page = Integer(response.extensions[:kwargs][:page].to_s, 10)
+          list = ::Locker::List.new(Resource, config.per_page, response.extensions[:kwargs][:page])
         rescue ArgumentError
           response.reply t("list.invalid_page_type")
 
           return
         end
 
-        pages = (count / config.per_page).ceil + 1
-
-        if page < 1 || page > pages
-          response.reply t("list.page_outside_range", pages: pages)
+        unless list.valid_page?
+          response.reply t("list.page_outside_range", pages: list.pages)
 
           return
         end
 
-        offset = config.per_page * (page - 1)
-
-        message = list[offset, config.per_page].map do |key|
+        message = list.requested_page.map do |key|
           resource = Resource.new(key)
 
           state = resource.state.value
@@ -85,8 +80,8 @@ module Lita
           end
         end.join("\n")
 
-        if count > config.per_page
-          message += "\n#{t('list.paginate', page: page, pages: pages)}"
+        if list.multiple_pages?
+          message += "\n#{t('list.paginate', page: list.page, pages: list.pages)}"
         end
 
         response.reply(message)

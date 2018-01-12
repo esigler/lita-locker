@@ -14,13 +14,15 @@ Lita.version_3_compatibility_mode = false
 
 RSpec.configure do |config|
   config.before do
-    registry.register_hook(:trigger_route, Lita::Extensions::KeywordArguments)
-    registry.register_handler(Lita::Handlers::Locker)
-    registry.register_handler(Lita::Handlers::LockerEvents)
-    registry.register_handler(Lita::Handlers::LockerHttp)
-    registry.register_handler(Lita::Handlers::LockerLabels)
-    registry.register_handler(Lita::Handlers::LockerMisc)
-    registry.register_handler(Lita::Handlers::LockerResources)
+    if defined? registry
+      registry.register_hook(:trigger_route, Lita::Extensions::KeywordArguments)
+      registry.register_handler(Lita::Handlers::Locker)
+      registry.register_handler(Lita::Handlers::LockerEvents)
+      registry.register_handler(Lita::Handlers::LockerHttp)
+      registry.register_handler(Lita::Handlers::LockerLabels)
+      registry.register_handler(Lita::Handlers::LockerMisc)
+      registry.register_handler(Lita::Handlers::LockerResources)
+    end
   end
 end
 
