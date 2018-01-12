@@ -46,41 +46,34 @@ describe Lita::Handlers::LockerResources, lita_handler: true do
         robot.config.handlers.locker.per_page = 3
       end
 
-      it 'includes details about what page was shown' do
-        send_command('locker resource create 1')
-        send_command('locker resource create 2')
-        send_command('locker resource create 3')
-        send_command('locker resource create 4')
-        send_command('locker resource list')
-        expect(replies.last).to include("Page 1 of 2 shown. Use --page to specify additional pages.")
-      end
+      context 'when there are 4 resources' do
+        before do
+          send_command('locker resource create 1')
+          send_command('locker resource create 2')
+          send_command('locker resource create 3')
+          send_command('locker resource create 4')
+        end
 
-      it 'displays the page specified' do
-        send_command('locker resource create 1')
-        send_command('locker resource create 2')
-        send_command('locker resource create 3')
-        send_command('locker resource create 4')
-        send_command('locker resource list --page 2')
-        expect(replies.last).to include("Resource: 4, state: unlocked")
-        expect(replies.last).to include("Page 2 of 2 shown. Use --page to specify additional pages.")
-      end
+        it 'includes details about what page was shown' do
+          send_command('locker resource list')
+          expect(replies.last).to include("Page 1 of 2 shown. Use --page to specify additional pages.")
+        end
 
-      it 'rejects pages lower than 1' do
-        send_command('locker resource create 1')
-        send_command('locker resource create 2')
-        send_command('locker resource create 3')
-        send_command('locker resource create 4')
-        send_command('locker resource list --page 0')
-        expect(replies.last).to eq("Page specified must be between 1 and 2.")
-      end
+        it 'displays the page specified' do
+          send_command('locker resource list --page 2')
+          expect(replies.last).to include("Resource: 4, state: unlocked")
+          expect(replies.last).to include("Page 2 of 2 shown. Use --page to specify additional pages.")
+        end
 
-      it 'rejects pages higher than the number there are' do
-        send_command('locker resource create 1')
-        send_command('locker resource create 2')
-        send_command('locker resource create 3')
-        send_command('locker resource create 4')
-        send_command('locker resource list --page 3')
-        expect(replies.last).to eq("Page specified must be between 1 and 2.")
+        it 'rejects pages lower than 1' do
+          send_command('locker resource list --page 0')
+          expect(replies.last).to eq("Page specified must be between 1 and 2.")
+        end
+
+        it 'rejects pages higher than the number there are' do
+          send_command('locker resource list --page 3')
+          expect(replies.last).to eq("Page specified must be between 1 and 2.")
+        end
       end
 
       it 'rejects non-integer values for pages' do
