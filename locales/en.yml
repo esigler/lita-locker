@@ -16,6 +16,10 @@ en:
           already_observing: "%{user}, you are already observing %{name}"
           stopped_observing: "%{user}, you have stopped observing %{name}"
           were_not_observing: "%{user}, you were not observing %{name}"
+        list:
+          paginate: "Page %{page} of %{pages} shown. Use --page to specify additional pages."
+          invalid_page_type: "Page specified must be an integer."
+          page_outside_range: "Page specified must be between 1 and %{pages}."
         help:
           log:
             syntax: locker log <label>
@@ -49,7 +53,7 @@ en:
             desc: Show what locks a user currently holds
           resource:
             list:
-              syntax: locker resource list
+              syntax: locker resource list [--page N]
               desc: List all resources
             create:
               syntax: "locker resource create <name>[, <name> ...]"
@@ -62,7 +66,7 @@ en:
               desc: Show the state of <name>
           label:
             list:
-              syntax: locker label list
+              syntax: locker label list [--page N]
               desc: List all labels
             create:
               syntax: "locker label create <name>[, <name> ...]"
@@ -105,7 +109,7 @@ en:
           unlocked_no_queue: "%{name} is unlocked and no one is next up %{mention}"
           unable_to_lock: "%{name} unable to be locked"
           lock: "%{name} locked"
-          desc: "%{name} is unlocked"
+          desc: "%{name} is %{state}"
           desc_owner: "%{name} is locked by %{owner_name} (taken %{time})"
           desc_owner_queue: "%{name} is locked by %{owner_name} (taken %{time}). Next up: %{queue}"
           created: "Label %{name} created"

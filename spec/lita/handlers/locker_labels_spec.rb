@@ -41,12 +41,55 @@ describe Lita::Handlers::LockerLabels, lita_handler: true do
 
   describe '#label_list' do
     it 'shows a list of labels if there are any' do
+      send_command('locker resource create whatever')
       send_command('locker label create foobar')
       send_command('locker label create bazbat')
+      send_command('locker label add whatever to bazbat')
+      send_command('lock bazbat')
       send_command('locker label list')
-      sleep 1 # TODO: HAAAACK.  Need after to have a more testable behavior.
-      expect(replies.include?('foobar is unlocked')).to eq(true)
-      expect(replies.include?('bazbat is unlocked')).to eq(true)
+      expect(replies.last).to include('foobar is unlocked')
+      expect(replies.last).to include('bazbat is locked')
+    end
+
+    context 'when per_page is configured to 3' do
+      before do
+        robot.config.handlers.locker.per_page = 3
+      end
+
+      context 'when there are 4 labels' do
+        before do
+          send_command('locker label create 1')
+          send_command('locker label create 2')
+          send_command('locker label create 3')
+          send_command('locker label create 4')
+        end
+
+        it 'includes details about what page was shown' do
+          send_command('locker label list')
+          expect(replies.last).to include('Page 1 of 2 shown. Use --page to specify additional pages.')
+        end
+
+        it 'displays the page specified' do
+          send_command('locker label list --page 2')
+          expect(replies.last).to include('4 is unlocked')
+          expect(replies.last).to include('Page 2 of 2 shown. Use --page to specify additional pages.')
+        end
+
+        it 'rejects pages lower than 1' do
+          send_command('locker label list --page 0')
+          expect(replies.last).to eq('Page specified must be between 1 and 2.')
+        end
+
+        it 'rejects pages higher than the number there are' do
+          send_command('locker label list --page 3')
+          expect(replies.last).to eq('Page specified must be between 1 and 2.')
+        end
+      end
+
+      it 'rejects non-integer values for pages' do
+        send_command('locker label list --page x')
+        expect(replies.last).to eq('Page specified must be an integer.')
+      end
     end
   end
 

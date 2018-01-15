@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'locker/list'
+
 module Lita
   module Handlers
     # Label-related handlers
@@ -12,9 +14,10 @@ module Lita
       include ::Locker::Resource
 
       route(
-        /^locker\slabel\slist#{COMMENT_REGEX}$/,
+        /^locker\slabel\slist/,
         :list,
         command: true,
+        kwargs: { page: { default: 1 } },
         help: { t('help.label.list.syntax') => t('help.label.list.desc') }
       )
 
@@ -54,22 +57,34 @@ module Lita
       )
 
       def list(response)
-        after 0 do
-          should_rate_limit = false
-
-          Label.list.each_slice(5) do |slice|
-            if should_rate_limit
-              sleep 3
-            else
-              should_rate_limit = true
-            end
-
-            slice.each do |n|
-              l = Label.new(n)
-              response.reply(unlocked(t('label.desc', name: n, state: l.state.value)))
-            end
-          end
+        begin
+          list = ::Locker::List.new(Label, config.per_page, response.extensions[:kwargs][:page])
+        rescue ArgumentError
+          return response.reply(t('list.invalid_page_type'))
         end
+
+        return response.reply(t('list.page_outside_range', pages: list.pages)) unless list.valid_page?
+
+        message = list.requested_page.map do |key|
+          label = Label.new(key)
+
+          state = label.state.value.to_s
+
+          case state
+          when 'unlocked'
+            unlocked(t('label.desc', name: key, state: state))
+          when 'locked'
+            locked(t('label.desc', name: key, state: state))
+          else
+            # This case shouldn't happen, but it will if a label
+            # gets saved with some other value for `state`.
+            t('label.desc', name: key, state: state)
+          end
+        end.join("\n")
+
+        message += "\n#{t('list.paginate', page: list.page, pages: list.pages)}" if list.multiple_pages?
+
+        response.reply(message)
       end
 
       def create(response)
