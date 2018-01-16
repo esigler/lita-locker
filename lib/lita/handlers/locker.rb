@@ -76,7 +76,7 @@ module Lita
 
         return response.reply(failed(t('label.does_not_exist', name: name))) unless Label.exists?(name)
         l = Label.new(name)
-        return response.reply(failed(t('label.no_resources', name: name))) unless l.membership.count.positive?
+        return response.reply(failed(t('label.no_resources', name: name))) unless l.membership.count > 0
         return response.reply(t('label.self_lock', name: name, user: response.user.name)) if l.owner == response.user
         return response.reply(success(t('label.lock', name: name))) if l.lock!(response.user.id)
 
