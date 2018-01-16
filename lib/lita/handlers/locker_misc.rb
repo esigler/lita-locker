@@ -50,7 +50,7 @@ module Lita
 
       def status(response)
         name = response.match_data['label']
-        unless name.match?(/\*/)
+        unless name.match(/\*/)
           # Literal query
           return response.reply(status_label(name)) if Label.exists?(name)
           return response.reply(status_resource(name)) if Resource.exists?(name)
