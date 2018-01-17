@@ -48,6 +48,8 @@ module Lita
         end
       end
 
+      # rubocop:disable Performance/RedundantMatch
+      # rubocop:disable Performance/RegexpMatch
       def status(response)
         name = response.match_data['label']
         unless name.match(/\*/)
@@ -62,6 +64,8 @@ module Lita
         return response.reply(failed(t('status.does_not_exist', name: name))) if labels.empty?
         response.reply(labels.map { |l| status_label(l) }.join("\n"))
       end
+      # rubocop:enable Performance/RegexpMatch
+      # rubocop:enable Performance/RedundantMatch
 
       def dequeue(response)
         name = response.match_data['label']
@@ -92,7 +96,7 @@ module Lita
       def status_label(name)
         l = Label.new(name)
         return unlocked(t('label.desc', name: name, state: l.state.value)) unless l.locked?
-        if l.wait_queue.count.positive?
+        if l.wait_queue.count > 0
           queue = []
           l.wait_queue.each do |u|
             usr = Lita::User.find_by_id(u)

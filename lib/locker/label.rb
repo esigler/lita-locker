@@ -95,7 +95,7 @@ module Locker
         log('Unlocked')
 
         # FIXME: Possible race condition where resources become unavailable between unlock and relock
-        if wait_queue.count.positive?
+        if wait_queue.count > 0
           next_user = wait_queue.shift
           lock!(next_user)
         end

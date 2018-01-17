@@ -16,3 +16,9 @@ ClassLength:
 
 Metrics/BlockLength:
   Enabled: false
+
+Style/NumericPredicate:
+  Enabled: false
+
+Lint/UnneededDisable:
+  Enabled: false

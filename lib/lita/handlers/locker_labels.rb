@@ -121,7 +121,7 @@ module Lita
         name = response.match_data['label']
         return response.reply(failed(t('label.does_not_exist', name: name))) unless Label.exists?(name)
         l = Label.new(name)
-        return response.reply(t('label.has_no_resources', name: name)) unless l.membership.count.positive?
+        return response.reply(t('label.has_no_resources', name: name)) unless l.membership.count > 0
         res = []
         l.membership.each do |member|
           res.push(member)
